@@ -1,0 +1,56 @@
+# Flutter/Dart
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+
+# Web
+web/generated_plugin_registrant.dart
+
+# VS Code
+.vscode/
+.history/
+
+# Android
+android/.gradle/
+android/captures/
+android/gradle-wrapper.jar
+android/local.properties
+android/key.properties
+*.jks
+*.keystore
+
+# iOS/macOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/Flutter.podspec
+ios/Runner.xcworkspace/
+macos/Pods/
+macos/Flutter/ephemeral/
+*.xcworkspace
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+**/DerivedData/
+.DS_Store
+
+# Windows
+windows/flutter/ephemeral/
+
+# Linux
+linux/flutter/ephemeral/
+
+# Generated files
+generated_plugin_registrant.dart
+
+# Logs
+*.log
+
+# Environment / Secrets
+.env
+*.env
+
+# Other
+.pubignore
