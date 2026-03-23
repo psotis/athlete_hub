@@ -79,7 +79,6 @@ class UserService {
 
       return api;
     } on DioException catch (e) {
-      print(e);
       final data = e.response?.data;
       String message = 'Update failed';
 

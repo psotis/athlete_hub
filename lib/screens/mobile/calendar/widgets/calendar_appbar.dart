@@ -15,6 +15,7 @@ class CalendarAppbar extends StatelessWidget implements PreferredSizeWidget {
         initialDate: DateTime(2020, 4, 20),
         firstDate: DateTime(2019, 1, 15),
         lastDate: DateTime(2040, 11, 20),
+        // ignore: avoid_print
         onDateSelected: (date) => print(date),
         leftMargin: 20,
         monthColor: Colors.blueGrey,

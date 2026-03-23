@@ -10,8 +10,6 @@ class HomeMobile extends StatelessWidget {
     if (state is AuthAuthenticated) {
       final user = state.user;
 
-      print(user.userType);
-
       if (user.isTrainer) {
         // do something
       }
