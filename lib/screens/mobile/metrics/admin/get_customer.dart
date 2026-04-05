@@ -25,9 +25,9 @@ class _GetCustomerMobileState extends State<GetCustomerMobile> {
                   ? state.selectedUser?.id
                   : null;
 
-              if (state.status == ErgometricsStatus.failure) {
-                return Text(state.errorMessage!);
-              }
+              // if (state.status == ErgometricsStatus.failure) {
+              //   return Text(state.errorMessage!);
+              // }
 
               return IotDropdown2<String>(
                 buttonWidth: MediaQuery.of(context).size.width * .9,
@@ -98,7 +98,7 @@ class _GetCustomerMobileState extends State<GetCustomerMobile> {
 }
 
 class _SessionCard extends StatelessWidget {
-  final dynamic item;
+  final ErgometricsDetails item;
 
   const _SessionCard({required this.item});
 
@@ -111,7 +111,8 @@ class _SessionCard extends StatelessWidget {
     final jump = item.jumpingAbility;
     final agility = item.agilitySpeed;
     final endurance = item.endurance;
-    final overheadItems = item.overheadSquatAssessmentItems ?? [];
+    final movementQualityItems = item.overheadSquatAssessmentItems;
+    final date = session?.measurementDate;
 
     return Card(
       elevation: 2,
@@ -120,11 +121,11 @@ class _SessionCard extends StatelessWidget {
         tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
         title: Text(
-          'Session ${session.measurementDate ?? '-'}',
+          'Session ${date != null ? DateFormat('dd-MM-yyyy').format(date) : '-'}',
           style: const TextStyle(fontWeight: FontWeight.w700),
         ),
         subtitle: Text(
-          'Notes: ${session.notes?.toString().trim().isNotEmpty == true ? session.notes : '-'}',
+          'Notes: ${session?.notes?.toString().trim().isNotEmpty == true ? session?.notes : '-'}',
         ),
         children: [
           _CategoryCard(
@@ -220,13 +221,32 @@ class _SessionCard extends StatelessWidget {
             values: {
               'Beep test level': endurance?.beepTestLevel,
               'Beep test shuttles': endurance?.beepTestShuttles,
+              'Beep test score': endurance?.beepTestContinuousScore,
+              'Beep test time': _formatDurationFromSeconds(
+                endurance?.beepTestTimeSec,
+              ),
+              'Beep test distance (m)': endurance?.beepTestDistanceM,
+              'Beep test speed (km/h)': endurance?.beepTestSpeedKmh,
+              'Beep test VO2max (ml/kg/min)': endurance?.beepTestVo2maxMlKgMin,
               'HR max': endurance?.hrMax,
             },
           ),
-          if (overheadItems.isNotEmpty) _OverheadSection(items: overheadItems),
+          if (movementQualityItems.isNotEmpty)
+            _MovementQualitySection(items: movementQualityItems),
         ],
       ),
     );
+  }
+
+  String _formatDurationFromSeconds(double? seconds) {
+    if (seconds == null) return '-';
+
+    final totalSeconds = seconds.round();
+    final minutes = totalSeconds ~/ 60;
+    final remainingSeconds = totalSeconds % 60;
+
+    return '${minutes.toString().padLeft(2, '0')}:'
+        '${remainingSeconds.toString().padLeft(2, '0')}';
   }
 }
 
@@ -289,20 +309,23 @@ class _CategoryCard extends StatelessWidget {
 
   static String _formatValue(dynamic value) {
     if (value == null) return '-';
-    if (value is double) {
-      if (value == value.roundToDouble()) {
-        return value.toStringAsFixed(0);
+
+    if (value is num) {
+      final doubleValue = value.toDouble();
+      if (doubleValue == doubleValue.roundToDouble()) {
+        return doubleValue.toStringAsFixed(0);
       }
-      return value.toStringAsFixed(2);
+      return doubleValue.toStringAsFixed(2);
     }
+
     return value.toString();
   }
 }
 
-class _OverheadSection extends StatelessWidget {
-  final List<dynamic> items;
+class _MovementQualitySection extends StatelessWidget {
+  final List<Squat> items;
 
-  const _OverheadSection({required this.items});
+  const _MovementQualitySection({required this.items});
 
   @override
   Widget build(BuildContext context) {
@@ -319,7 +342,7 @@ class _OverheadSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Overhead Squat Assessment',
+            'Movement Quality',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 10),

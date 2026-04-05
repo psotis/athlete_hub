@@ -7,34 +7,64 @@ class Endurance extends Equatable {
   final int? beepTestLevel;
   final int? beepTestShuttles;
   final int? hrMax;
+  final double? beepTestTimeSec;
+  final int? beepTestDistanceM;
+  final double? beepTestSpeedKmh;
+  final double? beepTestContinuousScore;
+  final double? beepTestVo2maxMlKgMin;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  const Endurance(
-    this.id,
-    this.sessionId,
-    this.beepTestLevel,
-    this.beepTestShuttles,
-    this.hrMax,
+  const Endurance({
+    required this.id,
+    required this.sessionId,
+    required this.beepTestLevel,
+    required this.beepTestShuttles,
+    required this.hrMax,
+    required this.beepTestTimeSec,
+    required this.beepTestDistanceM,
+    required this.beepTestSpeedKmh,
+    required this.beepTestContinuousScore,
+    required this.beepTestVo2maxMlKgMin,
     this.createdAt,
     this.updatedAt,
-  );
+  });
 
   factory Endurance.initial() {
-    return const Endurance('', '', null, null, null, null, null);
+    return const Endurance(
+      id: '',
+      sessionId: '',
+      beepTestLevel: 1,
+      beepTestShuttles: 1,
+      hrMax: 0,
+      beepTestTimeSec: 0,
+      beepTestDistanceM: 0,
+      beepTestSpeedKmh: 0,
+      beepTestContinuousScore: 0,
+      beepTestVo2maxMlKgMin: 0,
+      createdAt: null,
+      updatedAt: null,
+    );
   }
 
   factory Endurance.fromMap(Map<String, dynamic> map) {
     return Endurance(
-      (map['id'] ?? '').toString(),
-      (map['session_id'] ?? '').toString(),
-      (map['beep_test_level'] as num?)?.toInt(),
-      (map['beep_test_shuttles'] as num?)?.toInt(),
-      (map['hr_max'] as num?)?.toInt(),
-      map['created_at'] != null
+      id: (map['id'] ?? '').toString(),
+      sessionId: (map['session_id'] ?? '').toString(),
+      beepTestLevel: (map['beep_test_level'] as num?)?.toInt(),
+      beepTestShuttles: (map['beep_test_shuttles'] as num?)?.toInt(),
+      hrMax: (map['hr_max'] as num?)?.toInt(),
+      beepTestTimeSec: (map['beep_test_time_sec'] as num?)?.toDouble(),
+      beepTestDistanceM: (map['beep_test_distance_m'] as num?)?.toInt(),
+      beepTestSpeedKmh: (map['beep_test_speed_kmh'] as num?)?.toDouble(),
+      beepTestContinuousScore: (map['beep_test_continuous_score'] as num?)
+          ?.toDouble(),
+      beepTestVo2maxMlKgMin: (map['beep_test_vo2max_ml_kg_min'] as num?)
+          ?.toDouble(),
+      createdAt: map['created_at'] != null
           ? DateTime.tryParse(map['created_at'].toString())
           : null,
-      map['updated_at'] != null
+      updatedAt: map['updated_at'] != null
           ? DateTime.tryParse(map['updated_at'].toString())
           : null,
     );
@@ -47,6 +77,11 @@ class Endurance extends Equatable {
       'beep_test_level': beepTestLevel,
       'beep_test_shuttles': beepTestShuttles,
       'hr_max': hrMax,
+      'beep_test_time_sec': beepTestTimeSec,
+      'beep_test_distance_m': beepTestDistanceM,
+      'beep_test_speed_kmh': beepTestSpeedKmh,
+      'beep_test_continuous_score': beepTestContinuousScore,
+      'beep_test_vo2max_ml_kg_min': beepTestVo2maxMlKgMin,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };
@@ -63,17 +98,29 @@ class Endurance extends Equatable {
     int? beepTestLevel,
     int? beepTestShuttles,
     int? hrMax,
+    double? beepTestTimeSec,
+    int? beepTestDistanceM,
+    double? beepTestSpeedKmh,
+    double? beepTestContinuousScore,
+    double? beepTestVo2maxMlKgMin,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
     return Endurance(
-      id ?? this.id,
-      sessionId ?? this.sessionId,
-      beepTestLevel ?? this.beepTestLevel,
-      beepTestShuttles ?? this.beepTestShuttles,
-      hrMax ?? this.hrMax,
-      createdAt ?? this.createdAt,
-      updatedAt ?? this.updatedAt,
+      id: id ?? this.id,
+      sessionId: sessionId ?? this.sessionId,
+      beepTestLevel: beepTestLevel ?? this.beepTestLevel,
+      beepTestShuttles: beepTestShuttles ?? this.beepTestShuttles,
+      hrMax: hrMax ?? this.hrMax,
+      beepTestTimeSec: beepTestTimeSec ?? this.beepTestTimeSec,
+      beepTestDistanceM: beepTestDistanceM ?? this.beepTestDistanceM,
+      beepTestSpeedKmh: beepTestSpeedKmh ?? this.beepTestSpeedKmh,
+      beepTestContinuousScore:
+          beepTestContinuousScore ?? this.beepTestContinuousScore,
+      beepTestVo2maxMlKgMin:
+          beepTestVo2maxMlKgMin ?? this.beepTestVo2maxMlKgMin,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
@@ -84,6 +131,11 @@ class Endurance extends Equatable {
     beepTestLevel,
     beepTestShuttles,
     hrMax,
+    beepTestTimeSec,
+    beepTestDistanceM,
+    beepTestSpeedKmh,
+    beepTestContinuousScore,
+    beepTestVo2maxMlKgMin,
     createdAt,
     updatedAt,
   ];

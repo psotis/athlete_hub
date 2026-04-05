@@ -10,13 +10,31 @@ class EnduranceCharts extends StatelessWidget {
     final labels = items.sessionLabels;
     final latest = items.isNotEmpty ? items.last : null;
 
-    final latestBeep = latestMetricValue(
+    final latestScore = latestMetricValue(
       items,
-      (e) => numToDouble(e.endurance?.beepTestLevel),
+      (e) => numToDouble(e.endurance?.beepTestContinuousScore),
     );
-    final previousBeep = previousMetricValue(
+    final previousScore = previousMetricValue(
       items,
-      (e) => numToDouble(e.endurance?.beepTestLevel),
+      (e) => numToDouble(e.endurance?.beepTestContinuousScore),
+    );
+
+    final latestDistance = latestMetricValue(
+      items,
+      (e) => numToDouble(e.endurance?.beepTestDistanceM),
+    );
+    final previousDistance = previousMetricValue(
+      items,
+      (e) => numToDouble(e.endurance?.beepTestDistanceM),
+    );
+
+    final latestVo2 = latestMetricValue(
+      items,
+      (e) => numToDouble(e.endurance?.beepTestVo2maxMlKgMin),
+    );
+    final previousVo2 = previousMetricValue(
+      items,
+      (e) => numToDouble(e.endurance?.beepTestVo2maxMlKgMin),
     );
 
     final latestHr = latestMetricValue(
@@ -32,27 +50,45 @@ class EnduranceCharts extends StatelessWidget {
       title: 'Endurance',
       children: [
         SummaryStatCard(
-          title: 'Latest Beep Test Level',
-          value:
-              numToDouble(
-                latest?.endurance?.beepTestLevel,
-              )?.toStringAsFixed(0) ??
-              '-',
+          title: 'Latest Beep Test Score',
+          value: latestScore?.toStringAsFixed(2) ?? '-',
           subtitle: latest?.session?.measurementDate != null
               ? _formatDate(latest!.session!.measurementDate!)
               : null,
           icon: Icons.favorite,
         ),
         const SizedBox(height: 12),
+
         MetricDeltaCard(
-          title: 'Beep Test Level Change',
-          latestValue: latestBeep,
-          previousValue: previousBeep,
+          title: 'Beep Test Score Change',
+          latestValue: latestScore,
+          previousValue: previousScore,
           unit: '',
-          decimals: 0,
+          decimals: 2,
           icon: Icons.trending_up,
         ),
         const SizedBox(height: 12),
+
+        MetricDeltaCard(
+          title: 'Distance Change',
+          latestValue: latestDistance,
+          previousValue: previousDistance,
+          unit: ' m',
+          decimals: 0,
+          icon: Icons.straighten,
+        ),
+        const SizedBox(height: 12),
+
+        MetricDeltaCard(
+          title: 'VO2max Change',
+          latestValue: latestVo2,
+          previousValue: previousVo2,
+          unit: ' ml/kg/min',
+          decimals: 2,
+          icon: Icons.air,
+        ),
+        const SizedBox(height: 12),
+
         MetricDeltaCard(
           title: 'HR Max Change',
           latestValue: latestHr,
@@ -62,28 +98,43 @@ class EnduranceCharts extends StatelessWidget {
           icon: Icons.monitor_heart,
         ),
         const SizedBox(height: 12),
+
         ChartCard(
-          title: 'Beep Test Level Trend',
+          title: 'Beep Test Score Trend',
           chart: SimpleLineChart(
             spots: items.lineSpots(
-              (e) => numToDouble(e.endurance?.beepTestLevel),
+              (e) => numToDouble(e.endurance?.beepTestContinuousScore),
+            ),
+            labels: labels,
+            yDecimals: 2,
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        ChartCard(
+          title: 'Distance Trend',
+          chart: SimpleLineChart(
+            spots: items.lineSpots(
+              (e) => numToDouble(e.endurance?.beepTestDistanceM),
             ),
             labels: labels,
             yDecimals: 0,
           ),
         ),
         const SizedBox(height: 12),
+
         ChartCard(
-          title: 'Beep Test Shuttles',
+          title: 'VO2max Trend',
           chart: SimpleLineChart(
             spots: items.lineSpots(
-              (e) => numToDouble(e.endurance?.beepTestShuttles),
+              (e) => numToDouble(e.endurance?.beepTestVo2maxMlKgMin),
             ),
             labels: labels,
-            yDecimals: 0,
+            yDecimals: 2,
           ),
         ),
         const SizedBox(height: 12),
+
         ChartCard(
           title: 'HR Max Trend',
           chart: SimpleLineChart(

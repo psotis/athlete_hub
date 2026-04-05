@@ -31,9 +31,9 @@ class _StartSessionMobileState extends State<StartSessionMobile> {
                   ? state.selectedUser?.id
                   : null;
 
-              if (state.status == SessionStatus.failure) {
-                return Text(state.errorMessage!);
-              }
+              // if (state.status == SessionStatus.failure) {
+              //   return Text(state.errorMessage!);
+              // }
 
               return IotDropdown2<String>(
                 buttonWidth: MediaQuery.of(context).size.width * .9,

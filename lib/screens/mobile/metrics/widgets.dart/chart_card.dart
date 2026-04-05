@@ -189,7 +189,7 @@ class SimpleLineChart extends StatelessWidget {
     return LineChart(
       LineChartData(
         minX: 0,
-        maxX: (spots.length - 1).toDouble(),
+        maxX: spots.last.x,
         minY: 0,
         maxY: _paddedMaxFromSpots(spots),
         titlesData: FlTitlesData(

@@ -17,6 +17,9 @@ class SessionEntriesMobile extends StatefulWidget {
 
 class _SessionEntriesMobileState extends State<SessionEntriesMobile> {
   final _formKey = GlobalKey<FormState>();
+  final List<Squat> movementQualityItems = [];
+  int? selectedBeepLevel;
+  int? selectedBeepShuttle;
 
   // Somatometrics
   final heightCmCtrl = TextEditingController();
@@ -68,9 +71,14 @@ class _SessionEntriesMobileState extends State<SessionEntriesMobile> {
   final sprint020Ctrl = TextEditingController();
   final sprint030Ctrl = TextEditingController();
 
+  // Movement Quality
+  final movementQualityViewNameCtrl = TextEditingController();
+  final movementQualityCheckpointNameCtrl = TextEditingController();
+  final movementQualityCompensationCtrl = TextEditingController();
+  final movementQualityNotesCtrl = TextEditingController();
+  bool movementQualityResult = false;
+
   // Endurance
-  final beepTestLevelCtrl = TextEditingController();
-  final beepTestShuttlesCtrl = TextEditingController();
   final hrMaxCtrl = TextEditingController();
 
   bool isSaving = false;
@@ -118,8 +126,10 @@ class _SessionEntriesMobileState extends State<SessionEntriesMobile> {
       sprint010Ctrl,
       sprint020Ctrl,
       sprint030Ctrl,
-      beepTestLevelCtrl,
-      beepTestShuttlesCtrl,
+      movementQualityViewNameCtrl,
+      movementQualityCheckpointNameCtrl,
+      movementQualityCompensationCtrl,
+      movementQualityNotesCtrl,
       hrMaxCtrl,
     ];
 
@@ -143,6 +153,13 @@ class _SessionEntriesMobileState extends State<SessionEntriesMobile> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    final beep = BeepTestTable.calculate(
+      level: selectedBeepLevel,
+      shuttle: selectedBeepShuttle,
+      age: widget.athlete.birthDate == null
+          ? null
+          : DateTime.now().year - widget.athlete.birthDate!.year,
+    );
 
     final payload = {
       "session_id": widget.sessionId,
@@ -214,10 +231,26 @@ class _SessionEntriesMobileState extends State<SessionEntriesMobile> {
         "sprint_0_20_sec": _toDouble(sprint020Ctrl),
         "sprint_0_30_sec": _toDouble(sprint030Ctrl),
       },
+      "overhead_squat_assessment_items": movementQualityItems
+          .map(
+            (e) => {
+              "view_name": e.viewName,
+              "checkpoint_name": e.checkpointName,
+              "compensation": e.compensation,
+              "result": e.result,
+              "notes": e.notes,
+            },
+          )
+          .toList(),
       "endurance": {
-        "beep_test_level": _toInt(beepTestLevelCtrl),
-        "beep_test_shuttles": _toInt(beepTestShuttlesCtrl),
+        "beep_test_level": selectedBeepLevel,
+        "beep_test_shuttles": selectedBeepShuttle,
         "hr_max": _toInt(hrMaxCtrl),
+        "beep_test_time_sec": beep?.totalTimeSec,
+        "beep_test_distance_m": beep?.totalDistanceM,
+        "beep_test_speed_kmh": beep?.speedKmh,
+        "beep_test_continuous_score": beep?.continuousScore,
+        "beep_test_vo2max_ml_kg_min": beep?.vo2maxMlKgMin,
       },
     };
 
@@ -368,18 +401,68 @@ class _SessionEntriesMobileState extends State<SessionEntriesMobile> {
           ),
 
           _CategorySection(
+            title: 'Movement Quality',
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: ElevatedButton.icon(
+                  onPressed: _addMovementQualityItem,
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add item'),
+                ),
+              ),
+              const SizedBox(height: 10),
+              if (movementQualityItems.isEmpty)
+                const Text('No movement quality items added yet.')
+              else
+                ...movementQualityItems.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final item = entry.value;
+
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _infoRow('View', item.viewName ?? '-'),
+                          _infoRow('Checkpoint', item.checkpointName ?? '-'),
+                          _infoRow('Compensation', item.compensation ?? '-'),
+                          _infoRow(
+                            'Result',
+                            item.result == true ? 'Yes' : 'No',
+                          ),
+                          _infoRow('Notes', item.notes ?? '-'),
+                          const SizedBox(height: 8),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  movementQualityItems.removeAt(index);
+                                });
+                              },
+                              icon: const Icon(Icons.delete),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+            ],
+          ),
+
+          _CategorySection(
             title: 'Endurance',
             children: [
-              _numberField(
-                'Beep test level',
-                beepTestLevelCtrl,
-                isInteger: true,
-              ),
-              _numberField(
-                'Beep test shuttles',
-                beepTestShuttlesCtrl,
-                isInteger: true,
-              ),
+              _beepLevelDropdown(),
+              const SizedBox(height: 10),
+              _beepShuttleDropdown(),
+              const SizedBox(height: 10),
+              _beepCalculatedFields(),
+              const SizedBox(height: 10),
               _numberField('HR max', hrMaxCtrl, isInteger: true),
             ],
           ),
@@ -398,6 +481,165 @@ class _SessionEntriesMobileState extends State<SessionEntriesMobile> {
         ],
       ),
     );
+  }
+
+  Widget _beepCalculatedFields() {
+    final result = BeepTestTable.calculate(
+      level: selectedBeepLevel,
+      shuttle: selectedBeepShuttle,
+    );
+
+    return Column(
+      children: [
+        _readonlyField(
+          'Beep test time',
+          result == null ? '' : BeepTestTable.formatTime(result.totalTimeSec),
+        ),
+        const SizedBox(height: 10),
+        _readonlyField(
+          'Beep test distance (m)',
+          result?.totalDistanceM.toString() ?? '',
+        ),
+        const SizedBox(height: 10),
+        _readonlyField(
+          'Beep test speed (km/h)',
+          result?.speedKmh.toStringAsFixed(2) ?? '',
+        ),
+        const SizedBox(height: 10),
+        _readonlyField(
+          'Beep test continuous score',
+          result?.continuousScore.toStringAsFixed(2) ?? '',
+        ),
+        const SizedBox(height: 10),
+        _readonlyField(
+          'Beep test VO2max (ml/kg/min)',
+          result?.vo2maxMlKgMin?.toStringAsFixed(2) ?? '',
+        ),
+      ],
+    );
+  }
+
+  Widget _readonlyField(String label, String value) {
+    return TextFormField(
+      key: ValueKey('$label-$value'),
+      initialValue: value,
+      readOnly: true,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
+  }
+
+  Widget _beepLevelDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Beep test level',
+          style: TextStyle(fontWeight: FontWeight.w500),
+        ),
+        const SizedBox(height: 6),
+        IotDropdown2<int>(
+          buttonWidth: double.infinity,
+          value: selectedBeepLevel,
+          hintText: 'Select level',
+          enableSearch: true,
+          dropdownMaxHeight: 350,
+          searchHintText: 'Search level...',
+          itemAsString: (level) => 'Level $level',
+          items: BeepTestTable.allLevels
+              .map(
+                (level) => DropdownMenuItem<int>(
+                  value: level,
+                  child: Text('Level $level'),
+                ),
+              )
+              .toList(),
+          onChanged: (value) {
+            setState(() {
+              selectedBeepLevel = value;
+              selectedBeepShuttle = null;
+            });
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _beepShuttleDropdown() {
+    final shuttles = BeepTestTable.shuttlesForLevel(selectedBeepLevel);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Beep test shuttle',
+          style: TextStyle(fontWeight: FontWeight.w500),
+        ),
+        const SizedBox(height: 6),
+        IotDropdown2<int>(
+          buttonWidth: double.infinity,
+          dropdownMaxHeight: 350,
+          value: shuttles.contains(selectedBeepShuttle)
+              ? selectedBeepShuttle
+              : null,
+          hintText: selectedBeepLevel == null
+              ? 'Select level first'
+              : 'Select shuttle',
+          enableSearch: true,
+          searchHintText: 'Search shuttle...',
+          itemAsString: (shuttle) => 'Shuttle $shuttle',
+          items: shuttles
+              .map(
+                (shuttle) => DropdownMenuItem<int>(
+                  value: shuttle,
+                  child: Text('Shuttle $shuttle'),
+                ),
+              )
+              .toList(),
+          onChanged: selectedBeepLevel == null
+              ? null
+              : (value) {
+                  setState(() {
+                    selectedBeepShuttle = value;
+                  });
+                },
+        ),
+      ],
+    );
+  }
+
+  Widget _infoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 4,
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          Expanded(flex: 6, child: Text(value)),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _addMovementQualityItem() async {
+    final item = await showModalBottomSheet<Squat>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => const _MovementQualityItemSheet(),
+    );
+
+    if (item != null) {
+      setState(() {
+        movementQualityItems.add(item);
+      });
+    }
   }
 
   Widget _numberField(
@@ -448,6 +690,146 @@ class _CategorySection extends StatelessWidget {
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
         childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
         children: children,
+      ),
+    );
+  }
+}
+
+class _MovementQualityItemSheet extends StatefulWidget {
+  const _MovementQualityItemSheet();
+
+  @override
+  State<_MovementQualityItemSheet> createState() =>
+      _MovementQualityItemSheetState();
+}
+
+class _MovementQualityItemSheetState extends State<_MovementQualityItemSheet> {
+  final _formKey = GlobalKey<FormState>();
+
+  final viewNameCtrl = TextEditingController();
+  final checkpointNameCtrl = TextEditingController();
+  final compensationCtrl = TextEditingController();
+  final notesCtrl = TextEditingController();
+
+  bool result = false;
+
+  @override
+  void dispose() {
+    viewNameCtrl.dispose();
+    checkpointNameCtrl.dispose();
+    compensationCtrl.dispose();
+    notesCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        16,
+        16,
+        16,
+        MediaQuery.of(context).viewInsets.bottom + 16,
+      ),
+      child: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Add Movement Quality Item',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: viewNameCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'View (e.g. ANTERIOR / LATERAL)',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: checkpointNameCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Checkpoint',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if ((value ?? '').trim().isEmpty) {
+                    return 'Checkpoint is required';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: compensationCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Compensation',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if ((value ?? '').trim().isEmpty) {
+                    return 'Compensation is required';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Result'),
+                subtitle: Text(result ? 'Yes' : 'No'),
+                value: result,
+                onChanged: (value) {
+                  setState(() {
+                    result = value;
+                  });
+                },
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: notesCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Notes',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (!_formKey.currentState!.validate()) return;
+
+                    Navigator.pop(
+                      context,
+                      Squat(
+                        '',
+                        '',
+                        viewNameCtrl.text.trim().isEmpty
+                            ? null
+                            : viewNameCtrl.text.trim(),
+                        checkpointNameCtrl.text.trim(),
+                        compensationCtrl.text.trim(),
+                        result,
+                        notesCtrl.text.trim().isEmpty
+                            ? null
+                            : notesCtrl.text.trim(),
+                        null,
+                        null,
+                      ),
+                    );
+                  },
+                  child: const Text('Add item'),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

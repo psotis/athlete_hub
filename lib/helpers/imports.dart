@@ -121,6 +121,7 @@ export '../models/ergometrics/squat.dart';
 export '../models/ergometrics/assignment.dart';
 export '../models/ergometrics/wrapper_model.dart';
 export '../models/medical_history.dart';
+export '../models/ergometrics/beep_test_table.dart';
 
 // Helpers
 export './auth_extensions.dart';
