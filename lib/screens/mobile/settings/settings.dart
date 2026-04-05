@@ -1,4 +1,5 @@
 import 'package:athlete_hub/blocs/exports.dart';
+
 import 'package:athlete_hub/helpers/imports.dart';
 
 class SettingsMobile extends StatefulWidget {
@@ -64,9 +65,16 @@ class _SettingsMobileState extends State<SettingsMobile> {
           spacing: 10,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Spacer(),
-            if (_imageFile != null) Image.file(_imageFile!, height: 200),
+            Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                image: DecorationImage(image: AssetImage(Images.logo2)),
+              ),
+            ),
+            // const Spacer(),
 
+            // if (_imageFile != null) Image.file(_imageFile!, height: 200),
             const SizedBox(height: 20),
 
             Card(
@@ -161,7 +169,10 @@ class _SettingsMobileState extends State<SettingsMobile> {
               ),
               width: 300,
               height: 50,
-              onPressed: () => context.read<AuthBloc>().add(AuthLoggedOut()),
+              onPressed: () {
+                context.read<ErgometricsCubit>().clearErgometrics();
+                context.read<AuthBloc>().add(AuthLoggedOut());
+              },
             ),
             Text(_version != null ? "Version: $_version" : "Loading..."),
           ],

@@ -6,11 +6,13 @@ class ErgometricsState extends Equatable {
   final ErgometricsStatus status;
   final AthleteErgometricsData data;
   final String? errorMessage;
+  final Users? selectedUser;
 
   const ErgometricsState({
     required this.status,
     required this.data,
     this.errorMessage,
+    this.selectedUser,
   });
 
   factory ErgometricsState.initial() {
@@ -18,6 +20,7 @@ class ErgometricsState extends Equatable {
       status: ErgometricsStatus.initial,
       data: AthleteErgometricsData.initial(),
       errorMessage: null,
+      selectedUser: Users.initial(),
     );
   }
 
@@ -26,14 +29,16 @@ class ErgometricsState extends Equatable {
     AthleteErgometricsData? data,
     String? errorMessage,
     bool clearError = false,
+    Users? selectedUser,
   }) {
     return ErgometricsState(
       status: status ?? this.status,
       data: data ?? this.data,
-      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      errorMessage: errorMessage ?? this.errorMessage,
+      selectedUser: selectedUser ?? this.selectedUser,
     );
   }
 
   @override
-  List<Object?> get props => [status, data, errorMessage];
+  List<Object?> get props => [status, data, errorMessage, selectedUser];
 }

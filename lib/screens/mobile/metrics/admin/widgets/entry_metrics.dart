@@ -1,0 +1,454 @@
+import 'package:athlete_hub/blocs/exports.dart';
+import 'package:athlete_hub/helpers/imports.dart';
+
+class SessionEntriesMobile extends StatefulWidget {
+  final String sessionId;
+  final Users athlete;
+
+  const SessionEntriesMobile({
+    super.key,
+    required this.sessionId,
+    required this.athlete,
+  });
+
+  @override
+  State<SessionEntriesMobile> createState() => _SessionEntriesMobileState();
+}
+
+class _SessionEntriesMobileState extends State<SessionEntriesMobile> {
+  final _formKey = GlobalKey<FormState>();
+
+  // Somatometrics
+  final heightCmCtrl = TextEditingController();
+  final armSpanCmCtrl = TextEditingController();
+  final weightKgCtrl = TextEditingController();
+  final bodyFatPercentCtrl = TextEditingController();
+
+  // Goniometrics
+  final hipFlexionRightCtrl = TextEditingController();
+  final hipFlexionLeftCtrl = TextEditingController();
+  final kneeFlexionRightCtrl = TextEditingController();
+  final kneeFlexionLeftCtrl = TextEditingController();
+  final hipInternalRotationRightCtrl = TextEditingController();
+  final hipInternalRotationLeftCtrl = TextEditingController();
+  final hipExternalRotationRightCtrl = TextEditingController();
+  final hipExternalRotationLeftCtrl = TextEditingController();
+
+  // Dynamometrics
+  final handGripRightCtrl = TextEditingController();
+  final handGripLeftCtrl = TextEditingController();
+  final midThighPullCtrl = TextEditingController();
+  final kneeExtensionRightCtrl = TextEditingController();
+  final kneeExtensionLeftCtrl = TextEditingController();
+  final kneeFlexionRightNCtrl = TextEditingController();
+  final kneeFlexionLeftNCtrl = TextEditingController();
+  final shoulderInternalRotationRightCtrl = TextEditingController();
+  final shoulderInternalRotationLeftCtrl = TextEditingController();
+  final shoulderExternalRotationRightCtrl = TextEditingController();
+  final shoulderExternalRotationLeftCtrl = TextEditingController();
+
+  // Jumping Ability
+  final squatJumpHeightCtrl = TextEditingController();
+  final squatJumpPowerCtrl = TextEditingController();
+  final cmjHeightCtrl = TextEditingController();
+  final cmjPowerCtrl = TextEditingController();
+  final cmjFreeHandsHeightCtrl = TextEditingController();
+  final cmjFreeHandsPowerCtrl = TextEditingController();
+  final dropJumpHeightCtrl = TextEditingController();
+  final dropJumpRsiCtrl = TextEditingController();
+  final singleLegCmjRightHeightCtrl = TextEditingController();
+  final singleLegCmjRightPowerCtrl = TextEditingController();
+  final singleLegCmjLeftHeightCtrl = TextEditingController();
+  final singleLegCmjLeftPowerCtrl = TextEditingController();
+
+  // Agility & Speed
+  final test5105RightCtrl = TextEditingController();
+  final test5105LeftCtrl = TextEditingController();
+  final sprint010Ctrl = TextEditingController();
+  final sprint020Ctrl = TextEditingController();
+  final sprint030Ctrl = TextEditingController();
+
+  // Endurance
+  final beepTestLevelCtrl = TextEditingController();
+  final beepTestShuttlesCtrl = TextEditingController();
+  final hrMaxCtrl = TextEditingController();
+
+  bool isSaving = false;
+
+  @override
+  void dispose() {
+    final controllers = [
+      heightCmCtrl,
+      armSpanCmCtrl,
+      weightKgCtrl,
+      bodyFatPercentCtrl,
+      hipFlexionRightCtrl,
+      hipFlexionLeftCtrl,
+      kneeFlexionRightCtrl,
+      kneeFlexionLeftCtrl,
+      hipInternalRotationRightCtrl,
+      hipInternalRotationLeftCtrl,
+      hipExternalRotationRightCtrl,
+      hipExternalRotationLeftCtrl,
+      handGripRightCtrl,
+      handGripLeftCtrl,
+      midThighPullCtrl,
+      kneeExtensionRightCtrl,
+      kneeExtensionLeftCtrl,
+      kneeFlexionRightNCtrl,
+      kneeFlexionLeftNCtrl,
+      shoulderInternalRotationRightCtrl,
+      shoulderInternalRotationLeftCtrl,
+      shoulderExternalRotationRightCtrl,
+      shoulderExternalRotationLeftCtrl,
+      squatJumpHeightCtrl,
+      squatJumpPowerCtrl,
+      cmjHeightCtrl,
+      cmjPowerCtrl,
+      cmjFreeHandsHeightCtrl,
+      cmjFreeHandsPowerCtrl,
+      dropJumpHeightCtrl,
+      dropJumpRsiCtrl,
+      singleLegCmjRightHeightCtrl,
+      singleLegCmjRightPowerCtrl,
+      singleLegCmjLeftHeightCtrl,
+      singleLegCmjLeftPowerCtrl,
+      test5105RightCtrl,
+      test5105LeftCtrl,
+      sprint010Ctrl,
+      sprint020Ctrl,
+      sprint030Ctrl,
+      beepTestLevelCtrl,
+      beepTestShuttlesCtrl,
+      hrMaxCtrl,
+    ];
+
+    for (final c in controllers) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  double? _toDouble(TextEditingController c) {
+    final text = c.text.trim();
+    if (text.isEmpty) return null;
+    return double.tryParse(text.replaceAll(',', '.'));
+  }
+
+  int? _toInt(TextEditingController c) {
+    final text = c.text.trim();
+    if (text.isEmpty) return null;
+    return int.tryParse(text);
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final payload = {
+      "session_id": widget.sessionId,
+      "somatometrics": {
+        "height_cm": _toDouble(heightCmCtrl),
+        "arm_span_cm": _toDouble(armSpanCmCtrl),
+        "weight_kg": _toDouble(weightKgCtrl),
+        "body_fat_percent": _toDouble(bodyFatPercentCtrl),
+      },
+      "goniometrics": {
+        "hip_flexion_right_deg": _toDouble(hipFlexionRightCtrl),
+        "hip_flexion_left_deg": _toDouble(hipFlexionLeftCtrl),
+        "knee_flexion_right_deg": _toDouble(kneeFlexionRightCtrl),
+        "knee_flexion_left_deg": _toDouble(kneeFlexionLeftCtrl),
+        "hip_internal_rotation_right_deg": _toDouble(
+          hipInternalRotationRightCtrl,
+        ),
+        "hip_internal_rotation_left_deg": _toDouble(
+          hipInternalRotationLeftCtrl,
+        ),
+        "hip_external_rotation_right_deg": _toDouble(
+          hipExternalRotationRightCtrl,
+        ),
+        "hip_external_rotation_left_deg": _toDouble(
+          hipExternalRotationLeftCtrl,
+        ),
+      },
+      "dynamometrics": {
+        "hand_grip_right_n": _toDouble(handGripRightCtrl),
+        "hand_grip_left_n": _toDouble(handGripLeftCtrl),
+        "mid_thigh_pull_n": _toDouble(midThighPullCtrl),
+        "knee_extension_right_n": _toDouble(kneeExtensionRightCtrl),
+        "knee_extension_left_n": _toDouble(kneeExtensionLeftCtrl),
+        "knee_flexion_right_n": _toDouble(kneeFlexionRightNCtrl),
+        "knee_flexion_left_n": _toDouble(kneeFlexionLeftNCtrl),
+        "shoulder_internal_rotation_right_n": _toDouble(
+          shoulderInternalRotationRightCtrl,
+        ),
+        "shoulder_internal_rotation_left_n": _toDouble(
+          shoulderInternalRotationLeftCtrl,
+        ),
+        "shoulder_external_rotation_right_n": _toDouble(
+          shoulderExternalRotationRightCtrl,
+        ),
+        "shoulder_external_rotation_left_n": _toDouble(
+          shoulderExternalRotationLeftCtrl,
+        ),
+      },
+      "jumping_ability": {
+        "squat_jump_height_cm": _toDouble(squatJumpHeightCtrl),
+        "squat_jump_power_w": _toDouble(squatJumpPowerCtrl),
+        "cmj_height_cm": _toDouble(cmjHeightCtrl),
+        "cmj_power_w": _toDouble(cmjPowerCtrl),
+        "cmj_free_hands_height_cm": _toDouble(cmjFreeHandsHeightCtrl),
+        "cmj_free_hands_power_w": _toDouble(cmjFreeHandsPowerCtrl),
+        "drop_jump_height_cm": _toDouble(dropJumpHeightCtrl),
+        "drop_jump_rsi": _toDouble(dropJumpRsiCtrl),
+        "single_leg_cmj_right_height_cm": _toDouble(
+          singleLegCmjRightHeightCtrl,
+        ),
+        "single_leg_cmj_right_power_w": _toDouble(singleLegCmjRightPowerCtrl),
+        "single_leg_cmj_left_height_cm": _toDouble(singleLegCmjLeftHeightCtrl),
+        "single_leg_cmj_left_power_w": _toDouble(singleLegCmjLeftPowerCtrl),
+      },
+      "agility_speed": {
+        "test_5_10_5_right_sec": _toDouble(test5105RightCtrl),
+        "test_5_10_5_left_sec": _toDouble(test5105LeftCtrl),
+        "sprint_0_10_sec": _toDouble(sprint010Ctrl),
+        "sprint_0_20_sec": _toDouble(sprint020Ctrl),
+        "sprint_0_30_sec": _toDouble(sprint030Ctrl),
+      },
+      "endurance": {
+        "beep_test_level": _toInt(beepTestLevelCtrl),
+        "beep_test_shuttles": _toInt(beepTestShuttlesCtrl),
+        "hr_max": _toInt(hrMaxCtrl),
+      },
+    };
+
+    setState(() => isSaving = true);
+
+    try {
+      await SessionService().bulkCreateSessionEntries(payload);
+
+      if (!mounted) return;
+      context.read<SessionCubit>().clearErgometrics();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Session entries saved successfully')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Save failed: $e')));
+    } finally {
+      if (mounted) {
+        setState(() => isSaving = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: ListView(
+        padding: const EdgeInsets.only(top: 8, bottom: 24),
+        children: [
+          Text(
+            'Session for ${widget.athlete.fullName}',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+
+          _CategorySection(
+            title: 'Somatometrics',
+            children: [
+              _numberField('Height (cm)', heightCmCtrl),
+              _numberField('Arm span (cm)', armSpanCmCtrl),
+              _numberField('Weight (kg)', weightKgCtrl),
+              _numberField('Body fat %', bodyFatPercentCtrl),
+            ],
+          ),
+
+          _CategorySection(
+            title: 'Goniometrics',
+            children: [
+              _numberField('Hip flexion right (°)', hipFlexionRightCtrl),
+              _numberField('Hip flexion left (°)', hipFlexionLeftCtrl),
+              _numberField('Knee flexion right (°)', kneeFlexionRightCtrl),
+              _numberField('Knee flexion left (°)', kneeFlexionLeftCtrl),
+              _numberField(
+                'Hip internal rotation right (°)',
+                hipInternalRotationRightCtrl,
+              ),
+              _numberField(
+                'Hip internal rotation left (°)',
+                hipInternalRotationLeftCtrl,
+              ),
+              _numberField(
+                'Hip external rotation right (°)',
+                hipExternalRotationRightCtrl,
+              ),
+              _numberField(
+                'Hip external rotation left (°)',
+                hipExternalRotationLeftCtrl,
+              ),
+            ],
+          ),
+
+          _CategorySection(
+            title: 'Dynamometrics',
+            children: [
+              _numberField('Hand grip right (N)', handGripRightCtrl),
+              _numberField('Hand grip left (N)', handGripLeftCtrl),
+              _numberField('Mid thigh pull (N)', midThighPullCtrl),
+              _numberField('Knee extension right (N)', kneeExtensionRightCtrl),
+              _numberField('Knee extension left (N)', kneeExtensionLeftCtrl),
+              _numberField('Knee flexion right (N)', kneeFlexionRightNCtrl),
+              _numberField('Knee flexion left (N)', kneeFlexionLeftNCtrl),
+              _numberField(
+                'Shoulder internal rotation right (N)',
+                shoulderInternalRotationRightCtrl,
+              ),
+              _numberField(
+                'Shoulder internal rotation left (N)',
+                shoulderInternalRotationLeftCtrl,
+              ),
+              _numberField(
+                'Shoulder external rotation right (N)',
+                shoulderExternalRotationRightCtrl,
+              ),
+              _numberField(
+                'Shoulder external rotation left (N)',
+                shoulderExternalRotationLeftCtrl,
+              ),
+            ],
+          ),
+
+          _CategorySection(
+            title: 'Jumping Ability',
+            children: [
+              _numberField('Squat jump height (cm)', squatJumpHeightCtrl),
+              _numberField('Squat jump power (W)', squatJumpPowerCtrl),
+              _numberField('CMJ height (cm)', cmjHeightCtrl),
+              _numberField('CMJ power (W)', cmjPowerCtrl),
+              _numberField(
+                'CMJ free hands height (cm)',
+                cmjFreeHandsHeightCtrl,
+              ),
+              _numberField('CMJ free hands power (W)', cmjFreeHandsPowerCtrl),
+              _numberField('Drop jump height (cm)', dropJumpHeightCtrl),
+              _numberField('Drop jump RSI', dropJumpRsiCtrl),
+              _numberField(
+                'Single leg CMJ right height (cm)',
+                singleLegCmjRightHeightCtrl,
+              ),
+              _numberField(
+                'Single leg CMJ right power (W)',
+                singleLegCmjRightPowerCtrl,
+              ),
+              _numberField(
+                'Single leg CMJ left height (cm)',
+                singleLegCmjLeftHeightCtrl,
+              ),
+              _numberField(
+                'Single leg CMJ left power (W)',
+                singleLegCmjLeftPowerCtrl,
+              ),
+            ],
+          ),
+
+          _CategorySection(
+            title: 'Agility & Speed',
+            children: [
+              _numberField('5-10-5 right (sec)', test5105RightCtrl),
+              _numberField('5-10-5 left (sec)', test5105LeftCtrl),
+              _numberField('Sprint 0-10 (sec)', sprint010Ctrl),
+              _numberField('Sprint 0-20 (sec)', sprint020Ctrl),
+              _numberField('Sprint 0-30 (sec)', sprint030Ctrl),
+            ],
+          ),
+
+          _CategorySection(
+            title: 'Endurance',
+            children: [
+              _numberField(
+                'Beep test level',
+                beepTestLevelCtrl,
+                isInteger: true,
+              ),
+              _numberField(
+                'Beep test shuttles',
+                beepTestShuttlesCtrl,
+                isInteger: true,
+              ),
+              _numberField('HR max', hrMaxCtrl, isInteger: true),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: isSaving ? null : _submit,
+            child: isSaving
+                ? const SizedBox(
+                    height: 18,
+                    width: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Save all categories'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _numberField(
+    String label,
+    TextEditingController controller, {
+    bool isInteger = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+        validator: (value) {
+          final text = value?.trim() ?? '';
+          if (text.isEmpty) return null;
+
+          if (isInteger) {
+            if (int.tryParse(text) == null) {
+              return 'Enter a valid integer';
+            }
+          } else {
+            if (double.tryParse(text.replaceAll(',', '.')) == null) {
+              return 'Enter a valid number';
+            }
+          }
+          return null;
+        },
+      ),
+    );
+  }
+}
+
+class _CategorySection extends StatelessWidget {
+  final String title;
+  final List<Widget> children;
+
+  const _CategorySection({required this.title, required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ExpansionTile(
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+        childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+        children: children,
+      ),
+    );
+  }
+}

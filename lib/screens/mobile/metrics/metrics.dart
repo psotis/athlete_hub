@@ -20,12 +20,17 @@ class _MetricsMobileState extends State<MetricsMobile> {
   void _initialize() {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
-      context.read<ErgometricsCubit>().getAthleteErgometrics(authState.user.id);
+      if (authState.user.isCustomer) {
+        context.read<ErgometricsCubit>().getAthleteErgometrics(authState.user);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (context.isAdmin) {
+      return AdminMobile();
+    }
     return Scaffold(
       body: SafeArea(
         child: BlocBuilder<ErgometricsCubit, ErgometricsState>(

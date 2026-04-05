@@ -6,17 +6,18 @@ class ErgometricsCubit extends Cubit<ErgometricsState> {
 
   ErgometricsCubit(this._repository) : super(ErgometricsState.initial());
 
-  Future<void> getAthleteErgometrics(String athleteId) async {
+  Future<void> getAthleteErgometrics(Users user) async {
     emit(state.copyWith(status: ErgometricsStatus.loading, clearError: true));
 
     try {
-      final response = await _repository.getErgometricsPerUser(athleteId);
+      final response = await _repository.getErgometricsPerUser(user.id);
 
       emit(
         state.copyWith(
           status: ErgometricsStatus.success,
           data: response,
           clearError: true,
+          selectedUser: user,
         ),
       );
     } catch (e) {

@@ -1,9 +1,10 @@
 import 'package:athlete_hub/helpers/imports.dart';
 
-class IotDropdown2<T> extends StatelessWidget {
+class IotDropdown2<T> extends StatefulWidget {
   final List<DropdownMenuItem<T>> items;
   final T? value;
   final void Function(T?)? onChanged;
+  final String Function(T)? itemAsString;
   final String? hintText;
   final double? buttonHeight;
   final double? buttonWidth;
@@ -22,12 +23,16 @@ class IotDropdown2<T> extends StatelessWidget {
   final bool scrollbarAlwaysShow;
   final Radius? scrollbarRadius;
   final double? scrollbarThickness;
+  final bool enableSearch;
+  final String? searchHintText;
+  final double? searchInnerWidgetHeight;
 
   const IotDropdown2({
     super.key,
     required this.items,
     this.value,
     this.onChanged,
+    this.itemAsString,
     this.hintText,
     this.buttonHeight = 48,
     this.buttonWidth,
@@ -46,29 +51,46 @@ class IotDropdown2<T> extends StatelessWidget {
     this.scrollbarAlwaysShow = false,
     this.scrollbarRadius,
     this.scrollbarThickness,
+    this.enableSearch = false,
+    this.searchHintText,
+    this.searchInnerWidgetHeight = 60,
   });
+
+  @override
+  State<IotDropdown2<T>> createState() => _IotDropdown2State<T>();
+}
+
+class _IotDropdown2State<T> extends State<IotDropdown2<T>> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return DropdownButtonHideUnderline(
       child: DropdownButton2<T>(
-        items: items,
-        value: value,
-        onChanged: onChanged,
-        isExpanded: isExpanded,
-        hint: hintText != null
+        items: widget.items,
+        value: widget.value,
+        onChanged: widget.onChanged,
+        isExpanded: widget.isExpanded,
+        hint: widget.hintText != null
             ? Text(
-                hintText!,
+                widget.hintText!,
                 style:
-                    hintStyle ?? TextStyle(color: Theme.of(context).hintColor),
+                    widget.hintStyle ??
+                    TextStyle(color: Theme.of(context).hintColor),
               )
             : null,
         buttonStyleData: ButtonStyleData(
-          height: buttonHeight,
-          width: buttonWidth,
-          padding: buttonPadding,
+          height: widget.buttonHeight,
+          width: widget.buttonWidth,
+          padding: widget.buttonPadding,
           decoration:
-              buttonDecoration ??
+              widget.buttonDecoration ??
               BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.grey.shade400),
@@ -76,33 +98,73 @@ class IotDropdown2<T> extends StatelessWidget {
               ),
         ),
         dropdownStyleData: DropdownStyleData(
-          maxHeight: dropdownMaxHeight,
-          width: dropdownWidth ?? buttonWidth,
+          maxHeight: widget.dropdownMaxHeight,
+          width: widget.dropdownWidth ?? widget.buttonWidth,
           decoration:
-              dropdownDecoration ??
+              widget.dropdownDecoration ??
               BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 color: Colors.white,
               ),
           elevation: 8,
           scrollbarTheme: ScrollbarThemeData(
-            thumbVisibility: WidgetStateProperty.all(scrollbarAlwaysShow),
-            radius: scrollbarRadius,
-            thickness: WidgetStateProperty.all(scrollbarThickness),
+            thumbVisibility: WidgetStateProperty.all(
+              widget.scrollbarAlwaysShow,
+            ),
+            radius: widget.scrollbarRadius,
+            thickness: WidgetStateProperty.all(widget.scrollbarThickness),
           ),
         ),
-
         iconStyleData: IconStyleData(
-          icon: icon ?? const Icon(Icons.arrow_drop_down),
-          iconSize: iconSize!,
-          iconEnabledColor: iconEnabledColor,
-          iconDisabledColor: iconDisabledColor,
+          icon: widget.icon ?? const Icon(Icons.arrow_drop_down),
+          iconSize: widget.iconSize!,
+          iconEnabledColor: widget.iconEnabledColor,
+          iconDisabledColor: widget.iconDisabledColor,
         ),
         menuItemStyleData: MenuItemStyleData(
           selectedMenuItemBuilder: (context, child) => child,
         ),
 
-        // customItemsHeights: List.generate(items.length, (_) => null),
+        dropdownSearchData: widget.enableSearch
+            ? DropdownSearchData(
+                searchController: _searchController,
+                searchInnerWidgetHeight: widget.searchInnerWidgetHeight,
+                searchInnerWidget: Container(
+                  height: widget.searchInnerWidgetHeight,
+                  padding: const EdgeInsets.all(8),
+                  child: TextFormField(
+                    controller: _searchController,
+                    expands: true,
+                    maxLines: null,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
+                      hintText: widget.searchHintText ?? 'Search...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ),
+                searchMatchFn: (item, searchValue) {
+                  final text = item.value == null
+                      ? ''
+                      : (widget.itemAsString?.call(item.value as T) ??
+                            item.value.toString());
+
+                  return text.toLowerCase().contains(searchValue.toLowerCase());
+                },
+              )
+            : null,
+
+        onMenuStateChange: (isOpen) {
+          if (!isOpen) {
+            _searchController.clear();
+          }
+        },
       ),
     );
   }

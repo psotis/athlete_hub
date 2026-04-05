@@ -62,6 +62,10 @@ class _MyAppState extends State<MyApp> {
           create: (context) =>
               ErgometricsRepository(ergometricsService: ErgometricsService()),
         ),
+        RepositoryProvider<SessionRepository>(
+          create: (context) =>
+              SessionRepository(sessionService: SessionService()),
+        ),
         RepositoryProvider<MedicalRepository>(
           create: (context) =>
               MedicalRepository(medicalService: MedicalService()),
@@ -80,6 +84,10 @@ class _MyAppState extends State<MyApp> {
           BlocProvider<ErgometricsCubit>(
             create: (context) =>
                 ErgometricsCubit(context.read<ErgometricsRepository>()),
+          ),
+          BlocProvider<SessionCubit>(
+            create: (context) =>
+                SessionCubit(context.read<SessionRepository>()),
           ),
           BlocProvider<MedicalCubit>(
             create: (context) =>
