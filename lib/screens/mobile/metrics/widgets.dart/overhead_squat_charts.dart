@@ -27,27 +27,19 @@ class OverheadSquatCharts extends StatelessWidget {
     final previousPositive = items.length >= 2
         ? positiveCount(items[items.length - 2])
         : null;
+    final latestNegative = latest != null ? negativeCount(latest) : null;
+    final previousNegative = items.length >= 2
+        ? negativeCount(items[items.length - 2])
+        : null;
+    final latestTotal = latest != null ? totalCount(latest) : null;
+    final previousTotal = items.length >= 2
+        ? totalCount(items[items.length - 2])
+        : null;
 
     return ChartSection(
       title: 'Overhead Squat',
       children: [
-        SummaryStatCard(
-          title: 'Latest Positive Results',
-          value: latestPositive?.toStringAsFixed(0) ?? '-',
-          subtitle: latest?.session?.measurementDate != null
-              ? _formatDate(latest!.session!.measurementDate!)
-              : null,
-          icon: Icons.accessibility,
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Positive Results Change',
-          latestValue: latestPositive,
-          previousValue: previousPositive,
-          unit: '',
-          decimals: 0,
-          icon: Icons.compare_arrows,
-        ),
+        LatestMeasurementDateCard(date: latest?.session?.measurementDate),
         const SizedBox(height: 12),
         ChartCard(
           title: 'Positive Results',
@@ -56,6 +48,15 @@ class OverheadSquatCharts extends StatelessWidget {
             labels: labels,
             yDecimals: 0,
           ),
+        ),
+        const SizedBox(height: 12),
+        MetricDeltaCard(
+          title: 'Positive Results Comparison',
+          latestValue: latestPositive,
+          previousValue: previousPositive,
+          unit: '',
+          decimals: 0,
+          icon: Icons.check_circle_outline,
         ),
         const SizedBox(height: 12),
         ChartCard(
@@ -67,6 +68,16 @@ class OverheadSquatCharts extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
+        MetricDeltaCard(
+          title: 'Negative Results Comparison',
+          latestValue: latestNegative,
+          previousValue: previousNegative,
+          unit: '',
+          decimals: 0,
+          lowerIsBetter: true,
+          icon: Icons.cancel_outlined,
+        ),
+        const SizedBox(height: 12),
         ChartCard(
           title: 'Total Assessment Items',
           chart: SimpleBarChart(
@@ -75,13 +86,16 @@ class OverheadSquatCharts extends StatelessWidget {
             yDecimals: 0,
           ),
         ),
+        const SizedBox(height: 12),
+        MetricDeltaCard(
+          title: 'Total Items Comparison',
+          latestValue: latestTotal,
+          previousValue: previousTotal,
+          unit: '',
+          decimals: 0,
+          icon: Icons.format_list_numbered,
+        ),
       ],
     );
   }
-}
-
-String _formatDate(DateTime date) {
-  return "${date.year.toString().padLeft(4, '0')}-"
-      "${date.month.toString().padLeft(2, '0')}-"
-      "${date.day.toString().padLeft(2, '0')}";
 }

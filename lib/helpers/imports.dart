@@ -122,6 +122,8 @@ export '../models/ergometrics/assignment.dart';
 export '../models/ergometrics/wrapper_model.dart';
 export '../models/medical_history.dart';
 export '../models/ergometrics/beep_test_table.dart';
+export '../models/teams.dart';
+export '../models/team_members.dart';
 
 // Helpers
 export './auth_extensions.dart';

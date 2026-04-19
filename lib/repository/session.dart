@@ -10,4 +10,10 @@ class SessionRepository {
 
     return session.data!;
   }
+
+  Future<bool> deleteSession(String? sessionId) async {
+    final session = await sessionService.deleteSession(sessionId);
+
+    return session;
+  }
 }

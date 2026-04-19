@@ -49,56 +49,8 @@ class EnduranceCharts extends StatelessWidget {
     return ChartSection(
       title: 'Endurance',
       children: [
-        SummaryStatCard(
-          title: 'Latest Beep Test Score',
-          value: latestScore?.toStringAsFixed(2) ?? '-',
-          subtitle: latest?.session?.measurementDate != null
-              ? _formatDate(latest!.session!.measurementDate!)
-              : null,
-          icon: Icons.favorite,
-        ),
+        LatestMeasurementDateCard(date: latest?.session?.measurementDate),
         const SizedBox(height: 12),
-
-        MetricDeltaCard(
-          title: 'Beep Test Score Change',
-          latestValue: latestScore,
-          previousValue: previousScore,
-          unit: '',
-          decimals: 2,
-          icon: Icons.trending_up,
-        ),
-        const SizedBox(height: 12),
-
-        MetricDeltaCard(
-          title: 'Distance Change',
-          latestValue: latestDistance,
-          previousValue: previousDistance,
-          unit: ' m',
-          decimals: 0,
-          icon: Icons.straighten,
-        ),
-        const SizedBox(height: 12),
-
-        MetricDeltaCard(
-          title: 'VO2max Change',
-          latestValue: latestVo2,
-          previousValue: previousVo2,
-          unit: ' ml/kg/min',
-          decimals: 2,
-          icon: Icons.air,
-        ),
-        const SizedBox(height: 12),
-
-        MetricDeltaCard(
-          title: 'HR Max Change',
-          latestValue: latestHr,
-          previousValue: previousHr,
-          unit: ' bpm',
-          decimals: 0,
-          icon: Icons.monitor_heart,
-        ),
-        const SizedBox(height: 12),
-
         ChartCard(
           title: 'Beep Test Score Trend',
           chart: SimpleLineChart(
@@ -110,7 +62,15 @@ class EnduranceCharts extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-
+        MetricDeltaCard(
+          title: 'Beep Test Score Comparison',
+          latestValue: latestScore,
+          previousValue: previousScore,
+          unit: '',
+          decimals: 2,
+          icon: Icons.favorite,
+        ),
+        const SizedBox(height: 12),
         ChartCard(
           title: 'Distance Trend',
           chart: SimpleLineChart(
@@ -122,7 +82,15 @@ class EnduranceCharts extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-
+        MetricDeltaCard(
+          title: 'Distance Comparison',
+          latestValue: latestDistance,
+          previousValue: previousDistance,
+          unit: ' m',
+          decimals: 0,
+          icon: Icons.straighten,
+        ),
+        const SizedBox(height: 12),
         ChartCard(
           title: 'VO2max Trend',
           chart: SimpleLineChart(
@@ -134,7 +102,15 @@ class EnduranceCharts extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-
+        MetricDeltaCard(
+          title: 'VO2max Comparison',
+          latestValue: latestVo2,
+          previousValue: previousVo2,
+          unit: ' ml/kg/min',
+          decimals: 2,
+          icon: Icons.air,
+        ),
+        const SizedBox(height: 12),
         ChartCard(
           title: 'HR Max Trend',
           chart: SimpleLineChart(
@@ -143,13 +119,16 @@ class EnduranceCharts extends StatelessWidget {
             yDecimals: 0,
           ),
         ),
+        const SizedBox(height: 12),
+        MetricDeltaCard(
+          title: 'HR Max Comparison',
+          latestValue: latestHr,
+          previousValue: previousHr,
+          unit: ' bpm',
+          decimals: 0,
+          icon: Icons.monitor_heart,
+        ),
       ],
     );
   }
-}
-
-String _formatDate(DateTime date) {
-  return "${date.year.toString().padLeft(4, '0')}-"
-      "${date.month.toString().padLeft(2, '0')}-"
-      "${date.day.toString().padLeft(2, '0')}";
 }

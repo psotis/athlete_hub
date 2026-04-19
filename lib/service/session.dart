@@ -72,4 +72,41 @@ class SessionService {
       throw AppException('Unexpected error: $e');
     }
   }
+
+  Future<bool> deleteSession(String? sessionId) async {
+    try {
+      final res = await ApiClient.dio.delete('/measurement/delete/$sessionId');
+
+      if (res.statusCode == 200) {
+        return true;
+      }
+
+      return false;
+    } on DioException catch (e) {
+      final data = e.response?.data;
+      String message = data['message'];
+      if (data is Map<String, dynamic>) {
+        message = data['message']?.toString() ?? message;
+      } else if (e.message != null) {
+        message = e.message!;
+      }
+
+      final code = e.response?.statusCode ?? 0;
+
+      switch (code) {
+        case 400:
+          throw BadRequestException(message);
+        case 401:
+          throw UnauthorizedException(message);
+        case 404:
+          throw NotFoundException(message);
+        case 500:
+          throw ServerException(message);
+        default:
+          throw AppException(message, statusCode: code);
+      }
+    } catch (e) {
+      throw AppException('Unexpected error: $e');
+    }
+  }
 }

@@ -29,6 +29,23 @@ class SessionCubit extends Cubit<SessionState> {
     }
   }
 
+  Future<void> deleteSession(String? sessionId) async {
+    emit(state.copyWith(status: SessionStatus.loading, clearError: true));
+
+    try {
+      await _repository.deleteSession(sessionId);
+
+      emit(state.copyWith(status: SessionStatus.initial, clearError: true));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: SessionStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
   void clearErgometrics() {
     emit(SessionState.initial());
   }

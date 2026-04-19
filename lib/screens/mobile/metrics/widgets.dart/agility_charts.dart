@@ -10,6 +10,23 @@ class AgilityCharts extends StatelessWidget {
     final labels = items.sessionLabels;
     final latest = items.isNotEmpty ? items.last : null;
 
+    final latestTestRight = latestMetricValue(
+      items,
+      (e) => numToDouble(e.agilitySpeed?.test5105RightSec),
+    );
+    final previousTestRight = previousMetricValue(
+      items,
+      (e) => numToDouble(e.agilitySpeed?.test5105RightSec),
+    );
+    final latestTestLeft = latestMetricValue(
+      items,
+      (e) => numToDouble(e.agilitySpeed?.test5105LeftSec),
+    );
+    final previousTestLeft = previousMetricValue(
+      items,
+      (e) => numToDouble(e.agilitySpeed?.test5105LeftSec),
+    );
+
     final latestSprint10 = latestMetricValue(
       items,
       (e) => numToDouble(e.agilitySpeed?.sprint010Sec),
@@ -18,7 +35,14 @@ class AgilityCharts extends StatelessWidget {
       items,
       (e) => numToDouble(e.agilitySpeed?.sprint010Sec),
     );
-
+    final latestSprint20 = latestMetricValue(
+      items,
+      (e) => numToDouble(e.agilitySpeed?.sprint020Sec),
+    );
+    final previousSprint20 = previousMetricValue(
+      items,
+      (e) => numToDouble(e.agilitySpeed?.sprint020Sec),
+    );
     final latestSprint30 = latestMetricValue(
       items,
       (e) => numToDouble(e.agilitySpeed?.sprint030Sec),
@@ -31,35 +55,7 @@ class AgilityCharts extends StatelessWidget {
     return ChartSection(
       title: 'Agility & Speed',
       children: [
-        SummaryStatCard(
-          title: 'Latest Sprint 0-10',
-          value:
-              '${numToDouble(latest?.agilitySpeed?.sprint010Sec)?.toStringAsFixed(2) ?? '-'} s',
-          subtitle: latest?.session?.measurementDate != null
-              ? _formatDate(latest!.session!.measurementDate!)
-              : null,
-          icon: Icons.directions_run,
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Sprint 0-10 Change',
-          latestValue: latestSprint10,
-          previousValue: previousSprint10,
-          unit: ' s',
-          decimals: 2,
-          lowerIsBetter: true,
-          icon: Icons.timer,
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Sprint 0-30 Change',
-          latestValue: latestSprint30,
-          previousValue: previousSprint30,
-          unit: ' s',
-          decimals: 2,
-          lowerIsBetter: true,
-          icon: Icons.speed,
-        ),
+        LatestMeasurementDateCard(date: latest?.session?.measurementDate),
         const SizedBox(height: 12),
         ChartCard(
           title: '5-10-5 Right vs Left',
@@ -77,6 +73,26 @@ class AgilityCharts extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
+        MetricDeltaCard(
+          title: '5-10-5 Right Comparison',
+          latestValue: latestTestRight,
+          previousValue: previousTestRight,
+          unit: ' s',
+          decimals: 2,
+          lowerIsBetter: true,
+          icon: Icons.timer,
+        ),
+        const SizedBox(height: 12),
+        MetricDeltaCard(
+          title: '5-10-5 Left Comparison',
+          latestValue: latestTestLeft,
+          previousValue: previousTestLeft,
+          unit: ' s',
+          decimals: 2,
+          lowerIsBetter: true,
+          icon: Icons.timer_outlined,
+        ),
+        const SizedBox(height: 12),
         ChartCard(
           title: 'Sprint 0-10 Trend',
           chart: SimpleLineChart(
@@ -86,6 +102,16 @@ class AgilityCharts extends StatelessWidget {
             labels: labels,
             yDecimals: 2,
           ),
+        ),
+        const SizedBox(height: 12),
+        MetricDeltaCard(
+          title: 'Sprint 0-10 Comparison',
+          latestValue: latestSprint10,
+          previousValue: previousSprint10,
+          unit: ' s',
+          decimals: 2,
+          lowerIsBetter: true,
+          icon: Icons.directions_run,
         ),
         const SizedBox(height: 12),
         ChartCard(
@@ -99,6 +125,16 @@ class AgilityCharts extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
+        MetricDeltaCard(
+          title: 'Sprint 0-20 Comparison',
+          latestValue: latestSprint20,
+          previousValue: previousSprint20,
+          unit: ' s',
+          decimals: 2,
+          lowerIsBetter: true,
+          icon: Icons.speed,
+        ),
+        const SizedBox(height: 12),
         ChartCard(
           title: 'Sprint 0-30 Trend',
           chart: SimpleLineChart(
@@ -109,13 +145,17 @@ class AgilityCharts extends StatelessWidget {
             yDecimals: 2,
           ),
         ),
+        const SizedBox(height: 12),
+        MetricDeltaCard(
+          title: 'Sprint 0-30 Comparison',
+          latestValue: latestSprint30,
+          previousValue: previousSprint30,
+          unit: ' s',
+          decimals: 2,
+          lowerIsBetter: true,
+          icon: Icons.ssid_chart,
+        ),
       ],
     );
   }
-}
-
-String _formatDate(DateTime date) {
-  return "${date.year.toString().padLeft(4, '0')}-"
-      "${date.month.toString().padLeft(2, '0')}-"
-      "${date.day.toString().padLeft(2, '0')}";
 }

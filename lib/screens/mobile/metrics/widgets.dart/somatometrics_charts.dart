@@ -28,37 +28,46 @@ class SomatometricsCharts extends StatelessWidget {
       (e) => numToDouble(e.somatometrics?.bodyFatPercent),
     );
 
+    final latestBmi = latestMetricValue(
+      items,
+      (e) => numToDouble(e.somatometrics?.bmi),
+    );
+    final previousBmi = previousMetricValue(
+      items,
+      (e) => numToDouble(e.somatometrics?.bmi),
+    );
+
+    final latestHeight = latestMetricValue(
+      items,
+      (e) => numToDouble(e.somatometrics?.heightCm),
+    );
+    final previousHeight = previousMetricValue(
+      items,
+      (e) => numToDouble(e.somatometrics?.heightCm),
+    );
+
+    final latestArmSpan = latestMetricValue(
+      items,
+      (e) => numToDouble(e.somatometrics?.armSpanCm),
+    );
+    final previousArmSpan = previousMetricValue(
+      items,
+      (e) => numToDouble(e.somatometrics?.armSpanCm),
+    );
+
+    final latestApeIndex = latestMetricValue(
+      items,
+      (e) => numToDouble(e.somatometrics?.apeIndex),
+    );
+    final previousApeIndex = previousMetricValue(
+      items,
+      (e) => numToDouble(e.somatometrics?.apeIndex),
+    );
+
     return ChartSection(
       title: 'Somatometrics',
       children: [
-        SummaryStatCard(
-          title: 'Latest Weight',
-          value:
-              '${numToDouble(latest?.somatometrics?.weightKg)?.toStringAsFixed(1) ?? '-'} kg',
-          subtitle: latest?.session?.measurementDate != null
-              ? _formatDate(latest!.session!.measurementDate!)
-              : null,
-          icon: Icons.monitor_weight,
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Weight Change',
-          latestValue: latestWeight,
-          previousValue: previousWeight,
-          unit: ' kg',
-          decimals: 1,
-          icon: Icons.trending_up,
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Body Fat Change',
-          latestValue: latestBodyFat,
-          previousValue: previousBodyFat,
-          unit: '%',
-          decimals: 1,
-          lowerIsBetter: true,
-          icon: Icons.percent,
-        ),
+        LatestMeasurementDateCard(date: latest?.session?.measurementDate),
         const SizedBox(height: 12),
         ChartCard(
           title: 'Weight Trend',
@@ -69,6 +78,15 @@ class SomatometricsCharts extends StatelessWidget {
             labels: labels,
             yDecimals: 1,
           ),
+        ),
+        const SizedBox(height: 12),
+        MetricDeltaCard(
+          title: 'Weight Comparison',
+          latestValue: latestWeight,
+          previousValue: previousWeight,
+          unit: ' kg',
+          decimals: 1,
+          icon: Icons.monitor_weight,
         ),
         const SizedBox(height: 12),
         ChartCard(
@@ -82,6 +100,16 @@ class SomatometricsCharts extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
+        MetricDeltaCard(
+          title: 'Body Fat Comparison',
+          latestValue: latestBodyFat,
+          previousValue: previousBodyFat,
+          unit: ' %',
+          decimals: 1,
+          lowerIsBetter: true,
+          icon: Icons.percent,
+        ),
+        const SizedBox(height: 12),
         ChartCard(
           title: 'BMI',
           chart: SimpleLineChart(
@@ -89,6 +117,15 @@ class SomatometricsCharts extends StatelessWidget {
             labels: labels,
             yDecimals: 1,
           ),
+        ),
+        const SizedBox(height: 12),
+        MetricDeltaCard(
+          title: 'BMI Comparison',
+          latestValue: latestBmi,
+          previousValue: previousBmi,
+          unit: '',
+          decimals: 1,
+          icon: Icons.insights,
         ),
         const SizedBox(height: 12),
         ChartCard(
@@ -107,6 +144,24 @@ class SomatometricsCharts extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
+        MetricDeltaCard(
+          title: 'Height Comparison',
+          latestValue: latestHeight,
+          previousValue: previousHeight,
+          unit: ' cm',
+          decimals: 1,
+          icon: Icons.height,
+        ),
+        const SizedBox(height: 12),
+        MetricDeltaCard(
+          title: 'Arm Span Comparison',
+          latestValue: latestArmSpan,
+          previousValue: previousArmSpan,
+          unit: ' cm',
+          decimals: 1,
+          icon: Icons.straighten,
+        ),
+        const SizedBox(height: 12),
         ChartCard(
           title: 'Ape Index',
           chart: SimpleLineChart(
@@ -117,13 +172,16 @@ class SomatometricsCharts extends StatelessWidget {
             yDecimals: 2,
           ),
         ),
+        const SizedBox(height: 12),
+        MetricDeltaCard(
+          title: 'Ape Index Comparison',
+          latestValue: latestApeIndex,
+          previousValue: previousApeIndex,
+          unit: '',
+          decimals: 2,
+          icon: Icons.compare_arrows,
+        ),
       ],
     );
   }
-}
-
-String _formatDate(DateTime date) {
-  return "${date.year.toString().padLeft(4, '0')}-"
-      "${date.month.toString().padLeft(2, '0')}-"
-      "${date.day.toString().padLeft(2, '0')}";
 }

@@ -93,6 +93,29 @@ class SummaryStatCard extends StatelessWidget {
   }
 }
 
+class LatestMeasurementDateCard extends StatelessWidget {
+  final DateTime? date;
+
+  const LatestMeasurementDateCard({super.key, required this.date});
+
+  @override
+  Widget build(BuildContext context) {
+    final value = date == null
+        ? '-'
+        : "${date!.year.toString().padLeft(4, '0')}-"
+              "${date!.month.toString().padLeft(2, '0')}-"
+              "${date!.day.toString().padLeft(2, '0')}";
+
+    return Card(
+      child: ListTile(
+        leading: const Icon(Icons.event),
+        title: const Text('Latest ergometrics date'),
+        subtitle: Text(value),
+      ),
+    );
+  }
+}
+
 class SparklineCard extends StatelessWidget {
   final String title;
   final String value;
@@ -109,6 +132,8 @@ class SparklineCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final yRange = _rangeFromSpots(spots);
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -127,8 +152,8 @@ class SparklineCard extends StatelessWidget {
                       LineChartData(
                         minX: 0,
                         maxX: (spots.length - 1).toDouble(),
-                        minY: 0,
-                        maxY: _paddedMaxFromSpots(spots),
+                        minY: yRange.min,
+                        maxY: yRange.max,
                         titlesData: const FlTitlesData(
                           leftTitles: AxisTitles(
                             sideTitles: SideTitles(showTitles: false),
@@ -145,6 +170,7 @@ class SparklineCard extends StatelessWidget {
                         ),
                         gridData: const FlGridData(show: false),
                         borderData: FlBorderData(show: false),
+                        extraLinesData: _zeroLineData(yRange),
                         lineBarsData: [
                           LineChartBarData(
                             spots: spots,
@@ -186,12 +212,18 @@ class SimpleLineChart extends StatelessWidget {
       return const Center(child: Text('No data'));
     }
 
+    final yRange = _rangeFromSpots(spots);
+    final maxX = max(
+      spots.last.x,
+      labels.isEmpty ? spots.last.x : (labels.length - 1).toDouble(),
+    );
+
     return LineChart(
       LineChartData(
         minX: 0,
-        maxX: spots.last.x,
-        minY: 0,
-        maxY: _paddedMaxFromSpots(spots),
+        maxX: maxX,
+        minY: yRange.min,
+        maxY: yRange.max,
         titlesData: FlTitlesData(
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
@@ -243,6 +275,7 @@ class SimpleLineChart extends StatelessWidget {
         ),
         gridData: const FlGridData(show: true),
         borderData: FlBorderData(show: true),
+        extraLinesData: _zeroLineData(yRange),
         lineBarsData: [
           LineChartBarData(
             spots: spots,
@@ -275,10 +308,12 @@ class SimpleBarChart extends StatelessWidget {
       return const Center(child: Text('No data'));
     }
 
+    final yRange = _rangeFromValues(values);
+
     return BarChart(
       BarChartData(
-        minY: 0,
-        maxY: _paddedMaxFromValues(values),
+        minY: yRange.min,
+        maxY: yRange.max,
         titlesData: FlTitlesData(
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
@@ -325,6 +360,7 @@ class SimpleBarChart extends StatelessWidget {
         ),
         gridData: const FlGridData(show: true),
         borderData: FlBorderData(show: true),
+        extraLinesData: _zeroLineData(yRange),
         barGroups: List.generate(
           values.length,
           (index) => BarChartGroupData(
@@ -350,6 +386,8 @@ class GroupedBarChart extends StatelessWidget {
   final String firstLegend;
   final String secondLegend;
   final int yDecimals;
+  final Color firstColor;
+  final Color secondColor;
 
   const GroupedBarChart({
     super.key,
@@ -359,6 +397,8 @@ class GroupedBarChart extends StatelessWidget {
     required this.firstLegend,
     required this.secondLegend,
     this.yDecimals = 0,
+    this.firstColor = Colors.blue,
+    this.secondColor = Colors.orange,
   });
 
   @override
@@ -367,24 +407,24 @@ class GroupedBarChart extends StatelessWidget {
       return const Center(child: Text('No data'));
     }
 
-    final maxY = _paddedMaxFromValues([...firstValues, ...secondValues]);
+    final yRange = _rangeFromValues([...firstValues, ...secondValues]);
 
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _LegendDot(label: firstLegend),
+            _LegendDot(label: firstLegend, color: firstColor),
             const SizedBox(width: 16),
-            _LegendDot(label: secondLegend),
+            _LegendDot(label: secondLegend, color: secondColor),
           ],
         ),
         const SizedBox(height: 12),
         Expanded(
           child: BarChart(
             BarChartData(
-              minY: 0,
-              maxY: maxY,
+              minY: yRange.min,
+              maxY: yRange.max,
               groupsSpace: 12,
               titlesData: FlTitlesData(
                 leftTitles: AxisTitles(
@@ -432,6 +472,7 @@ class GroupedBarChart extends StatelessWidget {
               ),
               gridData: const FlGridData(show: true),
               borderData: FlBorderData(show: true),
+              extraLinesData: _zeroLineData(yRange),
               barGroups: List.generate(
                 labels.length,
                 (index) => BarChartGroupData(
@@ -442,6 +483,7 @@ class GroupedBarChart extends StatelessWidget {
                       toY: index < firstValues.length ? firstValues[index] : 0,
                       width: 12,
                       borderRadius: BorderRadius.circular(4),
+                      color: firstColor,
                     ),
                     BarChartRodData(
                       toY: index < secondValues.length
@@ -449,6 +491,7 @@ class GroupedBarChart extends StatelessWidget {
                           : 0,
                       width: 12,
                       borderRadius: BorderRadius.circular(4),
+                      color: secondColor,
                     ),
                   ],
                 ),
@@ -524,7 +567,7 @@ class MetricDeltaCard extends StatelessWidget {
                     spacing: 16,
                     runSpacing: 8,
                     children: [
-                      _MetricMiniInfo(label: 'Latest', value: latestText),
+                      _MetricMiniInfo(label: 'Current', value: latestText),
                       _MetricMiniInfo(label: 'Previous', value: previousText),
                       _MetricMiniInfo(
                         label: 'Delta',
@@ -578,14 +621,15 @@ class _MetricMiniInfo extends StatelessWidget {
 
 class _LegendDot extends StatelessWidget {
   final String label;
+  final Color color;
 
-  const _LegendDot({required this.label});
+  const _LegendDot({required this.label, required this.color});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const CircleAvatar(radius: 4),
+        CircleAvatar(radius: 4, backgroundColor: color),
         const SizedBox(width: 6),
         Text(label, style: Theme.of(context).textTheme.bodySmall),
       ],
@@ -593,14 +637,49 @@ class _LegendDot extends StatelessWidget {
   }
 }
 
-double _paddedMaxFromSpots(List<FlSpot> spots) {
-  final maxYValue = spots.map((e) => e.y).reduce((a, b) => a > b ? a : b);
-  return maxYValue == 0 ? 10.0 : maxYValue * 1.15;
+({double min, double max}) _rangeFromSpots(List<FlSpot> spots) {
+  return _rangeFromValues(spots.map((e) => e.y).toList());
 }
 
-double _paddedMaxFromValues(List<double> values) {
-  final maxYValue = values.reduce((a, b) => a > b ? a : b);
-  return maxYValue == 0 ? 10.0 : maxYValue * 1.15;
+({double min, double max}) _rangeFromValues(List<double> values) {
+  if (values.isEmpty) {
+    return (min: 0, max: 10);
+  }
+
+  final minValue = values.reduce((a, b) => a < b ? a : b);
+  final maxValue = values.reduce((a, b) => a > b ? a : b);
+  final boundedMin = min(minValue, 0);
+  final boundedMax = max(maxValue, 0);
+  final span = boundedMax - boundedMin;
+
+  if (span == 0) {
+    if (boundedMax == 0) {
+      return (min: -1, max: 10);
+    }
+
+    final padding = boundedMax.abs() * 0.15;
+    return (min: boundedMin - padding, max: boundedMax + padding);
+  }
+
+  final padding = span * 0.15;
+  return (min: boundedMin - padding, max: boundedMax + padding);
+}
+
+ExtraLinesData _zeroLineData(({double min, double max}) range) {
+  final showZeroLine = range.min < 0 && range.max > 0;
+
+  return ExtraLinesData(
+    horizontalLines: showZeroLine
+        ? [
+            HorizontalLine(
+              y: 0,
+              color: Colors.grey.shade500,
+              strokeWidth: 1,
+              dashArray: const [6, 4],
+            ),
+          ]
+        : const [],
+  );
 }
 
 double? latestMetricValue(
