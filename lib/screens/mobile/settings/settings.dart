@@ -118,6 +118,32 @@ class _SettingsMobileState extends State<SettingsMobile> {
                       height: 50,
                       onPressed: () => context.push(Routes.profile),
                     ),
+                    if (context.isAdmin) ...[
+                      Divider(
+                        thickness: 2,
+                        color: Theme.of(context).dividerTheme.color,
+                      ),
+                      IotButton(
+                        text: 'Athletes profile',
+                        icon: const Icon(Icons.manage_accounts_outlined, size: 24),
+                        borderWidth: 0,
+                        elevation: 3,
+                        textStyle: const TextStyle(
+                          fontSize: 18,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        width: 300,
+                        height: 50,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ProfileCustomerSearchPage(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                     Divider(
                       thickness: 2,
                       color: Theme.of(context).dividerTheme.color,
@@ -152,26 +178,6 @@ class _SettingsMobileState extends State<SettingsMobile> {
                       height: 50,
                       onPressed: () => context.push(Routes.health),
                     ),
-                    if (context.isAdmin) ...[
-                      Divider(
-                        thickness: 2,
-                        color: Theme.of(context).dividerTheme.color,
-                      ),
-                      IotButton(
-                        text: 'Athletes profile',
-                        icon: const Icon(Icons.manage_search, size: 24),
-                        borderWidth: 0,
-                        elevation: 3,
-                        textStyle: const TextStyle(
-                          fontSize: 18,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        width: 300,
-                        height: 50,
-                        onPressed: () =>
-                            context.push(Routes.healthCustomerSearch),
-                      ),
-                    ],
                   ],
                 ),
               ),

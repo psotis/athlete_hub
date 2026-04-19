@@ -61,11 +61,13 @@ export '../screens/mobile/home/home.dart';
 export '../screens/mobile/calendar/widgets/calendar_appbar.dart';
 export '../screens/mobile/signup/signup.dart';
 export '../screens/mobile/settings/profile/profile.dart';
+export '../screens/mobile/settings/profile/admin/profile_customer_search.dart';
 export '../screens/mobile/settings/health/health.dart';
 export '../screens/mobile/settings/health/admin/health_customer_search.dart';
 export '../screens/mobile/metrics/admin/admin.dart';
 export '../screens/mobile/metrics/admin/get_customer.dart';
 export '../screens/mobile/metrics/admin/start_session.dart';
+export '../screens/mobile/metrics/admin/widgets/team_batch_session_page.dart';
 
 // Desktop
 export '../screens/desktop/login/login.dart';

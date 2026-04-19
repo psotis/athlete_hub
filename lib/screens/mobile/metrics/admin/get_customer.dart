@@ -12,6 +12,87 @@ class GetCustomerMobile extends StatefulWidget {
 }
 
 class _GetCustomerMobileState extends State<GetCustomerMobile> {
+  bool _teamLoading = false;
+  String? _teamError;
+  String? _selectedTeamName;
+  List<_TeamErgometricsResult> _teamResults = [];
+
+  List<_MetricsSearchOption> get _options {
+    final athletes = widget.users
+        .map((user) => _MetricsSearchOption.athlete(user))
+        .toList();
+
+    final teams = <_MetricsSearchOption>[];
+    final grouped = <String, List<Users>>{};
+
+    for (final user in widget.users) {
+      final team = user.team?.trim();
+      if (team == null || team.isEmpty) continue;
+      grouped.putIfAbsent(team, () => []).add(user);
+    }
+
+    final sortedTeams = grouped.keys.toList()..sort();
+    for (final team in sortedTeams) {
+      teams.add(_MetricsSearchOption.team(team, grouped[team]!));
+    }
+
+    return [...athletes, ...teams];
+  }
+
+  Future<void> _loadTeamErgometrics(_MetricsSearchOption option) async {
+    setState(() {
+      _teamLoading = true;
+      _teamError = null;
+      _selectedTeamName = option.teamName;
+      _teamResults = [];
+    });
+
+    final repository = context.read<ErgometricsRepository>();
+    final results = <_TeamErgometricsResult>[];
+
+    try {
+      for (final user in option.members) {
+        final data = await repository.getErgometricsPerUser(user.id);
+        results.add(_TeamErgometricsResult(user: user, data: data));
+      }
+
+      if (!mounted) return;
+
+      setState(() {
+        _teamLoading = false;
+        _teamResults = results;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _teamLoading = false;
+        _teamError = e.toString();
+      });
+    }
+  }
+
+  Future<void> _onChanged(String? value) async {
+    if (value == null) return;
+
+    final option = _options.firstWhere((element) => element.key == value);
+
+    if (option.isTeam) {
+      context.read<ErgometricsCubit>().clearErgometrics();
+      await _loadTeamErgometrics(option);
+      return;
+    }
+
+    setState(() {
+      _selectedTeamName = null;
+      _teamResults = [];
+      _teamError = null;
+      _teamLoading = false;
+    });
+
+    context.read<ErgometricsCubit>().getAthleteErgometrics(option.athlete!);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -25,76 +106,174 @@ class _GetCustomerMobileState extends State<GetCustomerMobile> {
                   ? state.selectedUser?.id
                   : null;
 
-              // if (state.status == ErgometricsStatus.failure) {
-              //   return Text(state.errorMessage!);
-              // }
+              final currentValue = _selectedTeamName != null
+                  ? 'team:$_selectedTeamName'
+                  : selectedId == null
+                  ? null
+                  : 'athlete:$selectedId';
 
               return IotDropdown2<String>(
                 buttonWidth: MediaQuery.of(context).size.width * .9,
-                value: selectedId,
-                hintText: 'Select athlete',
+                value: currentValue,
+                hintText: 'Select athlete or team',
                 enableSearch: true,
-                searchHintText: 'Search athlete...',
-                itemAsString: (id) {
+                searchHintText: 'Search athlete or team...',
+                itemAsString: (key) {
                   try {
-                    return widget.users.firstWhere((e) => e.id == id).fullName;
+                    return _options
+                        .firstWhere((option) => option.key == key)
+                        .displayLabel;
                   } catch (_) {
                     return '';
                   }
                 },
-                items: widget.users.map((e) {
+                items: _options.map((option) {
                   return DropdownMenuItem<String>(
-                    value: e.id,
-                    child: Text(e.fullName),
+                    value: option.key,
+                    child: Text(
+                      option.displayLabel,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   );
                 }).toList(),
-                onChanged: (value) {
-                  if (value == null) return;
-                  final selectedUser = widget.users.firstWhere(
-                    (e) => e.id == value,
-                  );
-                  context.read<ErgometricsCubit>().getAthleteErgometrics(
-                    selectedUser,
-                  );
-                },
+                onChanged: _onChanged,
               );
             },
           ),
           const SizedBox(height: 12),
-          Expanded(
-            child: BlocBuilder<ErgometricsCubit, ErgometricsState>(
-              builder: (context, state) {
-                if (state.status == ErgometricsStatus.loading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (state.status == ErgometricsStatus.failure) {
-                  return Center(
-                    child: Text(state.errorMessage ?? 'Something went wrong'),
-                  );
-                }
-
-                final ergometrics = state.data.ergometrics;
-
-                if (ergometrics.isEmpty) {
-                  return const Center(child: Text('No ergometrics found'));
-                }
-
-                return ListView.separated(
-                  itemCount: ergometrics.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final item = ergometrics[index];
-                    return _SessionCard(item: item);
-                  },
-                );
-              },
-            ),
-          ),
+          Expanded(child: _buildContent()),
         ],
       ),
     );
   }
+
+  Widget _buildContent() {
+    if (_selectedTeamName != null) {
+      if (_teamLoading) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      if (_teamError != null) {
+        return Center(child: Text(_teamError!));
+      }
+
+      if (_teamResults.isEmpty) {
+        return const Center(child: Text('No ergometrics found'));
+      }
+
+      return ListView.separated(
+        itemCount: _teamResults.length,
+        separatorBuilder: (_, _) => const SizedBox(height: 12),
+        itemBuilder: (context, index) {
+          final result = _teamResults[index];
+
+          return Card(
+            child: ExpansionTile(
+              title: Text(result.user.fullName),
+              subtitle: Text(
+                [
+                  if ((result.user.team ?? '').trim().isNotEmpty)
+                    result.user.team!,
+                  if ((result.user.sport ?? '').trim().isNotEmpty)
+                    result.user.sport!,
+                ].join(' • '),
+              ),
+              childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+              children: [
+                if (result.data.ergometrics.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Text('No ergometrics found'),
+                  )
+                else
+                  ...result.data.ergometrics.map(
+                    (item) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _SessionCard(item: item),
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+
+    return BlocBuilder<ErgometricsCubit, ErgometricsState>(
+      builder: (context, state) {
+        if (state.status == ErgometricsStatus.loading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state.status == ErgometricsStatus.failure) {
+          return Center(
+            child: Text(state.errorMessage ?? 'Something went wrong'),
+          );
+        }
+
+        final ergometrics = state.data.ergometrics;
+
+        if (ergometrics.isEmpty) {
+          return const Center(child: Text('No ergometrics found'));
+        }
+
+        return ListView.separated(
+          itemCount: ergometrics.length,
+          separatorBuilder: (_, _) => const SizedBox(height: 12),
+          itemBuilder: (context, index) {
+            final item = ergometrics[index];
+            return _SessionCard(item: item);
+          },
+        );
+      },
+    );
+  }
+}
+
+class _MetricsSearchOption {
+  final String key;
+  final Users? athlete;
+  final String? teamName;
+  final List<Users> members;
+
+  const _MetricsSearchOption._({
+    required this.key,
+    this.athlete,
+    this.teamName,
+    this.members = const [],
+  });
+
+  factory _MetricsSearchOption.athlete(Users user) {
+    return _MetricsSearchOption._(key: 'athlete:${user.id}', athlete: user);
+  }
+
+  factory _MetricsSearchOption.team(String teamName, List<Users> members) {
+    return _MetricsSearchOption._(
+      key: 'team:$teamName',
+      teamName: teamName,
+      members: members,
+    );
+  }
+
+  bool get isTeam => teamName != null;
+
+  String get displayLabel {
+    if (isTeam) {
+      return 'Team: $teamName (${members.length} athletes)';
+    }
+
+    final team = athlete?.team?.trim();
+    if (team == null || team.isEmpty) return athlete?.fullName ?? '';
+    return '${athlete?.fullName} - $team';
+  }
+}
+
+class _TeamErgometricsResult {
+  final Users user;
+  final AthleteErgometricsData data;
+
+  const _TeamErgometricsResult({required this.user, required this.data});
 }
 
 class _SessionCard extends StatelessWidget {
@@ -142,17 +321,17 @@ class _SessionCard extends StatelessWidget {
           _CategoryCard(
             title: 'Goniometrics',
             values: {
-              'Hip flexion right (°)': goni?.hipFlexionRightDeg,
-              'Hip flexion left (°)': goni?.hipFlexionLeftDeg,
-              'Knee flexion right (°)': goni?.kneeFlexionRightDeg,
-              'Knee flexion left (°)': goni?.kneeFlexionLeftDeg,
-              'Hip internal rotation right (°)':
+              'Hip flexion right (Â°)': goni?.hipFlexionRightDeg,
+              'Hip flexion left (Â°)': goni?.hipFlexionLeftDeg,
+              'Knee flexion right (Â°)': goni?.kneeFlexionRightDeg,
+              'Knee flexion left (Â°)': goni?.kneeFlexionLeftDeg,
+              'Hip internal rotation right (Â°)':
                   goni?.hipInternalRotationRightDeg,
-              'Hip internal rotation left (°)':
+              'Hip internal rotation left (Â°)':
                   goni?.hipInternalRotationLeftDeg,
-              'Hip external rotation right (°)':
+              'Hip external rotation right (Â°)':
                   goni?.hipExternalRotationRightDeg,
-              'Hip external rotation left (°)':
+              'Hip external rotation left (Â°)':
                   goni?.hipExternalRotationLeftDeg,
               'Leg R/L ratio': goni?.legRlRatio,
               'Knee R/L ratio': goni?.kneeRlRatio,
