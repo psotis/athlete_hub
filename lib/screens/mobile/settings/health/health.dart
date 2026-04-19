@@ -3,7 +3,9 @@ import 'package:athlete_hub/blocs/medical/medical_state.dart';
 import 'package:athlete_hub/helpers/imports.dart';
 
 class HealthMobile extends StatefulWidget {
-  const HealthMobile({super.key});
+  final Users? selectedAthlete;
+
+  const HealthMobile({super.key, this.selectedAthlete});
 
   @override
   State<HealthMobile> createState() => _HealthMobileState();
@@ -11,6 +13,7 @@ class HealthMobile extends StatefulWidget {
 
 class _HealthMobileState extends State<HealthMobile> {
   String? athleteId;
+  Users? athlete;
 
   @override
   void initState() {
@@ -19,8 +22,17 @@ class _HealthMobileState extends State<HealthMobile> {
   }
 
   void _initialize() {
+    athlete = widget.selectedAthlete;
+
     final authState = context.read<AuthBloc>().state;
+    if (athlete != null) {
+      athleteId = athlete!.id;
+      context.read<MedicalCubit>().getMedicalPerUser(athlete!.id);
+      return;
+    }
+
     if (authState is AuthAuthenticated) {
+      athlete = authState.user;
       athleteId = authState.user.id;
       context.read<MedicalCubit>().getMedicalPerUser(authState.user.id);
     }
@@ -273,7 +285,7 @@ class _HealthMobileState extends State<HealthMobile> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(
-          'Medical History',
+          athlete == null ? 'Medical History' : athlete!.fullName,
           style: Theme.of(context).textTheme.headlineSmall,
         ),
       ),
@@ -314,6 +326,10 @@ class _HealthMobileState extends State<HealthMobile> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (athlete != null) ...[
+                    _AthleteDetailsCard(user: athlete!),
+                    const SizedBox(height: 12),
+                  ],
                   Expanded(
                     child: state.data.isEmpty
                         ? const Center(child: Text('No medical history found'))
@@ -386,6 +402,87 @@ class _HealthMobileState extends State<HealthMobile> {
             );
           },
         ),
+      ),
+    );
+  }
+}
+
+class _AthleteDetailsCard extends StatelessWidget {
+  final Users user;
+
+  const _AthleteDetailsCard({required this.user});
+
+  String _roleLabel() {
+    if (user.isAdmin) return 'Admin';
+    if (user.isNutritionist) return 'Nutritionist';
+    if (user.isTrainer) return 'Trainer';
+    return 'Customer';
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return '-';
+    return DateFormat('yyyy-MM-dd').format(date);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(user.fullName, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 10),
+            _DetailRow(label: 'Email', value: user.email),
+            _DetailRow(
+              label: 'Phone',
+              value: user.phone?.trim().isNotEmpty == true ? user.phone! : '-',
+            ),
+            _DetailRow(label: 'Role', value: _roleLabel()),
+            _DetailRow(label: 'Birth Date', value: _formatDate(user.birthDate)),
+            _DetailRow(
+              label: 'Sport',
+              value: user.sport?.trim().isNotEmpty == true ? user.sport! : '-',
+            ),
+            _DetailRow(
+              label: 'Team',
+              value: user.team?.trim().isNotEmpty == true ? user.team! : '-',
+            ),
+            _DetailRow(
+              label: 'Status',
+              value: user.isActive ? 'Active' : 'Inactive',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DetailRow extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _DetailRow({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 92,
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(child: Text(value)),
+        ],
       ),
     );
   }

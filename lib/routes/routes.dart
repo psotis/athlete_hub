@@ -7,4 +7,5 @@ abstract final class Routes {
   static const profile = "/profile";
   static const health = "/health";
   static const users = "/users";
+  static const healthCustomerSearch = "/healthCustomerSearch";
 }

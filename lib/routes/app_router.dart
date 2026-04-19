@@ -58,6 +58,10 @@ class AppRouter {
           path: Routes.health,
           builder: (context, state) => const HealthPage(),
         ),
+        GoRoute(
+          path: Routes.healthCustomerSearch,
+          builder: (context, state) => const HealthCustomerSearchPage(),
+        ),
       ],
       initialLocation: Routes.splash,
     );

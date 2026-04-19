@@ -48,6 +48,7 @@ export '../screens/pages/metrics_page.dart';
 export '../screens/pages/signup_page.dart';
 export '../screens/pages/profile_page.dart';
 export '../screens/pages/health_page.dart';
+export '../screens/shared/auth/auth_shell.dart';
 
 // Mobile
 export '../screens/mobile/login/login.dart';
@@ -61,6 +62,7 @@ export '../screens/mobile/calendar/widgets/calendar_appbar.dart';
 export '../screens/mobile/signup/signup.dart';
 export '../screens/mobile/settings/profile/profile.dart';
 export '../screens/mobile/settings/health/health.dart';
+export '../screens/mobile/settings/health/admin/health_customer_search.dart';
 export '../screens/mobile/metrics/admin/admin.dart';
 export '../screens/mobile/metrics/admin/get_customer.dart';
 export '../screens/mobile/metrics/admin/start_session.dart';
