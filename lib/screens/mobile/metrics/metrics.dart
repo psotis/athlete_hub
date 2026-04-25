@@ -83,7 +83,7 @@ class _MetricsMobileState extends State<MetricsMobile> {
                 category: ErgometricsCategory.endurance,
               ),
               _MetricCategoryItem(
-                title: 'Overhead Squat',
+                title: 'Movement Quality',
                 icon: Icons.accessibility,
                 category: ErgometricsCategory.overheadSquat,
               ),

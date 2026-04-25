@@ -7,95 +7,262 @@ class OverheadSquatCharts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final labels = items.sessionLabels;
-    final latest = items.isNotEmpty ? items.last : null;
+    ErgometricsDetails? latest;
+    for (final item in items.reversed) {
+      if (item.overheadSquatAssessmentItems.isNotEmpty) {
+        latest = item;
+        break;
+      }
+    }
 
-    double positiveCount(ErgometricsDetails e) => e.overheadSquatAssessmentItems
-        .where((item) => item.result == true)
-        .length
-        .toDouble();
+    final squatItems = latest?.overheadSquatAssessmentItems ?? const <Squat>[];
+    final groupedItems = <String, List<Squat>>{};
 
-    double negativeCount(ErgometricsDetails e) => e.overheadSquatAssessmentItems
-        .where((item) => item.result == false)
-        .length
-        .toDouble();
-
-    double totalCount(ErgometricsDetails e) =>
-        e.overheadSquatAssessmentItems.length.toDouble();
-
-    final latestPositive = latest != null ? positiveCount(latest) : null;
-    final previousPositive = items.length >= 2
-        ? positiveCount(items[items.length - 2])
-        : null;
-    final latestNegative = latest != null ? negativeCount(latest) : null;
-    final previousNegative = items.length >= 2
-        ? negativeCount(items[items.length - 2])
-        : null;
-    final latestTotal = latest != null ? totalCount(latest) : null;
-    final previousTotal = items.length >= 2
-        ? totalCount(items[items.length - 2])
-        : null;
+    for (final item in squatItems) {
+      final rawView = item.viewName?.trim();
+      final view = rawView == null || rawView.isEmpty ? 'Unknown' : rawView;
+      groupedItems.putIfAbsent(view, () => []).add(item);
+    }
 
     return ChartSection(
-      title: 'Overhead Squat',
+      title: 'Movement Quality',
       children: [
         LatestMeasurementDateCard(date: latest?.session?.measurementDate),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Positive Results',
-          latestValue: latestPositive,
-          previousValue: previousPositive,
-          unit: '',
-          decimals: 0,
-          icon: Icons.check_circle_outline,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Positive Results',
-          chart: SimpleBarChart(
-            values: items.map(positiveCount).toList(),
-            labels: labels,
-            yDecimals: 0,
+        if (squatItems.isEmpty)
+          const Card(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Text('No movement quality assessment found'),
+            ),
+          )
+        else
+          Card(
+            clipBehavior: Clip.antiAlias,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: SizedBox(
+                width: _OverheadTable.totalWidth,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const _OverheadHeaderRow(),
+                    for (final entry in groupedItems.entries)
+                      _OverheadViewSection(
+                        viewName: entry.key,
+                        items: entry.value,
+                      ),
+                  ],
+                ),
+              ),
+            ),
           ),
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Negative Results',
-          latestValue: latestNegative,
-          previousValue: previousNegative,
-          unit: '',
-          decimals: 0,
-          lowerIsBetter: true,
-          icon: Icons.cancel_outlined,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Negative Results',
-          chart: SimpleBarChart(
-            values: items.map(negativeCount).toList(),
-            labels: labels,
-            yDecimals: 0,
+      ],
+    );
+  }
+}
+
+class _OverheadTable {
+  static const double viewWidth = 150;
+  static const double checkpointWidth = 150;
+  static const double compensationWidth = 230;
+  static const double resultWidth = 90;
+  static const double totalWidth =
+      viewWidth + checkpointWidth + compensationWidth + resultWidth;
+}
+
+class _OverheadHeaderRow extends StatelessWidget {
+  const _OverheadHeaderRow();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.black,
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      child: const Row(
+        children: [
+          _HeaderCell(label: 'VIEW', width: _OverheadTable.viewWidth),
+          _HeaderCell(
+            label: 'CHECKPOINT',
+            width: _OverheadTable.checkpointWidth,
           ),
+          _HeaderCell(
+            label: 'COMPENSATION',
+            width: _OverheadTable.compensationWidth,
+          ),
+          _HeaderCell(
+            label: 'RESULT',
+            width: _OverheadTable.resultWidth,
+            showRightBorder: false,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OverheadViewSection extends StatelessWidget {
+  final String viewName;
+  final List<Squat> items;
+
+  const _OverheadViewSection({required this.viewName, required this.items});
+
+  @override
+  Widget build(BuildContext context) {
+    final safeViewName = viewName.trim().isEmpty
+        ? 'UNKNOWN'
+        : viewName.toUpperCase();
+
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            width: _OverheadTable.viewWidth,
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            decoration: const BoxDecoration(
+              color: Colors.black,
+              border: Border(
+                right: BorderSide(color: Colors.white24),
+                bottom: BorderSide(color: Colors.white24),
+              ),
+            ),
+            child: Text(
+              safeViewName,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 4,
+              ),
+            ),
+          ),
+          SizedBox(
+            width: _OverheadTable.totalWidth - _OverheadTable.viewWidth,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final item in items) _OverheadDataRow(item: item),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OverheadDataRow extends StatelessWidget {
+  final Squat item;
+
+  const _OverheadDataRow({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    final isPositive = item.result == true;
+    final resultText = isPositive ? 'YES' : 'NO';
+    final resultColor = isPositive
+        ? Colors.green.shade700
+        : Colors.red.shade700;
+    final checkpoint = (item.checkpointName ?? '').trim();
+    final compensation = (item.compensation ?? '').trim();
+
+    return Row(
+      children: [
+        _DataCell(
+          label: checkpoint.isEmpty ? '-' : checkpoint,
+          width: _OverheadTable.checkpointWidth,
         ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Total Items',
-          latestValue: latestTotal,
-          previousValue: previousTotal,
-          unit: '',
-          decimals: 0,
-          icon: Icons.format_list_numbered,
+        _DataCell(
+          label: compensation.isEmpty ? '-' : compensation,
+          width: _OverheadTable.compensationWidth,
         ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Total Assessment Items',
-          chart: SimpleBarChart(
-            values: items.map(totalCount).toList(),
-            labels: labels,
-            yDecimals: 0,
+        Container(
+          width: _OverheadTable.resultWidth,
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 18),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            border: Border(
+              left: BorderSide(color: Colors.black12),
+              bottom: BorderSide(color: Colors.black12),
+            ),
+          ),
+          child: Text(
+            resultText,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: resultColor, fontWeight: FontWeight.w700),
           ),
         ),
       ],
+    );
+  }
+}
+
+class _HeaderCell extends StatelessWidget {
+  final String label;
+  final double width;
+  final bool showRightBorder;
+
+  const _HeaderCell({
+    required this.label,
+    required this.width,
+    this.showRightBorder = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        border: showRightBorder
+            ? const Border(right: BorderSide(color: Colors.white24))
+            : null,
+      ),
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 1.2,
+        ),
+      ),
+    );
+  }
+}
+
+class _DataCell extends StatelessWidget {
+  final String label;
+  final double width;
+
+  const _DataCell({required this.label, required this.width});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
+      decoration: const BoxDecoration(
+        color: Colors.black,
+        border: Border(
+          left: BorderSide(color: Colors.white24),
+          bottom: BorderSide(color: Colors.white24),
+        ),
+      ),
+      child: Text(
+        label.toUpperCase(),
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 1,
+        ),
+      ),
     );
   }
 }

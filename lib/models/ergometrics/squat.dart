@@ -34,11 +34,11 @@ class Squat extends Equatable {
     return Squat(
       (map['id'] ?? '').toString(),
       (map['session_id'] ?? '').toString(),
-      map['view_name']?.toString(),
-      map['checkpoint_name']?.toString(),
-      map['compensation']?.toString(),
+      (map['view_name'] ?? '').toString(),
+      (map['checkpoint_name'] ?? '').toString(),
+      (map['compensation'] ?? '').toString(),
       map['result'] as bool?,
-      map['notes']?.toString(),
+      (map['notes'] ?? '').toString(),
       map['created_at'] != null
           ? DateTime.tryParse(map['created_at'].toString())
           : null,
