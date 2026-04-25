@@ -5,181 +5,161 @@ class SomatometricsCharts extends StatelessWidget {
 
   const SomatometricsCharts({super.key, required this.items});
 
+  List<Widget> _metricBlock({
+    required String title,
+    required String comparisonTitle,
+    required double? latestValue,
+    required double? previousValue,
+    required String unit,
+    required int decimals,
+    required IconData icon,
+    required List<FlSpot> spots,
+    required List<String> labels,
+    bool lowerIsBetter = false,
+  }) {
+    return [
+      MetricDeltaCard(
+        title: comparisonTitle,
+        latestValue: latestValue,
+        previousValue: previousValue,
+        unit: unit,
+        decimals: decimals,
+        lowerIsBetter: lowerIsBetter,
+        icon: icon,
+      ),
+      const SizedBox(height: 12),
+      ChartCard(
+        title: title,
+        chart: SimpleLineChart(
+          spots: spots,
+          labels: labels,
+          yDecimals: decimals,
+        ),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final labels = items.sessionLabels;
     final latest = items.isNotEmpty ? items.last : null;
-
-    final latestWeight = latestMetricValue(
-      items,
-      (e) => numToDouble(e.somatometrics?.weightKg),
-    );
-    final previousWeight = previousMetricValue(
-      items,
-      (e) => numToDouble(e.somatometrics?.weightKg),
-    );
-
-    final latestBodyFat = latestMetricValue(
-      items,
-      (e) => numToDouble(e.somatometrics?.bodyFatPercent),
-    );
-    final previousBodyFat = previousMetricValue(
-      items,
-      (e) => numToDouble(e.somatometrics?.bodyFatPercent),
-    );
-
-    final latestBmi = latestMetricValue(
-      items,
-      (e) => numToDouble(e.somatometrics?.bmi),
-    );
-    final previousBmi = previousMetricValue(
-      items,
-      (e) => numToDouble(e.somatometrics?.bmi),
-    );
-
-    final latestHeight = latestMetricValue(
-      items,
-      (e) => numToDouble(e.somatometrics?.heightCm),
-    );
-    final previousHeight = previousMetricValue(
-      items,
-      (e) => numToDouble(e.somatometrics?.heightCm),
-    );
-
-    final latestArmSpan = latestMetricValue(
-      items,
-      (e) => numToDouble(e.somatometrics?.armSpanCm),
-    );
-    final previousArmSpan = previousMetricValue(
-      items,
-      (e) => numToDouble(e.somatometrics?.armSpanCm),
-    );
-
-    final latestApeIndex = latestMetricValue(
-      items,
-      (e) => numToDouble(e.somatometrics?.apeIndex),
-    );
-    final previousApeIndex = previousMetricValue(
-      items,
-      (e) => numToDouble(e.somatometrics?.apeIndex),
-    );
 
     return ChartSection(
       title: 'Somatometrics',
       children: [
         LatestMeasurementDateCard(date: latest?.session?.measurementDate),
         const SizedBox(height: 12),
-        ChartCard(
-          title: 'Weight Trend',
-          chart: SimpleLineChart(
-            spots: items.lineSpots(
-              (e) => numToDouble(e.somatometrics?.weightKg),
-            ),
-            labels: labels,
-            yDecimals: 1,
+        ..._metricBlock(
+          title: 'Height',
+          comparisonTitle: 'Height',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.somatometrics?.heightCm),
           ),
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Weight Comparison',
-          latestValue: latestWeight,
-          previousValue: previousWeight,
-          unit: ' kg',
-          decimals: 1,
-          icon: Icons.monitor_weight,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Body Fat (%)',
-          chart: SimpleLineChart(
-            spots: items.lineSpots(
-              (e) => numToDouble(e.somatometrics?.bodyFatPercent),
-            ),
-            labels: labels,
-            yDecimals: 1,
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.somatometrics?.heightCm),
           ),
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Body Fat Comparison',
-          latestValue: latestBodyFat,
-          previousValue: previousBodyFat,
-          unit: ' %',
-          decimals: 1,
-          lowerIsBetter: true,
-          icon: Icons.percent,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'BMI',
-          chart: SimpleLineChart(
-            spots: items.lineSpots((e) => numToDouble(e.somatometrics?.bmi)),
-            labels: labels,
-            yDecimals: 1,
-          ),
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'BMI Comparison',
-          latestValue: latestBmi,
-          previousValue: previousBmi,
-          unit: '',
-          decimals: 1,
-          icon: Icons.insights,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Height vs Arm Span',
-          chart: GroupedBarChart(
-            labels: labels,
-            firstValues: items
-                .map((e) => numToDouble(e.somatometrics?.heightCm) ?? 0)
-                .toList(),
-            secondValues: items
-                .map((e) => numToDouble(e.somatometrics?.armSpanCm) ?? 0)
-                .toList(),
-            firstLegend: 'Height',
-            secondLegend: 'Arm Span',
-            yDecimals: 1,
-          ),
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Height Comparison',
-          latestValue: latestHeight,
-          previousValue: previousHeight,
           unit: ' cm',
           decimals: 1,
           icon: Icons.height,
+          spots: items.lineSpots((e) => numToDouble(e.somatometrics?.heightCm)),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Arm Span Comparison',
-          latestValue: latestArmSpan,
-          previousValue: previousArmSpan,
+        ..._metricBlock(
+          title: 'Wingspan',
+          comparisonTitle: 'Wingspan',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.somatometrics?.armSpanCm),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.somatometrics?.armSpanCm),
+          ),
           unit: ' cm',
           decimals: 1,
           icon: Icons.straighten,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Ape Index',
-          chart: SimpleLineChart(
-            spots: items.lineSpots(
-              (e) => numToDouble(e.somatometrics?.apeIndex),
-            ),
-            labels: labels,
-            yDecimals: 2,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.somatometrics?.armSpanCm),
           ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Ape Index Comparison',
-          latestValue: latestApeIndex,
-          previousValue: previousApeIndex,
+        ..._metricBlock(
+          title: 'Ape Index',
+          comparisonTitle: 'Ape Index',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.somatometrics?.apeIndex),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.somatometrics?.apeIndex),
+          ),
           unit: '',
           decimals: 2,
           icon: Icons.compare_arrows,
+          spots: items.lineSpots((e) => numToDouble(e.somatometrics?.apeIndex)),
+          labels: labels,
+        ),
+        const SizedBox(height: 12),
+        ..._metricBlock(
+          title: 'Weight',
+          comparisonTitle: 'Weight',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.somatometrics?.weightKg),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.somatometrics?.weightKg),
+          ),
+          unit: ' kg',
+          decimals: 1,
+          icon: Icons.monitor_weight,
+          spots: items.lineSpots((e) => numToDouble(e.somatometrics?.weightKg)),
+          labels: labels,
+        ),
+        const SizedBox(height: 12),
+        ..._metricBlock(
+          title: 'BMI',
+          comparisonTitle: 'BMI',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.somatometrics?.bmi),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.somatometrics?.bmi),
+          ),
+          unit: '',
+          decimals: 1,
+          icon: Icons.insights,
+          spots: items.lineSpots((e) => numToDouble(e.somatometrics?.bmi)),
+          labels: labels,
+        ),
+        const SizedBox(height: 12),
+        ..._metricBlock(
+          title: 'Body Fat %',
+          comparisonTitle: 'Body Fat %',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.somatometrics?.bodyFatPercent),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.somatometrics?.bodyFatPercent),
+          ),
+          unit: ' %',
+          decimals: 1,
+          icon: Icons.percent,
+          lowerIsBetter: true,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.somatometrics?.bodyFatPercent),
+          ),
+          labels: labels,
         ),
       ],
     );

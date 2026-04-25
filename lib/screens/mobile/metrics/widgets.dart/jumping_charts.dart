@@ -5,511 +5,368 @@ class JumpingCharts extends StatelessWidget {
 
   const JumpingCharts({super.key, required this.items});
 
+  List<Widget> _metricBlock({
+    required String title,
+    required String comparisonTitle,
+    required double? latestValue,
+    required double? previousValue,
+    required String unit,
+    required int decimals,
+    required IconData icon,
+    required List<FlSpot> spots,
+    required List<String> labels,
+  }) {
+    return [
+      MetricDeltaCard(
+        title: comparisonTitle,
+        latestValue: latestValue,
+        previousValue: previousValue,
+        unit: unit,
+        decimals: decimals,
+        icon: icon,
+      ),
+      const SizedBox(height: 12),
+      ChartCard(
+        title: title,
+        chart: SimpleLineChart(
+          spots: spots,
+          labels: labels,
+          yDecimals: decimals,
+        ),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final labels = items.sessionLabels;
     final latest = items.isNotEmpty ? items.last : null;
-
-    final latestCmjHeight = latestMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.cmjHeightCm),
-    );
-    final previousCmjHeight = previousMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.cmjHeightCm),
-    );
-    final latestCmjPower = latestMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.cmjPowerW),
-    );
-    final previousCmjPower = previousMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.cmjPowerW),
-    );
-
-    final latestSquatHeight = latestMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.squatJumpHeightCm),
-    );
-    final previousSquatHeight = previousMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.squatJumpHeightCm),
-    );
-    final latestSquatPower = latestMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.squatJumpPowerW),
-    );
-    final previousSquatPower = previousMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.squatJumpPowerW),
-    );
-
-    final latestFreeHandsHeight = latestMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.cmjFreeHandsHeightCm),
-    );
-    final previousFreeHandsHeight = previousMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.cmjFreeHandsHeightCm),
-    );
-    final latestFreeHandsPower = latestMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.cmjFreeHandsPowerW),
-    );
-    final previousFreeHandsPower = previousMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.cmjFreeHandsPowerW),
-    );
-
-    final latestDropHeight = latestMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.dropJumpHeightCm),
-    );
-    final previousDropHeight = previousMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.dropJumpHeightCm),
-    );
-    final latestRsi = latestMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.dropJumpRsi),
-    );
-    final previousRsi = previousMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.dropJumpRsi),
-    );
-
-    final latestSingleLegHeightRight = latestMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.singleLegCmjRightHeightCm),
-    );
-    final previousSingleLegHeightRight = previousMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.singleLegCmjRightHeightCm),
-    );
-    final latestSingleLegHeightLeft = latestMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.singleLegCmjLeftHeightCm),
-    );
-    final previousSingleLegHeightLeft = previousMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.singleLegCmjLeftHeightCm),
-    );
-
-    final latestSingleLegPowerRight = latestMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.singleLegCmjRightPowerW),
-    );
-    final previousSingleLegPowerRight = previousMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.singleLegCmjRightPowerW),
-    );
-    final latestSingleLegPowerLeft = latestMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.singleLegCmjLeftPowerW),
-    );
-    final previousSingleLegPowerLeft = previousMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.singleLegCmjLeftPowerW),
-    );
-
-    final latestElasticUtilRatio = latestMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.elasticUtilRatio),
-    );
-    final previousElasticUtilRatio = previousMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.elasticUtilRatio),
-    );
-
-    final latestArmSwing = latestMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.armSwing),
-    );
-    final previousArmSwing = previousMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.armSwing),
-    );
-
-    final latestBiliteralDeficit = latestMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.biliteralDeficit),
-    );
-    final previousBiliteralDeficit = previousMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.biliteralDeficit),
-    );
-
-    final latestSingleLegJump = latestMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.singleLegJump),
-    );
-    final previousSingleLegJump = previousMetricValue(
-      items,
-      (e) => numToDouble(e.jumpingAbility?.singleLegJump),
-    );
 
     return ChartSection(
       title: 'Jumping Ability',
       children: [
         LatestMeasurementDateCard(date: latest?.session?.measurementDate),
         const SizedBox(height: 12),
-        ChartCard(
-          title: 'CMJ',
-          height: 440,
-          chart: _JumpingMetricPairChart(
-            labels: labels,
-            firstTitle: 'Height (cm)',
-            firstSpots: items.lineSpots(
-              (e) => numToDouble(e.jumpingAbility?.cmjHeightCm),
-            ),
-            firstDecimals: 1,
-            secondTitle: 'Power (W)',
-            secondSpots: items.lineSpots(
-              (e) => numToDouble(e.jumpingAbility?.cmjPowerW),
-            ),
-            secondDecimals: 0,
+        ..._metricBlock(
+          title: 'Squat Jump Height (cm)',
+          comparisonTitle: 'Squat Jump Height',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.squatJumpHeightCm),
           ),
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'CMJ Height Comparison',
-          latestValue: latestCmjHeight,
-          previousValue: previousCmjHeight,
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.squatJumpHeightCm),
+          ),
           unit: ' cm',
           decimals: 1,
           icon: Icons.height,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.jumpingAbility?.squatJumpHeightCm),
+          ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'CMJ Power Comparison',
-          latestValue: latestCmjPower,
-          previousValue: previousCmjPower,
+        ..._metricBlock(
+          title: 'Squat Jump Power (watt)',
+          comparisonTitle: 'Squat Jump Power',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.squatJumpPowerW),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.squatJumpPowerW),
+          ),
           unit: ' W',
           decimals: 0,
           icon: Icons.bolt,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Squat Jump',
-          height: 440,
-          chart: _JumpingMetricPairChart(
-            labels: labels,
-            firstTitle: 'Height (cm)',
-            firstSpots: items.lineSpots(
-              (e) => numToDouble(e.jumpingAbility?.squatJumpHeightCm),
-            ),
-            firstDecimals: 1,
-            secondTitle: 'Power (W)',
-            secondSpots: items.lineSpots(
-              (e) => numToDouble(e.jumpingAbility?.squatJumpPowerW),
-            ),
-            secondDecimals: 0,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.jumpingAbility?.squatJumpPowerW),
           ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Squat Jump Height Comparison',
-          latestValue: latestSquatHeight,
-          previousValue: previousSquatHeight,
+        ..._metricBlock(
+          title: 'Counter Movement Jump Height (cm)',
+          comparisonTitle: 'Counter Movement Jump Height',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.cmjHeightCm),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.cmjHeightCm),
+          ),
           unit: ' cm',
           decimals: 1,
           icon: Icons.height,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.jumpingAbility?.cmjHeightCm),
+          ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Squat Jump Power Comparison',
-          latestValue: latestSquatPower,
-          previousValue: previousSquatPower,
+        ..._metricBlock(
+          title: 'Counter Movement Jump Power (watt)',
+          comparisonTitle: 'Counter Movement Jump Power',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.cmjPowerW),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.cmjPowerW),
+          ),
           unit: ' W',
           decimals: 0,
           icon: Icons.bolt,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'CMJ Free Hands',
-          height: 440,
-          chart: _JumpingMetricPairChart(
-            labels: labels,
-            firstTitle: 'Height (cm)',
-            firstSpots: items.lineSpots(
-              (e) => numToDouble(e.jumpingAbility?.cmjFreeHandsHeightCm),
-            ),
-            firstDecimals: 1,
-            secondTitle: 'Power (W)',
-            secondSpots: items.lineSpots(
-              (e) => numToDouble(e.jumpingAbility?.cmjFreeHandsPowerW),
-            ),
-            secondDecimals: 0,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.jumpingAbility?.cmjPowerW),
           ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'CMJ Free Hands Height Comparison',
-          latestValue: latestFreeHandsHeight,
-          previousValue: previousFreeHandsHeight,
+        ..._metricBlock(
+          title: 'Counter Movement Jump Free Hands Height (cm)',
+          comparisonTitle: 'Counter Movement Jump Free Hands Height',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.cmjFreeHandsHeightCm),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.cmjFreeHandsHeightCm),
+          ),
           unit: ' cm',
           decimals: 1,
           icon: Icons.height,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.jumpingAbility?.cmjFreeHandsHeightCm),
+          ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'CMJ Free Hands Power Comparison',
-          latestValue: latestFreeHandsPower,
-          previousValue: previousFreeHandsPower,
+        ..._metricBlock(
+          title: 'Counter Movement Jump Free Hands Power (watt)',
+          comparisonTitle: 'Counter Movement Jump Free Hands Power',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.cmjFreeHandsPowerW),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.cmjFreeHandsPowerW),
+          ),
           unit: ' W',
           decimals: 0,
           icon: Icons.bolt,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Drop Jump Height',
-          chart: SimpleLineChart(
-            spots: items.lineSpots(
-              (e) => numToDouble(e.jumpingAbility?.dropJumpHeightCm),
-            ),
-            labels: labels,
-            yDecimals: 1,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.jumpingAbility?.cmjFreeHandsPowerW),
           ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Drop Jump Height Comparison',
-          latestValue: latestDropHeight,
-          previousValue: previousDropHeight,
+        ..._metricBlock(
+          title: 'Drop Jump Height (cm)',
+          comparisonTitle: 'Drop Jump Height',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.dropJumpHeightCm),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.dropJumpHeightCm),
+          ),
           unit: ' cm',
           decimals: 1,
           icon: Icons.height,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.jumpingAbility?.dropJumpHeightCm),
+          ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        ChartCard(
+        ..._metricBlock(
           title: 'Drop Jump RSI',
-          chart: SimpleLineChart(
-            spots: items.lineSpots(
-              (e) => numToDouble(e.jumpingAbility?.dropJumpRsi),
-            ),
-            labels: labels,
-            yDecimals: 2,
+          comparisonTitle: 'Drop Jump RSI',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.dropJumpRsi),
           ),
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Drop Jump RSI Comparison',
-          latestValue: latestRsi,
-          previousValue: previousRsi,
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.dropJumpRsi),
+          ),
           unit: '',
           decimals: 2,
           icon: Icons.compare_arrows,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Single Leg CMJ Height Right vs Left',
-          chart: GroupedBarChart(
-            labels: labels,
-            firstValues: items
-                .map((e) => numToDouble(e.jumpingAbility?.singleLegCmjRightHeightCm) ?? 0)
-                .toList(),
-            secondValues: items
-                .map((e) => numToDouble(e.jumpingAbility?.singleLegCmjLeftHeightCm) ?? 0)
-                .toList(),
-            firstLegend: 'Right',
-            secondLegend: 'Left',
-            yDecimals: 1,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.jumpingAbility?.dropJumpRsi),
           ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Single Leg CMJ Height Right Comparison',
-          latestValue: latestSingleLegHeightRight,
-          previousValue: previousSingleLegHeightRight,
+        ..._metricBlock(
+          title: 'Single Leg CMJ Right Height (cm)',
+          comparisonTitle: 'Single Leg CMJ Right Height',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.singleLegCmjRightHeightCm),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.singleLegCmjRightHeightCm),
+          ),
           unit: ' cm',
           decimals: 1,
           icon: Icons.height,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.jumpingAbility?.singleLegCmjRightHeightCm),
+          ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Single Leg CMJ Height Left Comparison',
-          latestValue: latestSingleLegHeightLeft,
-          previousValue: previousSingleLegHeightLeft,
+        ..._metricBlock(
+          title: 'Single Leg CMJ Right Power (watt)',
+          comparisonTitle: 'Single Leg CMJ Right Power',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.singleLegCmjRightPowerW),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.singleLegCmjRightPowerW),
+          ),
+          unit: ' W',
+          decimals: 0,
+          icon: Icons.bolt,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.jumpingAbility?.singleLegCmjRightPowerW),
+          ),
+          labels: labels,
+        ),
+        const SizedBox(height: 12),
+        ..._metricBlock(
+          title: 'Single Leg CMJ Left Height (cm)',
+          comparisonTitle: 'Single Leg CMJ Left Height',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.singleLegCmjLeftHeightCm),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.singleLegCmjLeftHeightCm),
+          ),
           unit: ' cm',
           decimals: 1,
           icon: Icons.height,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Single Leg CMJ Power Right vs Left',
-          chart: GroupedBarChart(
-            labels: labels,
-            firstValues: items
-                .map((e) => numToDouble(e.jumpingAbility?.singleLegCmjRightPowerW) ?? 0)
-                .toList(),
-            secondValues: items
-                .map((e) => numToDouble(e.jumpingAbility?.singleLegCmjLeftPowerW) ?? 0)
-                .toList(),
-            firstLegend: 'Right',
-            secondLegend: 'Left',
-            yDecimals: 0,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.jumpingAbility?.singleLegCmjLeftHeightCm),
           ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Single Leg CMJ Power Right Comparison',
-          latestValue: latestSingleLegPowerRight,
-          previousValue: previousSingleLegPowerRight,
+        ..._metricBlock(
+          title: 'Single Leg CMJ Left Power (watt)',
+          comparisonTitle: 'Single Leg CMJ Left Power',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.singleLegCmjLeftPowerW),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.singleLegCmjLeftPowerW),
+          ),
           unit: ' W',
           decimals: 0,
           icon: Icons.bolt,
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Single Leg CMJ Power Left Comparison',
-          latestValue: latestSingleLegPowerLeft,
-          previousValue: previousSingleLegPowerLeft,
-          unit: ' W',
-          decimals: 0,
-          icon: Icons.bolt,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Elastic Util Ratio',
-          chart: SimpleLineChart(
-            spots: items.lineSpots(
-              (e) => numToDouble(e.jumpingAbility?.elasticUtilRatio),
-            ),
-            labels: labels,
-            yDecimals: 2,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.jumpingAbility?.singleLegCmjLeftPowerW),
           ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Elastic Util Ratio Comparison',
-          latestValue: latestElasticUtilRatio,
-          previousValue: previousElasticUtilRatio,
+        ..._metricBlock(
+          title: 'Elastic Utilization Ratio',
+          comparisonTitle: 'Elastic Utilization Ratio',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.elasticUtilRatio),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.elasticUtilRatio),
+          ),
           unit: '',
           decimals: 2,
           icon: Icons.show_chart,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Arm Swing',
-          chart: SimpleLineChart(
-            spots: items.lineSpots(
-              (e) => numToDouble(e.jumpingAbility?.armSwing),
-            ),
-            labels: labels,
-            yDecimals: 2,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.jumpingAbility?.elasticUtilRatio),
           ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Arm Swing Comparison',
-          latestValue: latestArmSwing,
-          previousValue: previousArmSwing,
+        ..._metricBlock(
+          title: 'Arm Swing Contribution',
+          comparisonTitle: 'Arm Swing Contribution',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.armSwing),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.armSwing),
+          ),
           unit: '',
           decimals: 2,
           icon: Icons.compare_arrows,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Biliteral Deficit',
-          chart: SimpleLineChart(
-            spots: items.lineSpots(
-              (e) => numToDouble(e.jumpingAbility?.biliteralDeficit),
-            ),
-            labels: labels,
-            yDecimals: 2,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.jumpingAbility?.armSwing),
           ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Biliteral Deficit Comparison',
-          latestValue: latestBiliteralDeficit,
-          previousValue: previousBiliteralDeficit,
+        ..._metricBlock(
+          title: 'Bilateral Deficit',
+          comparisonTitle: 'Bilateral Deficit',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.biliteralDeficit),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.biliteralDeficit),
+          ),
           unit: '',
           decimals: 2,
           icon: Icons.compare_arrows,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Single Leg Jump',
-          chart: SimpleLineChart(
-            spots: items.lineSpots(
-              (e) => numToDouble(e.jumpingAbility?.singleLegJump),
-            ),
-            labels: labels,
-            yDecimals: 2,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.jumpingAbility?.biliteralDeficit),
           ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Single Leg Jump Comparison',
-          latestValue: latestSingleLegJump,
-          previousValue: previousSingleLegJump,
+        ..._metricBlock(
+          title: 'Single Leg Jumps Ratio',
+          comparisonTitle: 'Single Leg Jumps Ratio',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.singleLegJump),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.jumpingAbility?.singleLegJump),
+          ),
           unit: '',
           decimals: 2,
           icon: Icons.show_chart,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.jumpingAbility?.singleLegJump),
+          ),
+          labels: labels,
         ),
       ],
-    );
-  }
-}
-
-class _JumpingMetricPairChart extends StatelessWidget {
-  final List<String> labels;
-  final String firstTitle;
-  final List<FlSpot> firstSpots;
-  final int firstDecimals;
-  final String secondTitle;
-  final List<FlSpot> secondSpots;
-  final int secondDecimals;
-
-  const _JumpingMetricPairChart({
-    required this.labels,
-    required this.firstTitle,
-    required this.firstSpots,
-    required this.firstDecimals,
-    required this.secondTitle,
-    required this.secondSpots,
-    required this.secondDecimals,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _PairChartLabel(title: firstTitle),
-        const SizedBox(height: 8),
-        Expanded(
-          child: SimpleLineChart(
-            spots: firstSpots,
-            labels: labels,
-            yDecimals: firstDecimals,
-          ),
-        ),
-        const SizedBox(height: 16),
-        _PairChartLabel(title: secondTitle),
-        const SizedBox(height: 8),
-        Expanded(
-          child: SimpleLineChart(
-            spots: secondSpots,
-            labels: labels,
-            yDecimals: secondDecimals,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _PairChartLabel extends StatelessWidget {
-  final String title;
-
-  const _PairChartLabel({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Text(title, style: Theme.of(context).textTheme.titleSmall),
     );
   }
 }

@@ -41,6 +41,15 @@ class OverheadSquatCharts extends StatelessWidget {
       children: [
         LatestMeasurementDateCard(date: latest?.session?.measurementDate),
         const SizedBox(height: 12),
+        MetricDeltaCard(
+          title: 'Positive Results',
+          latestValue: latestPositive,
+          previousValue: previousPositive,
+          unit: '',
+          decimals: 0,
+          icon: Icons.check_circle_outline,
+        ),
+        const SizedBox(height: 12),
         ChartCard(
           title: 'Positive Results',
           chart: SimpleBarChart(
@@ -51,12 +60,13 @@ class OverheadSquatCharts extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         MetricDeltaCard(
-          title: 'Positive Results Comparison',
-          latestValue: latestPositive,
-          previousValue: previousPositive,
+          title: 'Negative Results',
+          latestValue: latestNegative,
+          previousValue: previousNegative,
           unit: '',
           decimals: 0,
-          icon: Icons.check_circle_outline,
+          lowerIsBetter: true,
+          icon: Icons.cancel_outlined,
         ),
         const SizedBox(height: 12),
         ChartCard(
@@ -69,13 +79,12 @@ class OverheadSquatCharts extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         MetricDeltaCard(
-          title: 'Negative Results Comparison',
-          latestValue: latestNegative,
-          previousValue: previousNegative,
+          title: 'Total Items',
+          latestValue: latestTotal,
+          previousValue: previousTotal,
           unit: '',
           decimals: 0,
-          lowerIsBetter: true,
-          icon: Icons.cancel_outlined,
+          icon: Icons.format_list_numbered,
         ),
         const SizedBox(height: 12),
         ChartCard(
@@ -85,15 +94,6 @@ class OverheadSquatCharts extends StatelessWidget {
             labels: labels,
             yDecimals: 0,
           ),
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Total Items Comparison',
-          latestValue: latestTotal,
-          previousValue: previousTotal,
-          unit: '',
-          decimals: 0,
-          icon: Icons.format_list_numbered,
         ),
       ],
     );

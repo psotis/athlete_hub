@@ -5,445 +5,366 @@ class DynamometricsCharts extends StatelessWidget {
 
   const DynamometricsCharts({super.key, required this.items});
 
+  List<Widget> _metricBlock({
+    required String title,
+    required String comparisonTitle,
+    required double? latestValue,
+    required double? previousValue,
+    required String unit,
+    required int decimals,
+    required IconData icon,
+    required List<FlSpot> spots,
+    required List<String> labels,
+  }) {
+    return [
+      MetricDeltaCard(
+        title: comparisonTitle,
+        latestValue: latestValue,
+        previousValue: previousValue,
+        unit: unit,
+        decimals: decimals,
+        icon: icon,
+      ),
+      const SizedBox(height: 12),
+      ChartCard(
+        title: title,
+        chart: SimpleLineChart(
+          spots: spots,
+          labels: labels,
+          yDecimals: decimals,
+        ),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final labels = items.sessionLabels;
     final latest = items.isNotEmpty ? items.last : null;
-
-    final latestGripRight = latestMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.handGripRightN),
-    );
-    final previousGripRight = previousMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.handGripRightN),
-    );
-    final latestGripLeft = latestMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.handGripLeftN),
-    );
-    final previousGripLeft = previousMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.handGripLeftN),
-    );
-
-    final latestKneeExtensionRight = latestMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.kneeExtensionRightN),
-    );
-    final previousKneeExtensionRight = previousMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.kneeExtensionRightN),
-    );
-    final latestKneeExtensionLeft = latestMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.kneeExtensionLeftN),
-    );
-    final previousKneeExtensionLeft = previousMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.kneeExtensionLeftN),
-    );
-
-    final latestKneeFlexionRight = latestMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.kneeFlexionRightN),
-    );
-    final previousKneeFlexionRight = previousMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.kneeFlexionRightN),
-    );
-    final latestKneeFlexionLeft = latestMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.kneeFlexionLeftN),
-    );
-    final previousKneeFlexionLeft = previousMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.kneeFlexionLeftN),
-    );
-
-    final latestShoulderIntRight = latestMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.shoulderInternalRotationRightN),
-    );
-    final previousShoulderIntRight = previousMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.shoulderInternalRotationRightN),
-    );
-    final latestShoulderIntLeft = latestMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.shoulderInternalRotationLeftN),
-    );
-    final previousShoulderIntLeft = previousMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.shoulderInternalRotationLeftN),
-    );
-
-    final latestShoulderExtRight = latestMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.shoulderExternalRotationRightN),
-    );
-    final previousShoulderExtRight = previousMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.shoulderExternalRotationRightN),
-    );
-    final latestShoulderExtLeft = latestMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.shoulderExternalRotationLeftN),
-    );
-    final previousShoulderExtLeft = previousMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.shoulderExternalRotationLeftN),
-    );
-
-    final latestMidThigh = latestMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.midThighPullN),
-    );
-    final previousMidThigh = previousMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.midThighPullN),
-    );
-
-    final latestHandRatio = latestMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.handRlRatio),
-    );
-    final previousHandRatio = previousMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.handRlRatio),
-    );
-
-    final latestLegRatio = latestMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.legRlRatio),
-    );
-    final previousLegRatio = previousMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.legRlRatio),
-    );
-
-    final latestKneeRatio = latestMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.kneeRlRatio),
-    );
-    final previousKneeRatio = previousMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.kneeRlRatio),
-    );
-
-    final latestShoulderIntRatio = latestMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.shoulderIntRatio),
-    );
-    final previousShoulderIntRatio = previousMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.shoulderIntRatio),
-    );
-
-    final latestShoulderExtRatio = latestMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.shoulderExtRatio),
-    );
-    final previousShoulderExtRatio = previousMetricValue(
-      items,
-      (e) => numToDouble(e.dynamometrics?.shoulderExtRatio),
-    );
 
     return ChartSection(
       title: 'Dynamometrics',
       children: [
         LatestMeasurementDateCard(date: latest?.session?.measurementDate),
         const SizedBox(height: 12),
-        ChartCard(
-          title: 'Hand Grip Right vs Left',
-          chart: GroupedBarChart(
-            labels: labels,
-            firstValues: items
-                .map((e) => numToDouble(e.dynamometrics?.handGripRightN) ?? 0)
-                .toList(),
-            secondValues: items
-                .map((e) => numToDouble(e.dynamometrics?.handGripLeftN) ?? 0)
-                .toList(),
-            firstLegend: 'Right',
-            secondLegend: 'Left',
-            yDecimals: 0,
+        ..._metricBlock(
+          title: 'Handgrip Strength Test Right Hand',
+          comparisonTitle: 'Handgrip Strength Test Right Hand',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.handGripRightN),
           ),
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Hand Grip Right Comparison',
-          latestValue: latestGripRight,
-          previousValue: previousGripRight,
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.handGripRightN),
+          ),
           unit: ' N',
           decimals: 1,
           icon: Icons.pan_tool_alt,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.dynamometrics?.handGripRightN),
+          ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Hand Grip Left Comparison',
-          latestValue: latestGripLeft,
-          previousValue: previousGripLeft,
+        ..._metricBlock(
+          title: 'Handgrip Strength Test Left Hand',
+          comparisonTitle: 'Handgrip Strength Test Left Hand',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.handGripLeftN),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.handGripLeftN),
+          ),
           unit: ' N',
           decimals: 1,
           icon: Icons.pan_tool,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Knee Extension Right vs Left',
-          chart: GroupedBarChart(
-            labels: labels,
-            firstValues: items
-                .map((e) => numToDouble(e.dynamometrics?.kneeExtensionRightN) ?? 0)
-                .toList(),
-            secondValues: items
-                .map((e) => numToDouble(e.dynamometrics?.kneeExtensionLeftN) ?? 0)
-                .toList(),
-            firstLegend: 'Right',
-            secondLegend: 'Left',
-            yDecimals: 0,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.dynamometrics?.handGripLeftN),
           ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Knee Extension Right Comparison',
-          latestValue: latestKneeExtensionRight,
-          previousValue: previousKneeExtensionRight,
-          unit: ' N',
-          decimals: 1,
-          icon: Icons.fitness_center,
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Knee Extension Left Comparison',
-          latestValue: latestKneeExtensionLeft,
-          previousValue: previousKneeExtensionLeft,
-          unit: ' N',
-          decimals: 1,
-          icon: Icons.fitness_center,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Knee Flexion Right vs Left',
-          chart: GroupedBarChart(
-            labels: labels,
-            firstValues: items
-                .map((e) => numToDouble(e.dynamometrics?.kneeFlexionRightN) ?? 0)
-                .toList(),
-            secondValues: items
-                .map((e) => numToDouble(e.dynamometrics?.kneeFlexionLeftN) ?? 0)
-                .toList(),
-            firstLegend: 'Right',
-            secondLegend: 'Left',
-            yDecimals: 0,
+        ..._metricBlock(
+          title: 'Handgrip Right / Left Ratio',
+          comparisonTitle: 'Handgrip Right / Left Ratio',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.handRlRatio),
           ),
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Knee Flexion Right Comparison',
-          latestValue: latestKneeFlexionRight,
-          previousValue: previousKneeFlexionRight,
-          unit: ' N',
-          decimals: 1,
-          icon: Icons.fitness_center,
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Knee Flexion Left Comparison',
-          latestValue: latestKneeFlexionLeft,
-          previousValue: previousKneeFlexionLeft,
-          unit: ' N',
-          decimals: 1,
-          icon: Icons.fitness_center,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Shoulder Internal Rotation Right vs Left',
-          chart: GroupedBarChart(
-            labels: labels,
-            firstValues: items
-                .map(
-                  (e) => numToDouble(e.dynamometrics?.shoulderInternalRotationRightN) ?? 0,
-                )
-                .toList(),
-            secondValues: items
-                .map(
-                  (e) => numToDouble(e.dynamometrics?.shoulderInternalRotationLeftN) ?? 0,
-                )
-                .toList(),
-            firstLegend: 'Right',
-            secondLegend: 'Left',
-            yDecimals: 0,
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.handRlRatio),
           ),
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Shoulder Internal Rotation Right Comparison',
-          latestValue: latestShoulderIntRight,
-          previousValue: previousShoulderIntRight,
-          unit: ' N',
-          decimals: 1,
-          icon: Icons.sports_gymnastics,
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Shoulder Internal Rotation Left Comparison',
-          latestValue: latestShoulderIntLeft,
-          previousValue: previousShoulderIntLeft,
-          unit: ' N',
-          decimals: 1,
-          icon: Icons.sports_gymnastics,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Shoulder External Rotation Right vs Left',
-          chart: GroupedBarChart(
-            labels: labels,
-            firstValues: items
-                .map(
-                  (e) => numToDouble(e.dynamometrics?.shoulderExternalRotationRightN) ?? 0,
-                )
-                .toList(),
-            secondValues: items
-                .map(
-                  (e) => numToDouble(e.dynamometrics?.shoulderExternalRotationLeftN) ?? 0,
-                )
-                .toList(),
-            firstLegend: 'Right',
-            secondLegend: 'Left',
-            yDecimals: 0,
+          unit: '',
+          decimals: 2,
+          icon: Icons.balance,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.dynamometrics?.handRlRatio),
           ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Shoulder External Rotation Right Comparison',
-          latestValue: latestShoulderExtRight,
-          previousValue: previousShoulderExtRight,
-          unit: ' N',
-          decimals: 1,
-          icon: Icons.sports_gymnastics,
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Shoulder External Rotation Left Comparison',
-          latestValue: latestShoulderExtLeft,
-          previousValue: previousShoulderExtLeft,
-          unit: ' N',
-          decimals: 1,
-          icon: Icons.sports_gymnastics,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Mid Thigh Pull Trend',
-          chart: SimpleLineChart(
-            spots: items.lineSpots(
-              (e) => numToDouble(e.dynamometrics?.midThighPullN),
-            ),
-            labels: labels,
-            yDecimals: 0,
+        ..._metricBlock(
+          title: 'Mid Thigh Pull',
+          comparisonTitle: 'Mid Thigh Pull',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.midThighPullN),
           ),
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Mid Thigh Pull Comparison',
-          latestValue: latestMidThigh,
-          previousValue: previousMidThigh,
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.midThighPullN),
+          ),
           unit: ' N',
           decimals: 1,
           icon: Icons.straighten,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Hand R/L Ratio',
-          chart: SimpleLineChart(
-            spots: items.lineSpots((e) => numToDouble(e.dynamometrics?.handRlRatio)),
-            labels: labels,
-            yDecimals: 2,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.dynamometrics?.midThighPullN),
           ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Hand R/L Ratio Comparison',
-          latestValue: latestHandRatio,
-          previousValue: previousHandRatio,
+        ..._metricBlock(
+          title: 'Leg Extension 90 deg Right',
+          comparisonTitle: 'Leg Extension 90 deg Right',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.kneeExtensionRightN),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.kneeExtensionRightN),
+          ),
+          unit: ' N',
+          decimals: 1,
+          icon: Icons.fitness_center,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.dynamometrics?.kneeExtensionRightN),
+          ),
+          labels: labels,
+        ),
+        const SizedBox(height: 12),
+        ..._metricBlock(
+          title: 'Leg Extension 90 deg Left',
+          comparisonTitle: 'Leg Extension 90 deg Left',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.kneeExtensionLeftN),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.kneeExtensionLeftN),
+          ),
+          unit: ' N',
+          decimals: 1,
+          icon: Icons.fitness_center,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.dynamometrics?.kneeExtensionLeftN),
+          ),
+          labels: labels,
+        ),
+        const SizedBox(height: 12),
+        ..._metricBlock(
+          title: 'Leg Extension Right / Left Ratio',
+          comparisonTitle: 'Leg Extension Right / Left Ratio',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.legRlRatio),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.legRlRatio),
+          ),
           unit: '',
           decimals: 2,
           icon: Icons.balance,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Leg R/L Ratio',
-          chart: SimpleLineChart(
-            spots: items.lineSpots((e) => numToDouble(e.dynamometrics?.legRlRatio)),
-            labels: labels,
-            yDecimals: 2,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.dynamometrics?.legRlRatio),
           ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Leg R/L Ratio Comparison',
-          latestValue: latestLegRatio,
-          previousValue: previousLegRatio,
+        ..._metricBlock(
+          title: 'Knee Flexion Prone 90 deg Right',
+          comparisonTitle: 'Knee Flexion Prone 90 deg Right',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.kneeFlexionRightN),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.kneeFlexionRightN),
+          ),
+          unit: ' N',
+          decimals: 1,
+          icon: Icons.fitness_center,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.dynamometrics?.kneeFlexionRightN),
+          ),
+          labels: labels,
+        ),
+        const SizedBox(height: 12),
+        ..._metricBlock(
+          title: 'Knee Flexion Prone 90 deg Left',
+          comparisonTitle: 'Knee Flexion Prone 90 deg Left',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.kneeFlexionLeftN),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.kneeFlexionLeftN),
+          ),
+          unit: ' N',
+          decimals: 1,
+          icon: Icons.fitness_center,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.dynamometrics?.kneeFlexionLeftN),
+          ),
+          labels: labels,
+        ),
+        const SizedBox(height: 12),
+        ..._metricBlock(
+          title: 'Knee Flexion Right / Left Ratio',
+          comparisonTitle: 'Knee Flexion Right / Left Ratio',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.kneeRlRatio),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.kneeRlRatio),
+          ),
           unit: '',
           decimals: 2,
           icon: Icons.balance,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Knee R/L Ratio',
-          chart: SimpleLineChart(
-            spots: items.lineSpots((e) => numToDouble(e.dynamometrics?.kneeRlRatio)),
-            labels: labels,
-            yDecimals: 2,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.dynamometrics?.kneeRlRatio),
           ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Knee R/L Ratio Comparison',
-          latestValue: latestKneeRatio,
-          previousValue: previousKneeRatio,
+        ..._metricBlock(
+          title: 'Shoulder Internal Rotation Seated Right',
+          comparisonTitle: 'Shoulder Internal Rotation Seated Right',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.shoulderInternalRotationRightN),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.shoulderInternalRotationRightN),
+          ),
+          unit: ' N',
+          decimals: 1,
+          icon: Icons.sports_gymnastics,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.dynamometrics?.shoulderInternalRotationRightN),
+          ),
+          labels: labels,
+        ),
+        const SizedBox(height: 12),
+        ..._metricBlock(
+          title: 'Shoulder Internal Rotation Seated Left',
+          comparisonTitle: 'Shoulder Internal Rotation Seated Left',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.shoulderInternalRotationLeftN),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.shoulderInternalRotationLeftN),
+          ),
+          unit: ' N',
+          decimals: 1,
+          icon: Icons.sports_gymnastics,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.dynamometrics?.shoulderInternalRotationLeftN),
+          ),
+          labels: labels,
+        ),
+        const SizedBox(height: 12),
+        ..._metricBlock(
+          title: 'Shoulder Internal Rotation Right / Left Ratio',
+          comparisonTitle: 'Shoulder Internal Rotation Right / Left Ratio',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.shoulderIntRatio),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.shoulderIntRatio),
+          ),
           unit: '',
           decimals: 2,
           icon: Icons.balance,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Shoulder Internal Ratio',
-          chart: SimpleLineChart(
-            spots: items.lineSpots(
-              (e) => numToDouble(e.dynamometrics?.shoulderIntRatio),
-            ),
-            labels: labels,
-            yDecimals: 2,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.dynamometrics?.shoulderIntRatio),
           ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Shoulder Internal Ratio Comparison',
-          latestValue: latestShoulderIntRatio,
-          previousValue: previousShoulderIntRatio,
+        ..._metricBlock(
+          title: 'Shoulder External Rotation Seated Right',
+          comparisonTitle: 'Shoulder External Rotation Seated Right',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.shoulderExternalRotationRightN),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.shoulderExternalRotationRightN),
+          ),
+          unit: ' N',
+          decimals: 1,
+          icon: Icons.sports_gymnastics,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.dynamometrics?.shoulderExternalRotationRightN),
+          ),
+          labels: labels,
+        ),
+        const SizedBox(height: 12),
+        ..._metricBlock(
+          title: 'Shoulder External Rotation Seated Left',
+          comparisonTitle: 'Shoulder External Rotation Seated Left',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.shoulderExternalRotationLeftN),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.shoulderExternalRotationLeftN),
+          ),
+          unit: ' N',
+          decimals: 1,
+          icon: Icons.sports_gymnastics,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.dynamometrics?.shoulderExternalRotationLeftN),
+          ),
+          labels: labels,
+        ),
+        const SizedBox(height: 12),
+        ..._metricBlock(
+          title: 'Shoulder External Rotation Right / Left Ratio',
+          comparisonTitle: 'Shoulder External Rotation Right / Left Ratio',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.shoulderExtRatio),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.dynamometrics?.shoulderExtRatio),
+          ),
           unit: '',
           decimals: 2,
-          icon: Icons.compare_arrows,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Shoulder External Ratio',
-          chart: SimpleLineChart(
-            spots: items.lineSpots(
-              (e) => numToDouble(e.dynamometrics?.shoulderExtRatio),
-            ),
-            labels: labels,
-            yDecimals: 2,
+          icon: Icons.balance,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.dynamometrics?.shoulderExtRatio),
           ),
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Shoulder External Ratio Comparison',
-          latestValue: latestShoulderExtRatio,
-          previousValue: previousShoulderExtRatio,
-          unit: '',
-          decimals: 2,
-          icon: Icons.compare_arrows,
+          labels: labels,
         ),
       ],
     );

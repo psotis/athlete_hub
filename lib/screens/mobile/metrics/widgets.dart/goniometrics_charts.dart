@@ -5,307 +5,264 @@ class GoniometricsCharts extends StatelessWidget {
 
   const GoniometricsCharts({super.key, required this.items});
 
+  List<Widget> _metricBlock({
+    required String title,
+    required String comparisonTitle,
+    required double? latestValue,
+    required double? previousValue,
+    required String unit,
+    required int decimals,
+    required IconData icon,
+    required List<FlSpot> spots,
+    required List<String> labels,
+  }) {
+    return [
+      MetricDeltaCard(
+        title: comparisonTitle,
+        latestValue: latestValue,
+        previousValue: previousValue,
+        unit: unit,
+        decimals: decimals,
+        icon: icon,
+      ),
+      const SizedBox(height: 12),
+      ChartCard(
+        title: title,
+        chart: SimpleLineChart(
+          spots: spots,
+          labels: labels,
+          yDecimals: decimals,
+        ),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final labels = items.sessionLabels;
     final latest = items.isNotEmpty ? items.last : null;
-
-    final latestHipFlexionRight = latestMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.hipFlexionRightDeg),
-    );
-    final previousHipFlexionRight = previousMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.hipFlexionRightDeg),
-    );
-    final latestHipFlexionLeft = latestMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.hipFlexionLeftDeg),
-    );
-    final previousHipFlexionLeft = previousMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.hipFlexionLeftDeg),
-    );
-
-    final latestKneeFlexionRight = latestMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.kneeFlexionRightDeg),
-    );
-    final previousKneeFlexionRight = previousMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.kneeFlexionRightDeg),
-    );
-    final latestKneeFlexionLeft = latestMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.kneeFlexionLeftDeg),
-    );
-    final previousKneeFlexionLeft = previousMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.kneeFlexionLeftDeg),
-    );
-
-    final latestHipInternalRight = latestMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.hipInternalRotationRightDeg),
-    );
-    final previousHipInternalRight = previousMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.hipInternalRotationRightDeg),
-    );
-    final latestHipInternalLeft = latestMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.hipInternalRotationLeftDeg),
-    );
-    final previousHipInternalLeft = previousMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.hipInternalRotationLeftDeg),
-    );
-
-    final latestHipExternalRight = latestMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.hipExternalRotationRightDeg),
-    );
-    final previousHipExternalRight = previousMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.hipExternalRotationRightDeg),
-    );
-    final latestHipExternalLeft = latestMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.hipExternalRotationLeftDeg),
-    );
-    final previousHipExternalLeft = previousMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.hipExternalRotationLeftDeg),
-    );
-
-    final latestLegRatio = latestMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.legRlRatio),
-    );
-    final previousLegRatio = previousMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.legRlRatio),
-    );
-
-    final latestKneeRatio = latestMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.kneeRlRatio),
-    );
-    final previousKneeRatio = previousMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.kneeRlRatio),
-    );
-
-    final latestHipTotal = latestMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.hipTotal),
-    );
-    final previousHipTotal = previousMetricValue(
-      items,
-      (e) => numToDouble(e.goniometrics?.hipTotal),
-    );
 
     return ChartSection(
       title: 'Goniometrics',
       children: [
         LatestMeasurementDateCard(date: latest?.session?.measurementDate),
         const SizedBox(height: 12),
-        ChartCard(
-          title: 'Hip Flexion Right vs Left',
-          chart: GroupedBarChart(
-            labels: labels,
-            firstValues: items
-                .map((e) => numToDouble(e.goniometrics?.hipFlexionRightDeg) ?? 0)
-                .toList(),
-            secondValues: items
-                .map((e) => numToDouble(e.goniometrics?.hipFlexionLeftDeg) ?? 0)
-                .toList(),
-            firstLegend: 'Right',
-            secondLegend: 'Left',
-            yDecimals: 1,
+        ..._metricBlock(
+          title: 'Straight Leg Raise (SLR) Right',
+          comparisonTitle: 'Straight Leg Raise (SLR) Right',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.hipFlexionRightDeg),
           ),
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Hip Flexion Right Comparison',
-          latestValue: latestHipFlexionRight,
-          previousValue: previousHipFlexionRight,
-          unit: '°',
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.hipFlexionRightDeg),
+          ),
+          unit: ' deg',
           decimals: 1,
           icon: Icons.straighten,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.goniometrics?.hipFlexionRightDeg),
+          ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Hip Flexion Left Comparison',
-          latestValue: latestHipFlexionLeft,
-          previousValue: previousHipFlexionLeft,
-          unit: '°',
+        ..._metricBlock(
+          title: 'Straight Leg Raise (SLR) Left',
+          comparisonTitle: 'Straight Leg Raise (SLR) Left',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.hipFlexionLeftDeg),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.hipFlexionLeftDeg),
+          ),
+          unit: ' deg',
           decimals: 1,
           icon: Icons.straighten,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Knee Flexion Right vs Left',
-          chart: GroupedBarChart(
-            labels: labels,
-            firstValues: items
-                .map((e) => numToDouble(e.goniometrics?.kneeFlexionRightDeg) ?? 0)
-                .toList(),
-            secondValues: items
-                .map((e) => numToDouble(e.goniometrics?.kneeFlexionLeftDeg) ?? 0)
-                .toList(),
-            firstLegend: 'Right',
-            secondLegend: 'Left',
-            yDecimals: 1,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.goniometrics?.hipFlexionLeftDeg),
           ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Knee Flexion Right Comparison',
-          latestValue: latestKneeFlexionRight,
-          previousValue: previousKneeFlexionRight,
-          unit: '°',
-          decimals: 1,
-          icon: Icons.straighten,
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Knee Flexion Left Comparison',
-          latestValue: latestKneeFlexionLeft,
-          previousValue: previousKneeFlexionLeft,
-          unit: '°',
-          decimals: 1,
-          icon: Icons.straighten,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Hip Internal Rotation Right vs Left',
-          chart: GroupedBarChart(
-            labels: labels,
-            firstValues: items
-                .map(
-                  (e) => numToDouble(e.goniometrics?.hipInternalRotationRightDeg) ?? 0,
-                )
-                .toList(),
-            secondValues: items
-                .map(
-                  (e) => numToDouble(e.goniometrics?.hipInternalRotationLeftDeg) ?? 0,
-                )
-                .toList(),
-            firstLegend: 'Right',
-            secondLegend: 'Left',
-            yDecimals: 1,
+        ..._metricBlock(
+          title: 'Straight Leg Raise Right / Left Ratio',
+          comparisonTitle: 'Straight Leg Raise Right / Left Ratio',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.legRlRatio),
           ),
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Hip Internal Rotation Right Comparison',
-          latestValue: latestHipInternalRight,
-          previousValue: previousHipInternalRight,
-          unit: '°',
-          decimals: 1,
-          icon: Icons.rotate_right,
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Hip Internal Rotation Left Comparison',
-          latestValue: latestHipInternalLeft,
-          previousValue: previousHipInternalLeft,
-          unit: '°',
-          decimals: 1,
-          icon: Icons.rotate_left,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Hip External Rotation Right vs Left',
-          chart: GroupedBarChart(
-            labels: labels,
-            firstValues: items
-                .map(
-                  (e) => numToDouble(e.goniometrics?.hipExternalRotationRightDeg) ?? 0,
-                )
-                .toList(),
-            secondValues: items
-                .map(
-                  (e) => numToDouble(e.goniometrics?.hipExternalRotationLeftDeg) ?? 0,
-                )
-                .toList(),
-            firstLegend: 'Right',
-            secondLegend: 'Left',
-            yDecimals: 1,
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.legRlRatio),
           ),
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Hip External Rotation Right Comparison',
-          latestValue: latestHipExternalRight,
-          previousValue: previousHipExternalRight,
-          unit: '°',
-          decimals: 1,
-          icon: Icons.rotate_right,
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Hip External Rotation Left Comparison',
-          latestValue: latestHipExternalLeft,
-          previousValue: previousHipExternalLeft,
-          unit: '°',
-          decimals: 1,
-          icon: Icons.rotate_left,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Leg R/L Ratio',
-          chart: SimpleLineChart(
-            spots: items.lineSpots((e) => numToDouble(e.goniometrics?.legRlRatio)),
-            labels: labels,
-            yDecimals: 2,
-          ),
-        ),
-        const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Leg R/L Ratio Comparison',
-          latestValue: latestLegRatio,
-          previousValue: previousLegRatio,
           unit: '',
           decimals: 2,
           icon: Icons.balance,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Knee R/L Ratio',
-          chart: SimpleLineChart(
-            spots: items.lineSpots((e) => numToDouble(e.goniometrics?.kneeRlRatio)),
-            labels: labels,
-            yDecimals: 2,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.goniometrics?.legRlRatio),
           ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Knee R/L Ratio Comparison',
-          latestValue: latestKneeRatio,
-          previousValue: previousKneeRatio,
+        ..._metricBlock(
+          title: 'Knee Flexion Right',
+          comparisonTitle: 'Knee Flexion Right',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.kneeFlexionRightDeg),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.kneeFlexionRightDeg),
+          ),
+          unit: ' deg',
+          decimals: 1,
+          icon: Icons.straighten,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.goniometrics?.kneeFlexionRightDeg),
+          ),
+          labels: labels,
+        ),
+        const SizedBox(height: 12),
+        ..._metricBlock(
+          title: 'Knee Flexion Left',
+          comparisonTitle: 'Knee Flexion Left',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.kneeFlexionLeftDeg),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.kneeFlexionLeftDeg),
+          ),
+          unit: ' deg',
+          decimals: 1,
+          icon: Icons.straighten,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.goniometrics?.kneeFlexionLeftDeg),
+          ),
+          labels: labels,
+        ),
+        const SizedBox(height: 12),
+        ..._metricBlock(
+          title: 'Knee Flexion Right / Left Ratio',
+          comparisonTitle: 'Knee Flexion Right / Left Ratio',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.kneeRlRatio),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.kneeRlRatio),
+          ),
           unit: '',
           decimals: 2,
           icon: Icons.balance,
-        ),
-        const SizedBox(height: 12),
-        ChartCard(
-          title: 'Hip Total',
-          chart: SimpleLineChart(
-            spots: items.lineSpots((e) => numToDouble(e.goniometrics?.hipTotal)),
-            labels: labels,
-            yDecimals: 2,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.goniometrics?.kneeRlRatio),
           ),
+          labels: labels,
         ),
         const SizedBox(height: 12),
-        MetricDeltaCard(
-          title: 'Hip Total Comparison',
-          latestValue: latestHipTotal,
-          previousValue: previousHipTotal,
+        ..._metricBlock(
+          title: 'Internal Hip Rotation Right',
+          comparisonTitle: 'Internal Hip Rotation Right',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.hipInternalRotationRightDeg),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.hipInternalRotationRightDeg),
+          ),
+          unit: ' deg',
+          decimals: 1,
+          icon: Icons.rotate_right,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.goniometrics?.hipInternalRotationRightDeg),
+          ),
+          labels: labels,
+        ),
+        const SizedBox(height: 12),
+        ..._metricBlock(
+          title: 'Internal Hip Rotation Left',
+          comparisonTitle: 'Internal Hip Rotation Left',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.hipInternalRotationLeftDeg),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.hipInternalRotationLeftDeg),
+          ),
+          unit: ' deg',
+          decimals: 1,
+          icon: Icons.rotate_left,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.goniometrics?.hipInternalRotationLeftDeg),
+          ),
+          labels: labels,
+        ),
+        const SizedBox(height: 12),
+        ..._metricBlock(
+          title: 'External Hip Rotation Right',
+          comparisonTitle: 'External Hip Rotation Right',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.hipExternalRotationRightDeg),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.hipExternalRotationRightDeg),
+          ),
+          unit: ' deg',
+          decimals: 1,
+          icon: Icons.rotate_right,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.goniometrics?.hipExternalRotationRightDeg),
+          ),
+          labels: labels,
+        ),
+        const SizedBox(height: 12),
+        ..._metricBlock(
+          title: 'External Hip Rotation Left',
+          comparisonTitle: 'External Hip Rotation Left',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.hipExternalRotationLeftDeg),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.hipExternalRotationLeftDeg),
+          ),
+          unit: ' deg',
+          decimals: 1,
+          icon: Icons.rotate_left,
+          spots: items.lineSpots(
+            (e) => numToDouble(e.goniometrics?.hipExternalRotationLeftDeg),
+          ),
+          labels: labels,
+        ),
+        const SizedBox(height: 12),
+        ..._metricBlock(
+          title: 'Total Hip Rotation Right / Left Ratio',
+          comparisonTitle: 'Total Hip Rotation Right / Left Ratio',
+          latestValue: latestMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.hipTotal),
+          ),
+          previousValue: previousMetricValue(
+            items,
+            (e) => numToDouble(e.goniometrics?.hipTotal),
+          ),
           unit: '',
           decimals: 2,
-          icon: Icons.show_chart,
+          icon: Icons.balance,
+          spots: items.lineSpots((e) => numToDouble(e.goniometrics?.hipTotal)),
+          labels: labels,
         ),
       ],
     );
