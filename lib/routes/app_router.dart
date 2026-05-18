@@ -12,13 +12,22 @@ class AppRouter {
         debugPrint(
           'AUTH STATE: ${authBloc.state.runtimeType}, loc=${state.matchedLocation}',
         );
+        final authState = authBloc.state;
         final loggedIn = authBloc.state is AuthAuthenticated;
         final loc = state.matchedLocation;
         final onSplash = loc == Routes.splash;
         final onLogin = loc == Routes.login;
         final onSignup = loc == Routes.signup;
+        final isChecking =
+            authState is AuthInitial || authState is AuthChecking;
 
-        if (onSplash) return null;
+        if (isChecking) {
+          return onSplash ? null : Routes.splash;
+        }
+
+        if (onSplash) {
+          return loggedIn ? Routes.dashboard : Routes.login;
+        }
 
         if (!loggedIn) {
           if (onLogin || onSignup) return null;

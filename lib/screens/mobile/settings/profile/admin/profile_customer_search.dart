@@ -58,6 +58,7 @@ class _ProfileCustomerSearchPageState extends State<ProfileCustomerSearchPage> {
 
     return _users.where((user) {
       return user.fullName.toLowerCase().contains(query) ||
+          (user.phone ?? '').toLowerCase().contains(query) ||
           user.email.toLowerCase().contains(query) ||
           (user.team ?? '').toLowerCase().contains(query) ||
           (user.sport ?? '').toLowerCase().contains(query);
@@ -86,7 +87,7 @@ class _ProfileCustomerSearchPageState extends State<ProfileCustomerSearchPage> {
               const MobilePageHeader(
                 title: 'Athletes',
                 subtitle:
-                    'Search by athlete name, email, team or sport and open the full profile.',
+                    'Search by athlete name, phone, email, team or sport and open the full profile.',
               ),
               const SizedBox(height: 16),
               MobileSearchField(

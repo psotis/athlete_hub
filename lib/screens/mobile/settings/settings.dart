@@ -73,45 +73,27 @@ class _SettingsMobileState extends State<SettingsMobile> {
             const SizedBox(height: 18),
             MobileGlassCard(
               padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  Container(
-                    width: 72,
-                    height: 72,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(22),
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF173E8C), Color(0xFF0D6EFD)],
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Image.asset(Images.logo2),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  if (constraints.maxWidth < 320) {
+                    return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Athlete Hub',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          _version != null ? 'Version $_version' : 'Loading version...',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.white.withAlpha(173),
-                          ),
-                        ),
+                        const _BrandLogo(),
+                        const SizedBox(height: 14),
+                        _BrandInfo(version: _version),
                       ],
-                    ),
-                  ),
-                ],
+                    );
+                  }
+
+                  return Row(
+                    children: [
+                      const _BrandLogo(),
+                      const SizedBox(width: 16),
+                      Expanded(child: _BrandInfo(version: _version)),
+                    ],
+                  );
+                },
               ),
             ),
             const SizedBox(height: 18),
@@ -176,6 +158,57 @@ class _SettingsMobileState extends State<SettingsMobile> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _BrandLogo extends StatelessWidget {
+  const _BrandLogo();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 72,
+      height: 72,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF173E8C), Color(0xFF0D6EFD)],
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Image.asset(Images.logo2),
+      ),
+    );
+  }
+}
+
+class _BrandInfo extends StatelessWidget {
+  final String? version;
+
+  const _BrandInfo({required this.version});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Athlete Hub',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          version != null ? 'Version $version' : 'Loading version...',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Colors.white.withAlpha(173),
+          ),
+        ),
+      ],
     );
   }
 }

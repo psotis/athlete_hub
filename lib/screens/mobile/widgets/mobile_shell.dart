@@ -122,41 +122,77 @@ class MobilePageHeader extends StatelessWidget {
     return MobileGlassCard(
       borderRadius: BorderRadius.circular(30),
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final stackVertically = trailing != null && constraints.maxWidth < 330;
+
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Column(
+              if (stackVertically) ...[
+                _HeaderText(theme: theme, title: title, subtitle: subtitle),
+                const SizedBox(height: 14),
+                trailing!,
+              ] else ...[
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      title,
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                        height: 1.12,
+                    Expanded(
+                      child: _HeaderText(
+                        theme: theme,
+                        title: title,
+                        subtitle: subtitle,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      subtitle,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: Colors.white.withAlpha(179),
-                        height: 1.5,
-                      ),
-                    ),
+                    if (trailing != null) ...[
+                      const SizedBox(width: 14),
+                      trailing!,
+                    ],
                   ],
                 ),
-              ),
-              if (trailing != null) ...[const SizedBox(width: 14), trailing!],
+              ],
+              if (bottom != null) ...[const SizedBox(height: 18), bottom!],
             ],
-          ),
-          if (bottom != null) ...[const SizedBox(height: 18), bottom!],
-        ],
+          );
+        },
       ),
+    );
+  }
+}
+
+class _HeaderText extends StatelessWidget {
+  final ThemeData theme;
+  final String title;
+  final String subtitle;
+
+  const _HeaderText({
+    required this.theme,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.w800,
+            height: 1.12,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          subtitle,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: Colors.white.withAlpha(179),
+            height: 1.5,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -217,10 +253,10 @@ class MobileSearchField extends StatelessWidget {
       child: TextField(
         controller: controller,
         onChanged: onChanged,
-        style: const TextStyle(color: Colors.black),
+        style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(color: Colors.black.withAlpha(117)),
+          hintStyle: TextStyle(color: Colors.white.withAlpha(117)),
           prefixIcon: const Icon(Icons.search, color: Color(0xFF7DEBFF)),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(

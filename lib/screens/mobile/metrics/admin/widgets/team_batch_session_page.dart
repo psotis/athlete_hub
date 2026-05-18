@@ -111,6 +111,8 @@ class _TeamBatchSessionPageState extends State<TeamBatchSessionPage> {
                 separatorBuilder: (_, _) => const SizedBox(height: 16),
                 itemBuilder: (context, index) {
                   final config = widget.configs[index];
+                  final cardHeight = (MediaQuery.of(context).size.height * 0.55)
+                      .clamp(320.0, 520.0);
 
                   return Container(
                     decoration: BoxDecoration(
@@ -121,7 +123,7 @@ class _TeamBatchSessionPageState extends State<TeamBatchSessionPage> {
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: SizedBox(
-                        height: 420,
+                        height: cardHeight,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

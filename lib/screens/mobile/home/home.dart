@@ -34,24 +34,46 @@ class HomeMobile extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 18),
-            Row(
-              children: const [
-                Expanded(
-                  child: _HomeStatCard(
-                    title: 'Sessions',
-                    value: '03',
-                    accent: Color(0xFF4CC9F0),
-                  ),
-                ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: _HomeStatCard(
-                    title: 'Recovery',
-                    value: '87%',
-                    accent: Color(0xFF22C55E),
-                  ),
-                ),
-              ],
+            LayoutBuilder(
+              builder: (context, constraints) {
+                if (constraints.maxWidth < 330) {
+                  return const Column(
+                    children: [
+                      _HomeStatCard(
+                        title: 'Sessions',
+                        value: '03',
+                        accent: Color(0xFF4CC9F0),
+                      ),
+                      SizedBox(height: 12),
+                      _HomeStatCard(
+                        title: 'Recovery',
+                        value: '87%',
+                        accent: Color(0xFF22C55E),
+                      ),
+                    ],
+                  );
+                }
+
+                return const Row(
+                  children: [
+                    Expanded(
+                      child: _HomeStatCard(
+                        title: 'Sessions',
+                        value: '03',
+                        accent: Color(0xFF4CC9F0),
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: _HomeStatCard(
+                        title: 'Recovery',
+                        value: '87%',
+                        accent: Color(0xFF22C55E),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 18),
             const MobileInfoCard(

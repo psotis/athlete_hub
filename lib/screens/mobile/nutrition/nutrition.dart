@@ -48,7 +48,7 @@ class _NutritionMobileState extends State<NutritionMobile> {
       return;
     }
 
-    if (user.isNutritionist) {
+    if (user.isNutritionist || user.isAdmin) {
       await _loadCustomers();
     }
   }
@@ -123,15 +123,6 @@ class _NutritionMobileState extends State<NutritionMobile> {
   Future<void> _openProgramForm() async {
     if (_customers.isEmpty) return;
 
-    Users selectedAthlete = _customers.first;
-    final monthCtrl = TextEditingController(
-      text: DateFormat('MMMM yyyy').format(DateTime.now()),
-    );
-    final titleCtrl = TextEditingController(text: 'Monthly Nutrition Program');
-    final pdfNameCtrl = TextEditingController(text: 'nutrition_program.pdf');
-    final pdfUrlCtrl = TextEditingController();
-    final notesCtrl = TextEditingController();
-
     final created = await showModalBottomSheet<_NutritionProgram>(
       context: context,
       isScrollControlled: true,
@@ -139,152 +130,8 @@ class _NutritionMobileState extends State<NutritionMobile> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.fromLTRB(
-            16,
-            18,
-            16,
-            MediaQuery.of(context).viewInsets.bottom + 18,
-          ),
-          child: StatefulBuilder(
-            builder: (context, setModalState) {
-              return SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Add Monthly Program',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Add one PDF-based nutrition program for an athlete and month.',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.white.withAlpha(173),
-                      ),
-                    ),
-                    const SizedBox(height: 18),
-                    Text(
-                      'Athlete',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.titleSmall?.copyWith(color: Colors.white),
-                    ),
-                    const SizedBox(height: 8),
-                    _AthletePickerField(
-                      athlete: selectedAthlete,
-                      onTap: () async {
-                        final picked = await showModalBottomSheet<Users>(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: const Color(0xFF0B1730),
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(28),
-                            ),
-                          ),
-                          builder: (_) =>
-                              _AthletePickerSheet(customers: _customers),
-                        );
-
-                        if (picked == null) return;
-
-                        setModalState(() {
-                          selectedAthlete = picked;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    _NutritionField(
-                      controller: monthCtrl,
-                      label: 'Month',
-                      hint: 'April 2026',
-                    ),
-                    const SizedBox(height: 12),
-                    _NutritionField(
-                      controller: titleCtrl,
-                      label: 'Program Title',
-                      hint: 'Monthly Nutrition Program',
-                    ),
-                    const SizedBox(height: 12),
-                    _NutritionField(
-                      controller: pdfNameCtrl,
-                      label: 'PDF Name',
-                      hint: 'athlete_april_program.pdf',
-                    ),
-                    const SizedBox(height: 12),
-                    _NutritionField(
-                      controller: pdfUrlCtrl,
-                      label: 'PDF URL',
-                      hint: 'https://...',
-                    ),
-                    const SizedBox(height: 12),
-                    _NutritionField(
-                      controller: notesCtrl,
-                      label: 'Notes',
-                      hint: 'Optional notes for the athlete',
-                      maxLines: 3,
-                    ),
-                    const SizedBox(height: 18),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(
-                            context,
-                            _NutritionProgram(
-                              athleteId: selectedAthlete.id,
-                              athleteName: selectedAthlete.fullName,
-                              monthLabel: monthCtrl.text.trim().isEmpty
-                                  ? DateFormat(
-                                      'MMMM yyyy',
-                                    ).format(DateTime.now())
-                                  : monthCtrl.text.trim(),
-                              title: titleCtrl.text.trim().isEmpty
-                                  ? 'Monthly Nutrition Program'
-                                  : titleCtrl.text.trim(),
-                              pdfName: pdfNameCtrl.text.trim().isEmpty
-                                  ? 'nutrition_program.pdf'
-                                  : pdfNameCtrl.text.trim(),
-                              pdfUrl: pdfUrlCtrl.text.trim().isEmpty
-                                  ? null
-                                  : pdfUrlCtrl.text.trim(),
-                              notes: notesCtrl.text.trim().isEmpty
-                                  ? null
-                                  : notesCtrl.text.trim(),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0D6EFD),
-                          foregroundColor: Colors.white,
-                          minimumSize: const Size.fromHeight(52),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                        ),
-                        child: const Text('Save Program'),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        );
-      },
+      builder: (context) => _NutritionProgramFormSheet(customers: _customers),
     );
-
-    monthCtrl.dispose();
-    titleCtrl.dispose();
-    pdfNameCtrl.dispose();
-    pdfUrlCtrl.dispose();
-    notesCtrl.dispose();
 
     if (created == null || !mounted) return;
 
@@ -323,7 +170,7 @@ class _NutritionMobileState extends State<NutritionMobile> {
       return const SizedBox.shrink();
     }
 
-    if (user.isNutritionist) {
+    if (user.isNutritionist || user.isAdmin) {
       return _NutritionistNutritionView(
         programs: _programs,
         customers: _customers,
@@ -343,6 +190,183 @@ class _NutritionMobileState extends State<NutritionMobile> {
     }
 
     return const _NutritionFallbackView();
+  }
+}
+
+class _NutritionProgramFormSheet extends StatefulWidget {
+  final List<Users> customers;
+
+  const _NutritionProgramFormSheet({required this.customers});
+
+  @override
+  State<_NutritionProgramFormSheet> createState() =>
+      _NutritionProgramFormSheetState();
+}
+
+class _NutritionProgramFormSheetState extends State<_NutritionProgramFormSheet> {
+  late Users selectedAthlete;
+  late final TextEditingController monthCtrl;
+  late final TextEditingController titleCtrl;
+  late final TextEditingController pdfNameCtrl;
+  late final TextEditingController pdfUrlCtrl;
+  late final TextEditingController notesCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedAthlete = widget.customers.first;
+    monthCtrl = TextEditingController(
+      text: DateFormat('MMMM yyyy').format(DateTime.now()),
+    );
+    titleCtrl = TextEditingController(text: 'Monthly Nutrition Program');
+    pdfNameCtrl = TextEditingController(text: 'nutrition_program.pdf');
+    pdfUrlCtrl = TextEditingController();
+    notesCtrl = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    monthCtrl.dispose();
+    titleCtrl.dispose();
+    pdfNameCtrl.dispose();
+    pdfUrlCtrl.dispose();
+    notesCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        16,
+        18,
+        16,
+        MediaQuery.of(context).viewInsets.bottom + 18,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Add Monthly Program',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Add one PDF-based nutrition program for an athlete and month.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.white.withAlpha(173),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Text(
+              'Athlete',
+              style: Theme.of(
+                context,
+              ).textTheme.titleSmall?.copyWith(color: Colors.white),
+            ),
+            const SizedBox(height: 8),
+            _AthletePickerField(
+              athlete: selectedAthlete,
+              onTap: () async {
+                final picked = await showModalBottomSheet<Users>(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: const Color(0xFF0B1730),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(28),
+                    ),
+                  ),
+                  builder: (_) =>
+                      _AthletePickerSheet(customers: widget.customers),
+                );
+
+                if (picked == null || !mounted) return;
+
+                setState(() {
+                  selectedAthlete = picked;
+                });
+              },
+            ),
+            const SizedBox(height: 12),
+            _NutritionField(
+              controller: monthCtrl,
+              label: 'Month',
+              hint: 'April 2026',
+            ),
+            const SizedBox(height: 12),
+            _NutritionField(
+              controller: titleCtrl,
+              label: 'Program Title',
+              hint: 'Monthly Nutrition Program',
+            ),
+            const SizedBox(height: 12),
+            _NutritionField(
+              controller: pdfNameCtrl,
+              label: 'PDF Name',
+              hint: 'athlete_april_program.pdf',
+            ),
+            const SizedBox(height: 12),
+            _NutritionField(
+              controller: pdfUrlCtrl,
+              label: 'PDF URL',
+              hint: 'https://...',
+            ),
+            const SizedBox(height: 12),
+            _NutritionField(
+              controller: notesCtrl,
+              label: 'Notes',
+              hint: 'Optional notes for the athlete',
+              maxLines: 3,
+            ),
+            const SizedBox(height: 18),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(
+                    context,
+                    _NutritionProgram(
+                      athleteId: selectedAthlete.id,
+                      athleteName: selectedAthlete.fullName,
+                      monthLabel: monthCtrl.text.trim().isEmpty
+                          ? DateFormat('MMMM yyyy').format(DateTime.now())
+                          : monthCtrl.text.trim(),
+                      title: titleCtrl.text.trim().isEmpty
+                          ? 'Monthly Nutrition Program'
+                          : titleCtrl.text.trim(),
+                      pdfName: pdfNameCtrl.text.trim().isEmpty
+                          ? 'nutrition_program.pdf'
+                          : pdfNameCtrl.text.trim(),
+                      pdfUrl: pdfUrlCtrl.text.trim().isEmpty
+                          ? null
+                          : pdfUrlCtrl.text.trim(),
+                      notes: notesCtrl.text.trim().isEmpty
+                          ? null
+                          : notesCtrl.text.trim(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0D6EFD),
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size.fromHeight(52),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                ),
+                child: const Text('Save Program'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -755,7 +779,7 @@ class _NutritionFallbackView extends StatelessWidget {
         child: const MobileInfoCard(
           title: 'Nutrition',
           subtitle:
-              'This mobile nutrition flow is currently designed for customers and nutritionists.',
+              'This mobile nutrition flow is currently designed for customers, nutritionists and admins.',
           icon: Icons.info_outline_rounded,
         ),
       ),
@@ -781,104 +805,149 @@ class _ProgramCard extends StatelessWidget {
     return MobileGlassCard(
       borderRadius: BorderRadius.circular(26),
       padding: const EdgeInsets.all(18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final compact = constraints.maxWidth < 320;
+
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(18),
-                  color: const Color(0xFF6EE7FF).withAlpha(31),
-                ),
-                child: const Icon(
-                  Icons.picture_as_pdf_rounded,
-                  color: Color(0xFF7DEBFF),
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
+              if (compact) ...[
+                _ProgramIcon(),
+                const SizedBox(height: 14),
+                _ProgramHeaderText(program: program),
+              ] else ...[
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      program.title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      program.monthLabel,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.white.withAlpha(173),
-                      ),
-                    ),
-                    if (program.athleteName.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        program.athleteName,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.white.withAlpha(158),
-                        ),
-                      ),
-                    ],
+                    _ProgramIcon(),
+                    const SizedBox(width: 14),
+                    Expanded(child: _ProgramHeaderText(program: program)),
                   ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          _ProgramMetaRow(label: 'PDF', value: program.pdfName),
-          if ((program.notes ?? '').trim().isNotEmpty) ...[
-            const SizedBox(height: 8),
-            _ProgramMetaRow(label: 'Notes', value: program.notes!),
-          ],
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: onPrimaryTap,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0D6EFD),
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size.fromHeight(48),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: Text(primaryLabel),
-                ),
-              ),
-              if (secondaryLabel != null) ...[
-                const SizedBox(width: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 14,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: Colors.white.withAlpha(15),
-                    border: Border.all(color: Colors.white.withAlpha(26)),
-                  ),
-                  child: Text(
-                    secondaryLabel!,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.labelMedium?.copyWith(color: Colors.white),
-                  ),
-                ),
               ],
+              const SizedBox(height: 14),
+              _ProgramMetaRow(label: 'PDF', value: program.pdfName),
+              if ((program.notes ?? '').trim().isNotEmpty) ...[
+                const SizedBox(height: 8),
+                _ProgramMetaRow(label: 'Notes', value: program.notes!),
+              ],
+              const SizedBox(height: 16),
+              if (secondaryLabel == null)
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: onPrimaryTap,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0D6EFD),
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size.fromHeight(48),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: Text(primaryLabel),
+                  ),
+                )
+              else
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    SizedBox(
+                      width: compact ? constraints.maxWidth : null,
+                      child: ElevatedButton(
+                        onPressed: onPrimaryTap,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0D6EFD),
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size.fromHeight(48),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: Text(primaryLabel),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 14,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: Colors.white.withAlpha(15),
+                        border: Border.all(color: Colors.white.withAlpha(26)),
+                      ),
+                      child: Text(
+                        secondaryLabel!,
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
             ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _ProgramIcon extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 52,
+      height: 52,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        color: const Color(0xFF6EE7FF).withAlpha(31),
+      ),
+      child: const Icon(
+        Icons.picture_as_pdf_rounded,
+        color: Color(0xFF7DEBFF),
+      ),
+    );
+  }
+}
+
+class _ProgramHeaderText extends StatelessWidget {
+  final _NutritionProgram program;
+
+  const _ProgramHeaderText({required this.program});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          program.title,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          program.monthLabel,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Colors.white.withAlpha(173),
+          ),
+        ),
+        if (program.athleteName.isNotEmpty) ...[
+          const SizedBox(height: 4),
+          Text(
+            program.athleteName,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Colors.white.withAlpha(158),
+            ),
           ),
         ],
-      ),
+      ],
     );
   }
 }

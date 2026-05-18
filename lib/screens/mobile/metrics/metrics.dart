@@ -116,71 +116,82 @@ class _MetricsMobileState extends State<MetricsMobile> {
                 ),
                 const SizedBox(height: 18),
                 Expanded(
-                  child: GridView.builder(
-                    itemCount: items.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final width = constraints.maxWidth;
+                      final crossAxisCount = width >= 680
+                          ? 3
+                          : width >= 360
+                          ? 2
+                          : 1;
+                      final aspectRatio = crossAxisCount == 1 ? 1.7 : 0.98;
+
+                      return GridView.builder(
+                        itemCount: items.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: crossAxisCount,
                           mainAxisSpacing: 14,
                           crossAxisSpacing: 14,
-                          childAspectRatio: 0.98,
+                          childAspectRatio: aspectRatio,
                         ),
-                    itemBuilder: (context, index) {
-                      final item = items[index];
+                        itemBuilder: (context, index) {
+                          final item = items[index];
 
-                      return InkWell(
-                        borderRadius: BorderRadius.circular(24),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ErgometricsCategoryScreen(
-                                title: item.title,
-                                category: item.category,
+                          return InkWell(
+                            borderRadius: BorderRadius.circular(24),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ErgometricsCategoryScreen(
+                                    title: item.title,
+                                    category: item.category,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: MobileGlassCard(
+                              borderRadius: BorderRadius.circular(24),
+                              padding: const EdgeInsets.all(18),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    width: 48,
+                                    height: 48,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(16),
+                                      gradient: const LinearGradient(
+                                        colors: [
+                                          Color(0xFF183E8B),
+                                          Color(0xFF0D6EFD),
+                                        ],
+                                      ),
+                                    ),
+                                    child: Icon(item.icon, color: Colors.white),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    item.title,
+                                    style: Theme.of(context).textTheme.titleMedium
+                                        ?.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    item.subtitle,
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(
+                                          color: Colors.white.withAlpha(168),
+                                        ),
+                                  ),
+                                ],
                               ),
                             ),
                           );
                         },
-                        child: MobileGlassCard(
-                          borderRadius: BorderRadius.circular(24),
-                          padding: const EdgeInsets.all(18),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 48,
-                                height: 48,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Color(0xFF183E8B),
-                                      Color(0xFF0D6EFD),
-                                    ],
-                                  ),
-                                ),
-                                child: Icon(item.icon, color: Colors.white),
-                              ),
-                              const Spacer(),
-                              Text(
-                                item.title,
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                item.subtitle,
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
-                                      color: Colors.white.withAlpha(168),
-                                    ),
-                              ),
-                            ],
-                          ),
-                        ),
                       );
                     },
                   ),
