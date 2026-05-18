@@ -49,6 +49,7 @@ export '../screens/pages/signup_page.dart';
 export '../screens/pages/profile_page.dart';
 export '../screens/pages/health_page.dart';
 export '../screens/shared/auth/auth_shell.dart';
+export '../screens/pages/nutrition.dart';
 
 // Mobile
 export '../screens/mobile/login/login.dart';
@@ -68,6 +69,8 @@ export '../screens/mobile/metrics/admin/admin.dart';
 export '../screens/mobile/metrics/admin/get_customer.dart';
 export '../screens/mobile/metrics/admin/start_session.dart';
 export '../screens/mobile/metrics/admin/widgets/team_batch_session_page.dart';
+export '../screens/mobile/widgets/mobile_shell.dart';
+export '../screens/mobile/nutrition/nutrition.dart';
 
 // Desktop
 export '../screens/desktop/login/login.dart';
@@ -80,6 +83,7 @@ export '../screens/desktop/home/home.dart';
 export '../screens/desktop/signup/signup.dart';
 export '../screens/desktop/settings/profile/profile.dart';
 export '../screens/desktop/settings/health/health.dart';
+export '../screens/desktop/nutrition/nutrition.dart';
 
 // Utils
 export '../utils/dio_interceptor.dart';

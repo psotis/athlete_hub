@@ -43,9 +43,9 @@ class _LoginMobileState extends State<LoginMobile> {
 
         return AuthShell(
           eyebrow: 'Welcome Back',
-          title: 'Train smarter with your data close by.',
+          title: 'Train smarter with every athlete detail close by.',
           subtitle:
-              'Log in to review athlete progress, health history and performance metrics.',
+              'Log in to review health history, performance metrics and daily progress in one focused workspace.',
           child: Form(
             key: _formKey,
             child: Column(
@@ -95,6 +95,15 @@ class _LoginMobileState extends State<LoginMobile> {
                   borderRadius: 16,
                   fontSize: 16,
                   icon: Icons.person_add_alt_1,
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  'Use the same credentials your team uses for Athlete Hub.',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.white.withAlpha(153),
+                    height: 1.4,
+                  ),
                 ),
               ],
             ),

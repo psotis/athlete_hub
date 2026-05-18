@@ -1,5 +1,4 @@
 import 'package:athlete_hub/blocs/exports.dart';
-
 import 'package:athlete_hub/helpers/imports.dart';
 
 class SettingsMobile extends StatefulWidget {
@@ -58,152 +57,149 @@ class _SettingsMobileState extends State<SettingsMobile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
+    return MobileGlowScaffold(
+      child: MobilePageScrollView(
         child: Column(
-          spacing: 10,
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                image: DecorationImage(image: AssetImage(Images.logo2)),
+            MobilePageHeader(
+              title: 'Profile Hub',
+              subtitle: 'Manage your account, athlete details, health and support.',
+              trailing: MobileTopIconButton(
+                icon: Icons.photo_library_outlined,
+                onTap: _getFromGallery,
               ),
             ),
-            // const Spacer(),
-
-            // if (_imageFile != null) Image.file(_imageFile!, height: 200),
-            const SizedBox(height: 20),
-
-            Card(
-              elevation: 2,
-
-              color: Theme.of(context).cardTheme.color,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  spacing: 10,
-                  children: [
-                    // IotButton(
-                    //   text: 'Pick Image',
-                    //   icon: Icon(Icons.image, size: 24),
-                    //   borderWidth: 0,
-                    //   elevation: 3,
-                    //   borderColor: Colors.transparent,
-                    //   textStyle: TextStyle(
-                    //     fontSize: 18,
-                    //     overflow: TextOverflow.ellipsis,
-                    //   ),
-                    //   width: 300,
-                    //   height: 50,
-                    //   onPressed: _getFromGallery,
-                    // ),
-
-                    // Divider(
-                    //   thickness: 2,
-                    //   color: Theme.of(context).dividerTheme.color,
-                    // ),
-                    IotButton(
-                      text: 'My profile',
-                      icon: FaIcon(FontAwesomeIcons.circleUser, size: 22),
-                      borderWidth: 0,
-                      elevation: 3,
-                      textStyle: TextStyle(
-                        fontSize: 18,
-                        overflow: TextOverflow.ellipsis,
+            const SizedBox(height: 18),
+            MobileGlassCard(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF173E8C), Color(0xFF0D6EFD)],
                       ),
-                      width: 300,
-                      height: 50,
-                      onPressed: () => context.push(Routes.profile),
                     ),
-                    if (context.isAdmin) ...[
-                      Divider(
-                        thickness: 2,
-                        color: Theme.of(context).dividerTheme.color,
-                      ),
-                      IotButton(
-                        text: 'Athletes profile',
-                        icon: const Icon(Icons.manage_accounts_outlined, size: 24),
-                        borderWidth: 0,
-                        elevation: 3,
-                        textStyle: const TextStyle(
-                          fontSize: 18,
-                          overflow: TextOverflow.ellipsis,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Image.asset(Images.logo2),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Athlete Hub',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                        width: 300,
-                        height: 50,
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const ProfileCustomerSearchPage(),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                    Divider(
-                      thickness: 2,
-                      color: Theme.of(context).dividerTheme.color,
+                        const SizedBox(height: 6),
+                        Text(
+                          _version != null ? 'Version $_version' : 'Loading version...',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.white.withAlpha(173),
+                          ),
+                        ),
+                      ],
                     ),
-                    IotButton(
-                      text: 'Contact us',
-                      icon: FaIcon(FontAwesomeIcons.at, size: 22),
-                      borderWidth: 0,
-                      elevation: 3,
-                      textStyle: TextStyle(
-                        fontSize: 18,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      width: 300,
-                      height: 50,
-                      onPressed: _launchUrl,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+            _SettingsActionTile(
+              title: 'My profile',
+              subtitle: 'View and manage your account information.',
+              icon: FontAwesomeIcons.circleUser,
+              onTap: () => context.push(Routes.profile),
+            ),
+            if (context.isAdmin) ...[
+              const SizedBox(height: 12),
+              _SettingsActionTile(
+                title: 'Athletes profile',
+                subtitle: 'Search athletes, edit profile details and review medical history.',
+                icon: Icons.manage_accounts_outlined,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ProfileCustomerSearchPage(),
                     ),
-                    Divider(
-                      thickness: 2,
-                      color: Theme.of(context).dividerTheme.color,
+                  );
+                },
+              ),
+            ],
+            const SizedBox(height: 12),
+            _SettingsActionTile(
+              title: 'My health',
+              subtitle: 'Open your medical history and active records.',
+              icon: FontAwesomeIcons.heartPulse,
+              onTap: () => context.push(Routes.health),
+            ),
+            const SizedBox(height: 12),
+            _SettingsActionTile(
+              title: 'Contact us',
+              subtitle: 'Send a message straight to support.',
+              icon: FontAwesomeIcons.at,
+              onTap: _launchUrl,
+            ),
+            const SizedBox(height: 18),
+            MobileGlassCard(
+              padding: const EdgeInsets.all(18),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    context.read<ErgometricsCubit>().clearErgometrics();
+                    context.read<AuthBloc>().add(AuthLoggedOut());
+                  },
+                  icon: const Icon(Icons.logout_outlined),
+                  label: const Text('Logout'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFB91C1C),
+                    minimumSize: const Size.fromHeight(54),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
                     ),
-                    IotButton(
-                      text: 'My health',
-                      icon: FaIcon(FontAwesomeIcons.heartPulse, size: 22),
-                      borderWidth: 0,
-                      elevation: 3,
-                      textStyle: TextStyle(
-                        fontSize: 18,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      width: 300,
-                      height: 50,
-                      onPressed: () => context.push(Routes.health),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
-            const Spacer(),
-            IotButton(
-              text: 'Logout',
-              borderWidth: 0,
-              elevation: 3,
-              icon: Icon(Icons.logout_outlined, size: 24),
-              backgroundColor: Colors.redAccent,
-              textStyle: TextStyle(
-                fontSize: 18,
-                overflow: TextOverflow.ellipsis,
-              ),
-              width: 300,
-              height: 50,
-              onPressed: () {
-                context.read<ErgometricsCubit>().clearErgometrics();
-                context.read<AuthBloc>().add(AuthLoggedOut());
-              },
-            ),
-            Text(_version != null ? "Version: $_version" : "Loading..."),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _SettingsActionTile extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _SettingsActionTile({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return MobileInfoCard(
+      title: title,
+      subtitle: subtitle,
+      icon: icon,
+      onTap: onTap,
     );
   }
 }

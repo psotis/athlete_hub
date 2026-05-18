@@ -39,7 +39,7 @@ class _SignupMobileState extends State<SignupMobile> {
       eyebrow: 'New Here?',
       title: 'Create your Athlete Hub account.',
       subtitle:
-          'Set up your profile to start tracking athlete health and performance in one place.',
+          'Set up your profile to organize athlete health, performance and progress in one polished flow.',
       child: Form(
         key: _formKey,
         child: Column(
@@ -112,6 +112,15 @@ class _SignupMobileState extends State<SignupMobile> {
               borderRadius: 16,
               fontSize: 16,
               icon: Icons.arrow_back_rounded,
+            ),
+            const SizedBox(height: 14),
+            Text(
+              'Signup styling is ready here, but account creation still follows your current backend setup.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.white.withAlpha(153),
+                height: 1.4,
+              ),
             ),
           ],
         ),

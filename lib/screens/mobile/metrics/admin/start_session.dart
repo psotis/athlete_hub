@@ -284,14 +284,17 @@ class _StartSessionMobileState extends State<StartSessionMobile> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
       child: Column(
         spacing: 5,
         children: [
-          Text(
-            'Pick a customer or team to start a session',
-            style: Theme.of(context).textTheme.titleMedium,
+          const MobileInfoCard(
+            title: 'Start a session',
+            subtitle:
+                'Pick one athlete or a whole team, then continue with the metrics flow you already use.',
+            icon: Icons.play_circle_outline_rounded,
           ),
+          const SizedBox(height: 8),
           if (_isBatchStarting)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 8),
@@ -340,7 +343,10 @@ class _StartSessionMobileState extends State<StartSessionMobile> {
           BlocBuilder<SessionCubit, SessionState>(
             builder: (context, state) {
               if (state.status == SessionStatus.failure) {
-                return Text(state.errorMessage!);
+                return Text(
+                  state.errorMessage!,
+                  style: const TextStyle(color: Colors.white),
+                );
               }
 
               if (state.status == SessionStatus.success) {
@@ -351,7 +357,12 @@ class _StartSessionMobileState extends State<StartSessionMobile> {
                   ),
                 );
               }
-              return const Text('Waiting to start....');
+              return Text(
+                'Waiting to start...',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
+              );
             },
           ),
         ],

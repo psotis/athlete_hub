@@ -349,7 +349,10 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
         children: [
           Text(
             'Session for ${widget.athlete.fullName}',
-            style: Theme.of(context).textTheme.titleMedium,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: 12),
           if (_isSelected(ErgometricsEntryCategory.somatometrics))
@@ -485,7 +488,14 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
                     final item = entry.value;
 
                     return Card(
+                      color: const Color(0xFF0E1A34),
                       margin: const EdgeInsets.only(bottom: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        side: BorderSide(
+                          color: Colors.white.withAlpha(20),
+                        ),
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.all(12),
                         child: Column(
@@ -508,7 +518,10 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
                                     movementQualityItems.removeAt(index);
                                   });
                                 },
-                                icon: const Icon(Icons.delete),
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Color(0xFFF87171),
+                                ),
                               ),
                             ),
                           ],
@@ -590,9 +603,24 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
       key: ValueKey('$label-$value'),
       initialValue: value,
       readOnly: true,
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        labelStyle: TextStyle(color: Colors.white.withAlpha(184)),
+        filled: true,
+        fillColor: Colors.white.withAlpha(15),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.white.withAlpha(26)),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.white.withAlpha(26)),
+        ),
+        focusedBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderSide: BorderSide(color: Color(0xFF7DEBFF)),
+        ),
       ),
     );
   }
@@ -603,7 +631,10 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
       children: [
         const Text(
           'Beep test level',
-          style: TextStyle(fontWeight: FontWeight.w500),
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+          ),
         ),
         const SizedBox(height: 6),
         IotDropdown2<int>(
@@ -641,7 +672,10 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
       children: [
         const Text(
           'Beep test shuttle',
-          style: TextStyle(fontWeight: FontWeight.w500),
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+          ),
         ),
         const SizedBox(height: 6),
         IotDropdown2<int>(
@@ -685,10 +719,19 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
             flex: 4,
             child: Text(
               label,
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Colors.white70,
+              ),
             ),
           ),
-          Expanded(flex: 6, child: Text(value)),
+          Expanded(
+            flex: 6,
+            child: Text(
+              value,
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
         ],
       ),
     );
@@ -718,9 +761,28 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
       child: TextFormField(
         controller: controller,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          labelStyle: TextStyle(color: Colors.white.withAlpha(184)),
+          filled: true,
+          fillColor: Colors.white.withAlpha(15),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.white.withAlpha(26)),
+          ),
+          focusedBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(12)),
+            borderSide: BorderSide(color: Color(0xFF7DEBFF)),
+          ),
+          errorBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(12)),
+            borderSide: BorderSide(color: Color(0xFFEF4444)),
+          ),
+          focusedErrorBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(12)),
+            borderSide: BorderSide(color: Color(0xFFEF4444)),
+          ),
         ),
         validator: (value) {
           final text = value?.trim() ?? '';
@@ -750,12 +812,28 @@ class _CategorySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      child: ExpansionTile(
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-        childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-        children: children,
+      decoration: BoxDecoration(
+        color: const Color(0xFF0E1A34),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.white.withAlpha(20)),
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          iconColor: Colors.white,
+          collapsedIconColor: Colors.white70,
+          title: Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+          childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+          children: children,
+        ),
       ),
     );
   }

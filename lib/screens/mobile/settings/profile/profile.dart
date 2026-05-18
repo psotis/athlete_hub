@@ -156,7 +156,10 @@ class _ProfileMobileState extends State<ProfileMobile> {
         false;
 
     if (!confirmed || !mounted) return;
-    await context.read<MedicalCubit>().deleteMedical(athleteId: athleteId, id: id);
+    await context.read<MedicalCubit>().deleteMedical(
+      athleteId: athleteId,
+      id: id,
+    );
   }
 
   Future<void> _showMedicalForm({MedicalHistory? medical}) async {
@@ -350,7 +353,8 @@ class _ProfileMobileState extends State<ProfileMobile> {
         ),
         BlocListener<MedicalCubit, MedicalState>(
           listener: (context, state) {
-            if (state.actionMessage != null && state.actionMessage!.isNotEmpty) {
+            if (state.actionMessage != null &&
+                state.actionMessage!.isNotEmpty) {
               ScaffoldMessenger.of(
                 context,
               ).showSnackBar(SnackBar(content: Text(state.actionMessage!)));
@@ -359,26 +363,34 @@ class _ProfileMobileState extends State<ProfileMobile> {
           },
         ),
       ],
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          title: Text(_isAdminViewingAthlete ? 'Athlete Profile' : 'Profile'),
-          centerTitle: true,
+      child: MobileGlowScaffold(
+        appBar: MobileScreenAppBar(
+          title: _isAdminViewingAthlete ? 'Athlete Profile' : 'Profile',
           actions: [
             if (!_isEditing)
               IconButton(
                 onPressed: () => _startEditing(user),
-                icon: const Icon(Icons.edit_outlined),
+                icon: const Icon(Icons.edit_outlined, color: Colors.white),
               ),
           ],
         ),
-        body: SafeArea(
+        child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 120),
             child: Form(
               key: _formKey,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  MobilePageHeader(
+                    title: _isAdminViewingAthlete
+                        ? user.fullName
+                        : 'My Profile',
+                    subtitle: _isAdminViewingAthlete
+                        ? 'View the full athlete profile, edit details and manage medical history below.'
+                        : 'Keep your profile details organized and ready across the app.',
+                  ),
+                  const SizedBox(height: 16),
                   ProfileHeader(
                     fullName: user.fullName,
                     email: user.email,
@@ -450,10 +462,38 @@ class _ProfileMobileState extends State<ProfileMobile> {
                           readOnly: true,
                           enabled: _isEditing,
                           onTap: _isEditing ? _pickBirthDate : null,
-                          decoration: const InputDecoration(
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
                             labelText: 'Birth date',
-                            border: OutlineInputBorder(),
-                            suffixIcon: Icon(Icons.calendar_today_outlined),
+                            labelStyle: TextStyle(
+                              color: Colors.white.withAlpha(184),
+                            ),
+                            filled: true,
+                            fillColor: Colors.white.withAlpha(
+                              _isEditing ? 20 : 10,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: BorderSide(
+                                color: Colors.white.withAlpha(26),
+                              ),
+                            ),
+                            disabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: BorderSide(
+                                color: Colors.white.withAlpha(20),
+                              ),
+                            ),
+                            focusedBorder: const OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(18),
+                              ),
+                              borderSide: BorderSide(color: Color(0xFF7DEBFF)),
+                            ),
+                            suffixIcon: const Icon(
+                              Icons.calendar_today_outlined,
+                              color: Color(0xFF7DEBFF),
+                            ),
                           ),
                         ),
                       ],
@@ -515,6 +555,16 @@ class _ProfileMobileState extends State<ProfileMobile> {
                                 onPressed: isSaving
                                     ? null
                                     : () => _cancelEditing(user),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  side: BorderSide(
+                                    color: Colors.white.withAlpha(51),
+                                  ),
+                                  minimumSize: const Size.fromHeight(52),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                ),
                                 child: const Text('Cancel'),
                               ),
                             ),
@@ -554,6 +604,14 @@ class _ProfileMobileState extends State<ProfileMobile> {
                                               birthDate: _selectedBirthDate,
                                             );
                                       },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF0D6EFD),
+                                  foregroundColor: Colors.white,
+                                  minimumSize: const Size.fromHeight(52),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                ),
                                 child: isSaving
                                     ? const SizedBox(
                                         width: 18,
@@ -571,22 +629,16 @@ class _ProfileMobileState extends State<ProfileMobile> {
                     ),
                   if (_isAdminViewingAthlete) ...[
                     const SizedBox(height: 24),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            'Medical History',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: _athleteId == null
-                              ? null
-                              : () => _showMedicalForm(),
-                          icon: const Icon(Icons.add),
-                          tooltip: 'Add medical history',
-                        ),
-                      ],
+                    MobilePageHeader(
+                      title: 'Medical History',
+                      subtitle:
+                          'Review injuries, surgeries, medications and active conditions for this athlete.',
+                      trailing: MobileTopIconButton(
+                        icon: Icons.add_rounded,
+                        onTap: _athleteId == null
+                            ? null
+                            : () => _showMedicalForm(),
+                      ),
                     ),
                     const SizedBox(height: 12),
                     BlocBuilder<MedicalCubit, MedicalState>(
@@ -618,42 +670,33 @@ class _ProfileMobileState extends State<ProfileMobile> {
                           children: state.data.map((med) {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 12),
-                              child: Card(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    title: Text(med.title ?? '-'),
-                                    subtitle: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                              child: MobileGlassCard(
+                                borderRadius: BorderRadius.circular(22),
+                                padding: const EdgeInsets.all(14),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
                                       children: [
-                                        const SizedBox(height: 6),
-                                        Text(_medicalTypeLabel(med.itemType)),
-                                        const SizedBox(height: 4),
-                                        Text(med.description ?? '-'),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          'Start: ${med.startDate?.toIso8601String().split('T').first ?? '-'}',
+                                        Expanded(
+                                          child: Text(
+                                            med.title ?? '-',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleMedium
+                                                ?.copyWith(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                          ),
                                         ),
-                                        Text(
-                                          'End: ${med.endDate?.toIso8601String().split('T').first ?? '-'}',
-                                        ),
-                                        Text(
-                                          'Active: ${med.isActive == true ? 'Yes' : 'No'}',
-                                        ),
-                                      ],
-                                    ),
-                                    trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
                                         IconButton(
                                           onPressed: () =>
                                               _showMedicalForm(medical: med),
-                                          icon: const Icon(Icons.edit),
+                                          icon: const Icon(
+                                            Icons.edit,
+                                            color: Color(0xFF7DEBFF),
+                                          ),
                                         ),
                                         IconButton(
                                           onPressed: _athleteId == null
@@ -662,11 +705,34 @@ class _ProfileMobileState extends State<ProfileMobile> {
                                                   _athleteId!,
                                                   med.id,
                                                 ),
-                                          icon: const Icon(Icons.delete),
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            color: Color(0xFFF87171),
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  ),
+                                    const SizedBox(height: 8),
+                                    _MedicalText(
+                                      text: _medicalTypeLabel(med.itemType),
+                                      strong: true,
+                                    ),
+                                    const SizedBox(height: 6),
+                                    _MedicalText(text: med.description ?? '-'),
+                                    const SizedBox(height: 8),
+                                    _MedicalText(
+                                      text:
+                                          'Start: ${med.startDate?.toIso8601String().split('T').first ?? '-'}',
+                                    ),
+                                    _MedicalText(
+                                      text:
+                                          'End: ${med.endDate?.toIso8601String().split('T').first ?? '-'}',
+                                    ),
+                                    _MedicalText(
+                                      text:
+                                          'Active: ${med.isActive == true ? 'Yes' : 'No'}',
+                                    ),
+                                  ],
                                 ),
                               ),
                             );
@@ -680,6 +746,25 @@ class _ProfileMobileState extends State<ProfileMobile> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _MedicalText extends StatelessWidget {
+  final String text;
+  final bool strong;
+
+  const _MedicalText({required this.text, this.strong = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        color: strong ? Colors.white : Colors.white.withAlpha(184),
+        fontWeight: strong ? FontWeight.w600 : FontWeight.w400,
+        height: 1.35,
       ),
     );
   }

@@ -90,19 +90,18 @@ class _TeamBatchSessionPageState extends State<TeamBatchSessionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: Text(widget.teamName),
-      ),
-      body: SafeArea(
+    return MobileGlowScaffold(
+      appBar: MobileScreenAppBar(title: widget.teamName),
+      child: SafeArea(
         child: Column(
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
               child: Text(
                 'Fill the selected ergometrics for each athlete, then send them all together.',
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.white70,
+                ),
               ),
             ),
             Expanded(
@@ -113,7 +112,12 @@ class _TeamBatchSessionPageState extends State<TeamBatchSessionPage> {
                 itemBuilder: (context, index) {
                   final config = widget.configs[index];
 
-                  return Card(
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0E1A34),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: Colors.white.withAlpha(20)),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: SizedBox(
@@ -123,14 +127,19 @@ class _TeamBatchSessionPageState extends State<TeamBatchSessionPage> {
                           children: [
                             Text(
                               config.athlete.fullName,
-                              style: Theme.of(context).textTheme.titleMedium,
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                             ),
                             if ((config.athlete.team ?? '').trim().isNotEmpty)
                               Padding(
                                 padding: const EdgeInsets.only(top: 4),
                                 child: Text(
                                   'Team: ${config.athlete.team}',
-                                  style: Theme.of(context).textTheme.bodySmall,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(color: Colors.white70),
                                 ),
                               ),
                             const SizedBox(height: 8),

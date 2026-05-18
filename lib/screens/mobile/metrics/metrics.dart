@@ -31,136 +31,164 @@ class _MetricsMobileState extends State<MetricsMobile> {
     if (context.isAdmin) {
       return AdminMobile();
     }
-    return Scaffold(
-      body: SafeArea(
-        child: BlocBuilder<ErgometricsCubit, ErgometricsState>(
-          builder: (context, state) {
-            if (state.status == ErgometricsStatus.loading) {
-              return const Center(child: CircularProgressIndicator());
-            }
 
-            if (state.status == ErgometricsStatus.failure) {
-              return Center(
-                child: Text(state.errorMessage ?? 'Something went wrong'),
-              );
-            }
+    return MobileGlowScaffold(
+      child: BlocBuilder<ErgometricsCubit, ErgometricsState>(
+        builder: (context, state) {
+          if (state.status == ErgometricsStatus.loading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            final ergometrics = state.data.ergometrics;
-
-            if (ergometrics.isEmpty) {
-              return const Center(child: Text('No ergometrics found'));
-            }
-
-            final items = [
-              _MetricCategoryItem(
-                title: 'Somatometrics',
-                icon: Icons.accessibility_new,
-                category: ErgometricsCategory.somatometrics,
-              ),
-              _MetricCategoryItem(
-                title: 'Goniometrics',
-                icon: Icons.straighten,
-                category: ErgometricsCategory.goniometrics,
-              ),
-              _MetricCategoryItem(
-                title: 'Dynamometrics',
-                icon: Icons.fitness_center,
-                category: ErgometricsCategory.dynamometrics,
-              ),
-              _MetricCategoryItem(
-                title: 'Jumping Ability',
-                icon: Icons.arrow_upward,
-                category: ErgometricsCategory.jumping,
-              ),
-              _MetricCategoryItem(
-                title: 'Agility & Speed',
-                icon: Icons.directions_run,
-                category: ErgometricsCategory.agility,
-              ),
-              _MetricCategoryItem(
-                title: 'Endurance',
-                icon: Icons.favorite,
-                category: ErgometricsCategory.endurance,
-              ),
-              _MetricCategoryItem(
-                title: 'Movement Quality',
-                icon: Icons.accessibility,
-                category: ErgometricsCategory.overheadSquat,
-              ),
-            ];
-
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Ergometrics',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Choose a category',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: GridView.builder(
-                      itemCount: items.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 12,
-                            crossAxisSpacing: 12,
-                            childAspectRatio: 1.15,
-                          ),
-                      itemBuilder: (context, index) {
-                        final item = items[index];
-
-                        return InkWell(
-                          borderRadius: BorderRadius.circular(16),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ErgometricsCategoryScreen(
-                                  title: item.title,
-                                  category: item.category,
-                                ),
-                              ),
-                            );
-                          },
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(item.icon, size: 36),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    item.title,
-                                    textAlign: TextAlign.center,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleMedium,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
+          if (state.status == ErgometricsStatus.failure) {
+            return Center(
+              child: Text(
+                state.errorMessage ?? 'Something went wrong',
+                style: const TextStyle(color: Colors.white),
               ),
             );
-          },
-        ),
+          }
+
+          final ergometrics = state.data.ergometrics;
+
+          if (ergometrics.isEmpty) {
+            return const Center(
+              child: Text(
+                'No ergometrics found',
+                style: TextStyle(color: Colors.white),
+              ),
+            );
+          }
+
+          final items = [
+            _MetricCategoryItem(
+              title: 'Somatometrics',
+              subtitle: 'Body profile and structure',
+              icon: Icons.accessibility_new,
+              category: ErgometricsCategory.somatometrics,
+            ),
+            _MetricCategoryItem(
+              title: 'Goniometrics',
+              subtitle: 'Mobility and range',
+              icon: Icons.straighten,
+              category: ErgometricsCategory.goniometrics,
+            ),
+            _MetricCategoryItem(
+              title: 'Dynamometrics',
+              subtitle: 'Strength output',
+              icon: Icons.fitness_center,
+              category: ErgometricsCategory.dynamometrics,
+            ),
+            _MetricCategoryItem(
+              title: 'Jumping Ability',
+              subtitle: 'Power and reactivity',
+              icon: Icons.arrow_upward,
+              category: ErgometricsCategory.jumping,
+            ),
+            _MetricCategoryItem(
+              title: 'Agility & Speed',
+              subtitle: 'Acceleration and COD',
+              icon: Icons.directions_run,
+              category: ErgometricsCategory.agility,
+            ),
+            _MetricCategoryItem(
+              title: 'Endurance',
+              subtitle: 'Beep test insights',
+              icon: Icons.favorite,
+              category: ErgometricsCategory.endurance,
+            ),
+            _MetricCategoryItem(
+              title: 'Movement Quality',
+              subtitle: 'Overhead squat checks',
+              icon: Icons.accessibility,
+              category: ErgometricsCategory.overheadSquat,
+            ),
+          ];
+
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(18, 18, 18, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const MobilePageHeader(
+                  title: 'Ergometrics',
+                  subtitle:
+                      'Choose a category to explore your athlete data, comparisons and session history.',
+                ),
+                const SizedBox(height: 18),
+                Expanded(
+                  child: GridView.builder(
+                    itemCount: items.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 14,
+                          crossAxisSpacing: 14,
+                          childAspectRatio: 0.98,
+                        ),
+                    itemBuilder: (context, index) {
+                      final item = items[index];
+
+                      return InkWell(
+                        borderRadius: BorderRadius.circular(24),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ErgometricsCategoryScreen(
+                                title: item.title,
+                                category: item.category,
+                              ),
+                            ),
+                          );
+                        },
+                        child: MobileGlassCard(
+                          borderRadius: BorderRadius.circular(24),
+                          padding: const EdgeInsets.all(18),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFF183E8B),
+                                      Color(0xFF0D6EFD),
+                                    ],
+                                  ),
+                                ),
+                                child: Icon(item.icon, color: Colors.white),
+                              ),
+                              const Spacer(),
+                              Text(
+                                item.title,
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                item.subtitle,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: Colors.white.withAlpha(168),
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -168,11 +196,13 @@ class _MetricsMobileState extends State<MetricsMobile> {
 
 class _MetricCategoryItem {
   final String title;
+  final String subtitle;
   final IconData icon;
   final ErgometricsCategory category;
 
   const _MetricCategoryItem({
     required this.title,
+    required this.subtitle,
     required this.icon,
     required this.category,
   });

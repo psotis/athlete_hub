@@ -281,19 +281,15 @@ class _HealthMobileState extends State<HealthMobile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: Text(
-          athlete == null ? 'Medical History' : athlete!.fullName,
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
+    return MobileGlowScaffold(
+      appBar: MobileScreenAppBar(
+        title: athlete == null ? 'Medical History' : athlete!.fullName,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: athleteId == null ? null : () => _showMedicalForm(context),
         child: const Icon(Icons.add),
       ),
-      body: SafeArea(
+      child: SafeArea(
         child: BlocConsumer<MedicalCubit, MedicalState>(
           listener: (context, state) {
             if (state.actionMessage != null &&
@@ -322,11 +318,17 @@ class _HealthMobileState extends State<HealthMobile> {
             }
 
             return Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 100),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (athlete != null) ...[
+                    MobilePageHeader(
+                      title: athlete!.fullName,
+                      subtitle:
+                          'Full athlete details appear first, with medical history directly below.',
+                    ),
+                    const SizedBox(height: 12),
                     _AthleteDetailsCard(user: athlete!),
                     const SizedBox(height: 12),
                   ],
@@ -340,38 +342,26 @@ class _HealthMobileState extends State<HealthMobile> {
                             itemBuilder: (context, index) {
                               final med = state.data[index];
 
-                              return Card(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    title: Text(med.title ?? '-'),
-                                    subtitle: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                              return MobileGlassCard(
+                                borderRadius: BorderRadius.circular(22),
+                                padding: const EdgeInsets.all(14),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
                                       children: [
-                                        const SizedBox(height: 6),
-                                        Text(_medicalTypeLabel(med.itemType)),
-                                        const SizedBox(height: 4),
-                                        Text(med.description ?? '-'),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          'Start: ${med.startDate?.toIso8601String().split('T').first ?? '-'}',
+                                        Expanded(
+                                          child: Text(
+                                            med.title ?? '-',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleMedium
+                                                ?.copyWith(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                          ),
                                         ),
-                                        Text(
-                                          'End: ${med.endDate?.toIso8601String().split('T').first ?? '-'}',
-                                        ),
-                                        Text(
-                                          'Active: ${med.isActive == true ? 'Yes' : 'No'}',
-                                        ),
-                                      ],
-                                    ),
-                                    trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
                                         IconButton(
                                           onPressed: athleteId == null
                                               ? null
@@ -379,7 +369,10 @@ class _HealthMobileState extends State<HealthMobile> {
                                                   context,
                                                   medical: med,
                                                 ),
-                                          icon: const Icon(Icons.edit),
+                                          icon: const Icon(
+                                            Icons.edit,
+                                            color: Color(0xFF7DEBFF),
+                                          ),
                                         ),
                                         IconButton(
                                           onPressed: () => _confirmDelete(
@@ -387,11 +380,34 @@ class _HealthMobileState extends State<HealthMobile> {
                                             med.athleteId,
                                             med.id,
                                           ),
-                                          icon: const Icon(Icons.delete),
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            color: Color(0xFFF87171),
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  ),
+                                    const SizedBox(height: 8),
+                                    _HealthText(
+                                      text: _medicalTypeLabel(med.itemType),
+                                      strong: true,
+                                    ),
+                                    const SizedBox(height: 6),
+                                    _HealthText(text: med.description ?? '-'),
+                                    const SizedBox(height: 8),
+                                    _HealthText(
+                                      text:
+                                          'Start: ${med.startDate?.toIso8601String().split('T').first ?? '-'}',
+                                    ),
+                                    _HealthText(
+                                      text:
+                                          'End: ${med.endDate?.toIso8601String().split('T').first ?? '-'}',
+                                    ),
+                                    _HealthText(
+                                      text:
+                                          'Active: ${med.isActive == true ? 'Yes' : 'No'}',
+                                    ),
+                                  ],
                                 ),
                               );
                             },
@@ -426,35 +442,40 @@ class _AthleteDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(user.fullName, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 10),
-            _DetailRow(label: 'Email', value: user.email),
-            _DetailRow(
-              label: 'Phone',
-              value: user.phone?.trim().isNotEmpty == true ? user.phone! : '-',
+    return MobileGlassCard(
+      borderRadius: BorderRadius.circular(24),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            user.fullName,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
             ),
-            _DetailRow(label: 'Role', value: _roleLabel()),
-            _DetailRow(label: 'Birth Date', value: _formatDate(user.birthDate)),
-            _DetailRow(
-              label: 'Sport',
-              value: user.sport?.trim().isNotEmpty == true ? user.sport! : '-',
-            ),
-            _DetailRow(
-              label: 'Team',
-              value: user.team?.trim().isNotEmpty == true ? user.team! : '-',
-            ),
-            _DetailRow(
-              label: 'Status',
-              value: user.isActive ? 'Active' : 'Inactive',
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 10),
+          _DetailRow(label: 'Email', value: user.email),
+          _DetailRow(
+            label: 'Phone',
+            value: user.phone?.trim().isNotEmpty == true ? user.phone! : '-',
+          ),
+          _DetailRow(label: 'Role', value: _roleLabel()),
+          _DetailRow(label: 'Birth Date', value: _formatDate(user.birthDate)),
+          _DetailRow(
+            label: 'Sport',
+            value: user.sport?.trim().isNotEmpty == true ? user.sport! : '-',
+          ),
+          _DetailRow(
+            label: 'Team',
+            value: user.team?.trim().isNotEmpty == true ? user.team! : '-',
+          ),
+          _DetailRow(
+            label: 'Status',
+            value: user.isActive ? 'Active' : 'Inactive',
+          ),
+        ],
       ),
     );
   }
@@ -477,12 +498,42 @@ class _DetailRow extends StatelessWidget {
             width: 92,
             child: Text(
               label,
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: TextStyle(
+                color: Colors.white.withAlpha(158),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           const SizedBox(width: 8),
-          Expanded(child: Text(value)),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class _HealthText extends StatelessWidget {
+  final String text;
+  final bool strong;
+
+  const _HealthText({
+    required this.text,
+    this.strong = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        color: strong ? Colors.white : Colors.white.withAlpha(184),
+        fontWeight: strong ? FontWeight.w600 : FontWeight.w400,
+        height: 1.35,
       ),
     );
   }

@@ -96,9 +96,16 @@ class _GetCustomerMobileState extends State<GetCustomerMobile> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
       child: Column(
         children: [
+          const MobileInfoCard(
+            title: 'Search athlete or team',
+            subtitle:
+                'Pick a single athlete or load a team to inspect everyone with their metrics underneath.',
+            icon: Icons.search_rounded,
+          ),
+          const SizedBox(height: 12),
           BlocBuilder<ErgometricsCubit, ErgometricsState>(
             builder: (context, state) {
               final selectedId =
@@ -155,11 +162,18 @@ class _GetCustomerMobileState extends State<GetCustomerMobile> {
       }
 
       if (_teamError != null) {
-        return Center(child: Text(_teamError!));
+        return Center(
+          child: Text(_teamError!, style: const TextStyle(color: Colors.white)),
+        );
       }
 
       if (_teamResults.isEmpty) {
-        return const Center(child: Text('No ergometrics found'));
+        return const Center(
+          child: Text(
+            'No ergometrics found',
+            style: TextStyle(color: Colors.white),
+          ),
+        );
       }
 
       return ListView.separated(
@@ -168,32 +182,51 @@ class _GetCustomerMobileState extends State<GetCustomerMobile> {
         itemBuilder: (context, index) {
           final result = _teamResults[index];
 
-          return Card(
-            child: ExpansionTile(
-              title: Text(result.user.fullName),
-              subtitle: Text(
-                [
-                  if ((result.user.team ?? '').trim().isNotEmpty)
-                    result.user.team!,
-                  if ((result.user.sport ?? '').trim().isNotEmpty)
-                    result.user.sport!,
-                ].join(' • '),
-              ),
-              childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-              children: [
-                if (result.data.ergometrics.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Text('No ergometrics found'),
-                  )
-                else
-                  ...result.data.ergometrics.map(
-                    (item) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: _SessionCard(item: item),
+          return Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF0B1730),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.white.withAlpha(20)),
+            ),
+            child: Theme(
+              data: Theme.of(
+                context,
+              ).copyWith(dividerColor: Colors.transparent),
+              child: ExpansionTile(
+                title: Text(
+                  result.user.fullName,
+                  style: const TextStyle(color: Colors.black),
+                ),
+                subtitle: Text(
+                  [
+                    if ((result.user.team ?? '').trim().isNotEmpty)
+                      result.user.team!,
+                    if ((result.user.sport ?? '').trim().isNotEmpty)
+                      result.user.sport!,
+                  ].join(' - '),
+                  style: TextStyle(color: Colors.black.withAlpha(173)),
+                ),
+                iconColor: Colors.black,
+                collapsedIconColor: Colors.black,
+                childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                children: [
+                  if (result.data.ergometrics.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Text(
+                        'No ergometrics found',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    )
+                  else
+                    ...result.data.ergometrics.map(
+                      (item) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: _SessionCard(item: item),
+                      ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           );
         },
@@ -208,14 +241,22 @@ class _GetCustomerMobileState extends State<GetCustomerMobile> {
 
         if (state.status == ErgometricsStatus.failure) {
           return Center(
-            child: Text(state.errorMessage ?? 'Something went wrong'),
+            child: Text(
+              state.errorMessage ?? 'Something went wrong',
+              style: const TextStyle(color: Colors.white),
+            ),
           );
         }
 
         final ergometrics = state.data.ergometrics;
 
         if (ergometrics.isEmpty) {
-          return const Center(child: Text('No ergometrics found'));
+          return const Center(
+            child: Text(
+              'No ergometrics found',
+              style: TextStyle(color: Colors.white),
+            ),
+          );
         }
 
         return ListView.separated(
@@ -293,126 +334,140 @@ class _SessionCard extends StatelessWidget {
     final movementQualityItems = item.overheadSquatAssessmentItems;
     final date = session?.measurementDate;
 
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      child: ExpansionTile(
-        tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-        title: Text(
-          'Session ${date != null ? DateFormat('dd-MM-yyyy').format(date) : '-'}',
-          style: const TextStyle(fontWeight: FontWeight.w700),
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF0E1A34),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.white.withAlpha(20)),
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+          iconColor: Colors.black,
+          collapsedIconColor: Colors.white70,
+          title: Text(
+            'Session ${date != null ? DateFormat('dd-MM-yyyy').format(date) : '-'}',
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              color: Colors.black,
+            ),
+          ),
+          subtitle: Text(
+            'Notes: ${session?.notes?.toString().trim().isNotEmpty == true ? session?.notes : '-'}',
+            style: TextStyle(color: Colors.black.withAlpha(173)),
+          ),
+          children: [
+            _CategoryCard(
+              title: 'Somatometrics',
+              values: {
+                'Height (cm)': soma?.heightCm,
+                'Arm span (cm)': soma?.armSpanCm,
+                'Weight (kg)': soma?.weightKg,
+                'Body fat %': soma?.bodyFatPercent,
+                'BMI': soma?.bmi,
+                'Ape index': soma?.apeIndex,
+              },
+            ),
+            _CategoryCard(
+              title: 'Goniometrics',
+              values: {
+                'Hip flexion right (deg)': goni?.hipFlexionRightDeg,
+                'Hip flexion left (deg)': goni?.hipFlexionLeftDeg,
+                'Knee flexion right (deg)': goni?.kneeFlexionRightDeg,
+                'Knee flexion left (deg)': goni?.kneeFlexionLeftDeg,
+                'Hip internal rotation right (deg)':
+                    goni?.hipInternalRotationRightDeg,
+                'Hip internal rotation left (deg)':
+                    goni?.hipInternalRotationLeftDeg,
+                'Hip external rotation right (deg)':
+                    goni?.hipExternalRotationRightDeg,
+                'Hip external rotation left (deg)':
+                    goni?.hipExternalRotationLeftDeg,
+                'Leg R/L ratio': goni?.legRlRatio,
+                'Knee R/L ratio': goni?.kneeRlRatio,
+                'Hip total': goni?.hipTotal,
+              },
+            ),
+            _CategoryCard(
+              title: 'Dynamometrics',
+              values: {
+                'Hand grip right (N)': dynamo?.handGripRightN,
+                'Hand grip left (N)': dynamo?.handGripLeftN,
+                'Mid thigh pull (N)': dynamo?.midThighPullN,
+                'Knee extension right (N)': dynamo?.kneeExtensionRightN,
+                'Knee extension left (N)': dynamo?.kneeExtensionLeftN,
+                'Knee flexion right (N)': dynamo?.kneeFlexionRightN,
+                'Knee flexion left (N)': dynamo?.kneeFlexionLeftN,
+                'Shoulder internal right (N)':
+                    dynamo?.shoulderInternalRotationRightN,
+                'Shoulder internal left (N)':
+                    dynamo?.shoulderInternalRotationLeftN,
+                'Shoulder external right (N)':
+                    dynamo?.shoulderExternalRotationRightN,
+                'Shoulder external left (N)':
+                    dynamo?.shoulderExternalRotationLeftN,
+                'Hand R/L ratio': dynamo?.handRlRatio,
+                'Leg R/L ratio': dynamo?.legRlRatio,
+                'Knee R/L ratio': dynamo?.kneeRlRatio,
+                'Shoulder int ratio': dynamo?.shoulderIntRatio,
+                'Shoulder ext ratio': dynamo?.shoulderExtRatio,
+              },
+            ),
+            _CategoryCard(
+              title: 'Jumping Ability',
+              values: {
+                'Squat jump height (cm)': jump?.squatJumpHeightCm,
+                'Squat jump power (W)': jump?.squatJumpPowerW,
+                'CMJ height (cm)': jump?.cmjHeightCm,
+                'CMJ power (W)': jump?.cmjPowerW,
+                'CMJ free hands height (cm)': jump?.cmjFreeHandsHeightCm,
+                'CMJ free hands power (W)': jump?.cmjFreeHandsPowerW,
+                'Drop jump height (cm)': jump?.dropJumpHeightCm,
+                'Drop jump RSI': jump?.dropJumpRsi,
+                'Single leg CMJ right height (cm)':
+                    jump?.singleLegCmjRightHeightCm,
+                'Single leg CMJ right power (W)': jump?.singleLegCmjRightPowerW,
+                'Single leg CMJ left height (cm)':
+                    jump?.singleLegCmjLeftHeightCm,
+                'Single leg CMJ left power (W)': jump?.singleLegCmjLeftPowerW,
+                'Elastic util ratio': jump?.elasticUtilRatio,
+                'Arm swing': jump?.armSwing,
+                'Biliteral deficit': jump?.biliteralDeficit,
+                'Single leg jump': jump?.singleLegJump,
+              },
+            ),
+            _CategoryCard(
+              title: 'Agility & Speed',
+              values: {
+                '5-10-5 right (sec)': agility?.test5105RightSec,
+                '5-10-5 left (sec)': agility?.test5105LeftSec,
+                'Sprint 0-10 (sec)': agility?.sprint010Sec,
+                'Sprint 0-20 (sec)': agility?.sprint020Sec,
+                'Sprint 0-30 (sec)': agility?.sprint030Sec,
+              },
+            ),
+            _CategoryCard(
+              title: 'Endurance',
+              values: {
+                'Beep test level': endurance?.beepTestLevel,
+                'Beep test shuttles': endurance?.beepTestShuttles,
+                'Beep test score': endurance?.beepTestContinuousScore,
+                'Beep test time': _formatDurationFromSeconds(
+                  endurance?.beepTestTimeSec,
+                ),
+                'Beep test distance (m)': endurance?.beepTestDistanceM,
+                'Beep test speed (km/h)': endurance?.beepTestSpeedKmh,
+                'Beep test VO2max (ml/kg/min)':
+                    endurance?.beepTestVo2maxMlKgMin,
+                'HR max': endurance?.hrMax,
+              },
+            ),
+            if (movementQualityItems.isNotEmpty)
+              _MovementQualitySection(items: movementQualityItems),
+          ],
         ),
-        subtitle: Text(
-          'Notes: ${session?.notes?.toString().trim().isNotEmpty == true ? session?.notes : '-'}',
-        ),
-        children: [
-          _CategoryCard(
-            title: 'Somatometrics',
-            values: {
-              'Height (cm)': soma?.heightCm,
-              'Arm span (cm)': soma?.armSpanCm,
-              'Weight (kg)': soma?.weightKg,
-              'Body fat %': soma?.bodyFatPercent,
-              'BMI': soma?.bmi,
-              'Ape index': soma?.apeIndex,
-            },
-          ),
-          _CategoryCard(
-            title: 'Goniometrics',
-            values: {
-              'Hip flexion right (Â°)': goni?.hipFlexionRightDeg,
-              'Hip flexion left (Â°)': goni?.hipFlexionLeftDeg,
-              'Knee flexion right (Â°)': goni?.kneeFlexionRightDeg,
-              'Knee flexion left (Â°)': goni?.kneeFlexionLeftDeg,
-              'Hip internal rotation right (Â°)':
-                  goni?.hipInternalRotationRightDeg,
-              'Hip internal rotation left (Â°)':
-                  goni?.hipInternalRotationLeftDeg,
-              'Hip external rotation right (Â°)':
-                  goni?.hipExternalRotationRightDeg,
-              'Hip external rotation left (Â°)':
-                  goni?.hipExternalRotationLeftDeg,
-              'Leg R/L ratio': goni?.legRlRatio,
-              'Knee R/L ratio': goni?.kneeRlRatio,
-              'Hip total': goni?.hipTotal,
-            },
-          ),
-          _CategoryCard(
-            title: 'Dynamometrics',
-            values: {
-              'Hand grip right (N)': dynamo?.handGripRightN,
-              'Hand grip left (N)': dynamo?.handGripLeftN,
-              'Mid thigh pull (N)': dynamo?.midThighPullN,
-              'Knee extension right (N)': dynamo?.kneeExtensionRightN,
-              'Knee extension left (N)': dynamo?.kneeExtensionLeftN,
-              'Knee flexion right (N)': dynamo?.kneeFlexionRightN,
-              'Knee flexion left (N)': dynamo?.kneeFlexionLeftN,
-              'Shoulder internal right (N)':
-                  dynamo?.shoulderInternalRotationRightN,
-              'Shoulder internal left (N)':
-                  dynamo?.shoulderInternalRotationLeftN,
-              'Shoulder external right (N)':
-                  dynamo?.shoulderExternalRotationRightN,
-              'Shoulder external left (N)':
-                  dynamo?.shoulderExternalRotationLeftN,
-              'Hand R/L ratio': dynamo?.handRlRatio,
-              'Leg R/L ratio': dynamo?.legRlRatio,
-              'Knee R/L ratio': dynamo?.kneeRlRatio,
-              'Shoulder int ratio': dynamo?.shoulderIntRatio,
-              'Shoulder ext ratio': dynamo?.shoulderExtRatio,
-            },
-          ),
-          _CategoryCard(
-            title: 'Jumping Ability',
-            values: {
-              'Squat jump height (cm)': jump?.squatJumpHeightCm,
-              'Squat jump power (W)': jump?.squatJumpPowerW,
-              'CMJ height (cm)': jump?.cmjHeightCm,
-              'CMJ power (W)': jump?.cmjPowerW,
-              'CMJ free hands height (cm)': jump?.cmjFreeHandsHeightCm,
-              'CMJ free hands power (W)': jump?.cmjFreeHandsPowerW,
-              'Drop jump height (cm)': jump?.dropJumpHeightCm,
-              'Drop jump RSI': jump?.dropJumpRsi,
-              'Single leg CMJ right height (cm)':
-                  jump?.singleLegCmjRightHeightCm,
-              'Single leg CMJ right power (W)': jump?.singleLegCmjRightPowerW,
-              'Single leg CMJ left height (cm)': jump?.singleLegCmjLeftHeightCm,
-              'Single leg CMJ left power (W)': jump?.singleLegCmjLeftPowerW,
-              'Elastic util ratio': jump?.elasticUtilRatio,
-              'Arm swing': jump?.armSwing,
-              'Biliteral deficit': jump?.biliteralDeficit,
-              'Single leg jump': jump?.singleLegJump,
-            },
-          ),
-          _CategoryCard(
-            title: 'Agility & Speed',
-            values: {
-              '5-10-5 right (sec)': agility?.test5105RightSec,
-              '5-10-5 left (sec)': agility?.test5105LeftSec,
-              'Sprint 0-10 (sec)': agility?.sprint010Sec,
-              'Sprint 0-20 (sec)': agility?.sprint020Sec,
-              'Sprint 0-30 (sec)': agility?.sprint030Sec,
-            },
-          ),
-          _CategoryCard(
-            title: 'Endurance',
-            values: {
-              'Beep test level': endurance?.beepTestLevel,
-              'Beep test shuttles': endurance?.beepTestShuttles,
-              'Beep test score': endurance?.beepTestContinuousScore,
-              'Beep test time': _formatDurationFromSeconds(
-                endurance?.beepTestTimeSec,
-              ),
-              'Beep test distance (m)': endurance?.beepTestDistanceM,
-              'Beep test speed (km/h)': endurance?.beepTestSpeedKmh,
-              'Beep test VO2max (ml/kg/min)': endurance?.beepTestVo2maxMlKgMin,
-              'HR max': endurance?.hrMax,
-            },
-          ),
-          if (movementQualityItems.isNotEmpty)
-            _MovementQualitySection(items: movementQualityItems),
-        ],
       ),
     );
   }
@@ -444,16 +499,20 @@ class _CategoryCard extends StatelessWidget {
       margin: const EdgeInsets.only(top: 10),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
+        color: const Color(0xFF12203D),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withAlpha(26)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 10),
           ...entries.map(
@@ -466,7 +525,10 @@ class _CategoryCard extends StatelessWidget {
                     flex: 6,
                     child: Text(
                       e.key,
-                      style: const TextStyle(fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white.withAlpha(184),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -475,6 +537,7 @@ class _CategoryCard extends StatelessWidget {
                     child: Text(
                       _formatValue(e.value),
                       textAlign: TextAlign.end,
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ],
@@ -513,16 +576,20 @@ class _MovementQualitySection extends StatelessWidget {
       margin: const EdgeInsets.only(top: 10),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
+        color: const Color(0xFF12203D),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withAlpha(26)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             'Movement Quality',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 10),
           ...items.map(
@@ -530,9 +597,9 @@ class _MovementQualitySection extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 10),
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: const Color(0xFF172747),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.grey.shade200),
+                border: Border.all(color: Colors.white.withAlpha(20)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -560,10 +627,19 @@ class _MovementQualitySection extends StatelessWidget {
             flex: 4,
             child: Text(
               label,
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Colors.white70,
+              ),
             ),
           ),
-          Expanded(flex: 6, child: Text(value?.toString() ?? '-')),
+          Expanded(
+            flex: 6,
+            child: Text(
+              value?.toString() ?? '-',
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
         ],
       ),
     );

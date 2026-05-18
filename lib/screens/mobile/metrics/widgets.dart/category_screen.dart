@@ -24,36 +24,47 @@ class ErgometricsCategoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      ),
-      body: SafeArea(
-        child: BlocBuilder<ErgometricsCubit, ErgometricsState>(
-          builder: (context, state) {
-            if (state.status == ErgometricsStatus.loading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+    return MobileGlowScaffold(
+      appBar: MobileScreenAppBar(title: title),
+      child: BlocBuilder<ErgometricsCubit, ErgometricsState>(
+        builder: (context, state) {
+          if (state.status == ErgometricsStatus.loading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            if (state.status == ErgometricsStatus.failure) {
-              return Center(
-                child: Text(state.errorMessage ?? 'Something went wrong'),
-              );
-            }
-
-            final ergometrics = state.data.ergometrics;
-
-            if (ergometrics.isEmpty) {
-              return const Center(child: Text('No ergometrics found'));
-            }
-
-            return ListView(
-              padding: const EdgeInsets.all(16),
-              children: [_buildCategoryWidget(ergometrics)],
+          if (state.status == ErgometricsStatus.failure) {
+            return Center(
+              child: Text(
+                state.errorMessage ?? 'Something went wrong',
+                style: const TextStyle(color: Colors.white),
+              ),
             );
-          },
-        ),
+          }
+
+          final ergometrics = state.data.ergometrics;
+
+          if (ergometrics.isEmpty) {
+            return const Center(
+              child: Text(
+                'No ergometrics found',
+                style: TextStyle(color: Colors.white),
+              ),
+            );
+          }
+
+          return ListView(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
+            children: [
+              MobilePageHeader(
+                title: title,
+                subtitle:
+                    'Latest comparisons and full metric history in one place.',
+              ),
+              const SizedBox(height: 16),
+              _buildCategoryWidget(ergometrics),
+            ],
+          );
+        },
       ),
     );
   }

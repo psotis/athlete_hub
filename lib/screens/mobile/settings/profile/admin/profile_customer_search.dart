@@ -75,60 +75,82 @@ class _ProfileCustomerSearchPageState extends State<ProfileCustomerSearchPage> {
   Widget build(BuildContext context) {
     final filteredUsers = _filteredUsers;
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: const Text('Select Athlete'),
-      ),
-      body: SafeArea(
+    return MobileGlowScaffold(
+      appBar: const MobileScreenAppBar(title: 'Select Athlete'),
+      child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextField(
+              const MobilePageHeader(
+                title: 'Athletes',
+                subtitle:
+                    'Search by athlete name, email, team or sport and open the full profile.',
+              ),
+              const SizedBox(height: 16),
+              MobileSearchField(
                 controller: _searchCtrl,
                 onChanged: (_) => setState(() {}),
-                decoration: InputDecoration(
-                  hintText: 'Search athlete...',
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
+                hintText: 'Search athlete...',
               ),
               const SizedBox(height: 16),
               Expanded(
                 child: _isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : _error != null
-                    ? Center(child: Text(_error!))
+                    ? Center(
+                        child: Text(
+                          _error!,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      )
                     : filteredUsers.isEmpty
-                    ? const Center(child: Text('No athletes found'))
+                    ? const Center(
+                        child: Text(
+                          'No athletes found',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      )
                     : ListView.separated(
                         itemCount: filteredUsers.length,
                         separatorBuilder: (_, _) => const SizedBox(height: 12),
                         itemBuilder: (context, index) {
                           final user = filteredUsers[index];
 
-                          return Card(
+                          return MobileGlassCard(
+                            borderRadius: BorderRadius.circular(22),
+                            padding: EdgeInsets.zero,
                             child: ListTile(
                               onTap: () => _openProfile(user),
                               leading: CircleAvatar(
+                                backgroundColor:
+                                    const Color(0xFF6EE7FF).withAlpha(41),
                                 child: Text(
                                   user.firstName.isNotEmpty
                                       ? user.firstName[0].toUpperCase()
                                       : '?',
+                                  style: const TextStyle(color: Colors.white),
                                 ),
                               ),
-                              title: Text(user.fullName),
+                              title: Text(
+                                user.fullName,
+                                style: const TextStyle(color: Colors.white),
+                              ),
                               subtitle: Text(
                                 [
                                   user.email,
                                   if ((user.team ?? '').trim().isNotEmpty)
                                     user.team!,
-                                ].join(' • '),
+                                ].join(' - '),
+                                style: TextStyle(
+                                  color: Colors.white.withAlpha(173),
+                                ),
                               ),
-                              trailing: const Icon(Icons.chevron_right),
+                              trailing: const Icon(
+                                Icons.chevron_right,
+                                color: Colors.white70,
+                              ),
                             ),
                           );
                         },
