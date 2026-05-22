@@ -17,14 +17,8 @@ class _CalendarMobileState extends State<CalendarMobile> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            MobilePageHeader(
-              title: 'Calendar',
-              subtitle:
-                  'Review planning, sessions and your upcoming athlete workload.',
-              trailing: const MobileTopIconButton(
-                icon: Icons.event_available_rounded,
-              ),
-              bottom: CalendarTimeline(
+            MobileGlassCard(
+              child: CalendarTimeline(
                 initialDate: _selectedDate,
                 firstDate: DateTime(2019, 1, 15),
                 lastDate: DateTime(2040, 11, 20),
@@ -38,23 +32,14 @@ class _CalendarMobileState extends State<CalendarMobile> {
                 dayColor: Colors.white60,
                 activeDayColor: const Color(0xFF06142B),
                 activeBackgroundDayColor: const Color(0xFF7DEBFF),
-                // dotsColor: const Color(0xFF7DEBFF),
                 locale: 'en_ISO',
               ),
             ),
             const SizedBox(height: 18),
             MobileInfoCard(
               title: DateFormat('EEEE, d MMMM').format(_selectedDate),
-              subtitle:
-                  'No calendar-specific workflow was changed here. This is a visual refactor only.',
+              subtitle: '',
               icon: Icons.date_range_rounded,
-            ),
-            const SizedBox(height: 12),
-            const MobileInfoCard(
-              title: 'Planning ready',
-              subtitle:
-                  'Use this space for sessions, reminders and day-by-day athlete planning while keeping the existing logic untouched.',
-              icon: Icons.insights_rounded,
             ),
           ],
         ),

@@ -76,12 +76,14 @@ export '../screens/mobile/nutrition/nutrition.dart';
 export '../screens/desktop/login/login.dart';
 export '../screens/desktop/splash/splash.dart';
 export '../screens/desktop/dashboard/dashboard.dart';
+export '../screens/desktop/dashboard/desktop_shell.dart';
 export '../screens/desktop/calendar/calendar.dart';
 export '../screens/desktop/settings/settings.dart';
 export '../screens/desktop/metrics/metrics.dart';
 export '../screens/desktop/home/home.dart';
 export '../screens/desktop/signup/signup.dart';
 export '../screens/desktop/settings/profile/profile.dart';
+export '../screens/desktop/settings/profile/admin/profile_customer_search.dart';
 export '../screens/desktop/settings/health/health.dart';
 export '../screens/desktop/nutrition/nutrition.dart';
 

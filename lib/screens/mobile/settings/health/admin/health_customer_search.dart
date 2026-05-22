@@ -85,15 +85,9 @@ class _HealthCustomerSearchPageState extends State<HealthCustomerSearchPage> {
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const MobilePageHeader(
-                title: 'Medical Profiles',
-                subtitle:
-                    'Search athletes and jump straight into their details and medical history.',
-              ),
-              const SizedBox(height: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               MobileSearchField(
                 controller: _searchCtrl,
                 onChanged: (_) => setState(() {}),

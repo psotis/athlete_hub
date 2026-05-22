@@ -618,16 +618,6 @@ class _CustomerNutritionView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            MobilePageHeader(
-              title: 'Nutrition Program',
-              subtitle: latest == null
-                  ? 'Your nutritionist can assign your monthly PDF plan here.'
-                  : 'Your latest monthly nutrition program is ready below.',
-              trailing: const MobileTopIconButton(
-                icon: Icons.restaurant_menu_rounded,
-              ),
-            ),
-            const SizedBox(height: 18),
             if (latest == null)
               const MobileInfoCard(
                 title: 'No Program Yet',
@@ -645,7 +635,7 @@ class _CustomerNutritionView extends StatelessWidget {
               const SizedBox(height: 18),
               const MobileSectionTitle(
                 title: 'Previous Programs',
-                subtitle: 'Keep your older monthly plans close by.',
+                subtitle: null,
               ),
               const SizedBox(height: 12),
               ...programs
@@ -694,11 +684,9 @@ class _NutritionistNutritionView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            MobilePageHeader(
-              title: 'Nutrition Hub',
-              subtitle:
-                  'Create one monthly PDF program per athlete and keep the handoff simple.',
-              trailing: MobileTopIconButton(
+            Align(
+              alignment: Alignment.centerRight,
+              child: MobileTopIconButton(
                 icon: Icons.add_rounded,
                 onTap: onAddProgram,
               ),
@@ -729,19 +717,6 @@ class _NutritionistNutritionView extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 14),
-              MobileInfoCard(
-                title: 'PDF-Based Flow',
-                subtitle:
-                    'This keeps the nutrition workflow simple: attach one monthly PDF program, then let the athlete open it from mobile.',
-                icon: Icons.picture_as_pdf_outlined,
-                onTap: onAddProgram,
-              ),
-              const SizedBox(height: 18),
-              const MobileSectionTitle(
-                title: 'Monthly Programs',
-                subtitle: 'Latest plans you prepared for your athletes.',
-              ),
-              const SizedBox(height: 12),
               if (programs.isEmpty)
                 const MobileInfoCard(
                   title: 'No Programs Added',

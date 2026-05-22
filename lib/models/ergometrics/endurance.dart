@@ -12,6 +12,11 @@ class Endurance extends Equatable {
   final double? beepTestSpeedKmh;
   final double? beepTestContinuousScore;
   final double? beepTestVo2maxMlKgMin;
+
+  final double? maxSpeed;
+  final double? hrMaxVo;
+  final double? vo2Max;
+
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -26,6 +31,9 @@ class Endurance extends Equatable {
     required this.beepTestSpeedKmh,
     required this.beepTestContinuousScore,
     required this.beepTestVo2maxMlKgMin,
+    required this.maxSpeed,
+    required this.hrMaxVo,
+    required this.vo2Max,
     this.createdAt,
     this.updatedAt,
   });
@@ -42,6 +50,9 @@ class Endurance extends Equatable {
       beepTestSpeedKmh: 0,
       beepTestContinuousScore: 0,
       beepTestVo2maxMlKgMin: 0,
+      maxSpeed: 0,
+      hrMaxVo: 0,
+      vo2Max: 0,
       createdAt: null,
       updatedAt: null,
     );
@@ -61,6 +72,9 @@ class Endurance extends Equatable {
           ?.toDouble(),
       beepTestVo2maxMlKgMin: (map['beep_test_vo2max_ml_kg_min'] as num?)
           ?.toDouble(),
+      maxSpeed: (map['max_speed'] as num?)?.toDouble(),
+      hrMaxVo: (map['hr_max_vo'] as num?)?.toDouble(),
+      vo2Max: (map['vo2max'] as num?)?.toDouble(),
       createdAt: map['created_at'] != null
           ? DateTime.tryParse(map['created_at'].toString())
           : null,
@@ -82,6 +96,9 @@ class Endurance extends Equatable {
       'beep_test_speed_kmh': beepTestSpeedKmh,
       'beep_test_continuous_score': beepTestContinuousScore,
       'beep_test_vo2max_ml_kg_min': beepTestVo2maxMlKgMin,
+      'max_speed': maxSpeed,
+      'hr_max_vo': hrMaxVo,
+      'vo2max': vo2Max,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };
@@ -103,6 +120,9 @@ class Endurance extends Equatable {
     double? beepTestSpeedKmh,
     double? beepTestContinuousScore,
     double? beepTestVo2maxMlKgMin,
+    double? maxSpeed,
+    double? hrMaxVo,
+    double? vo2Max,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -119,6 +139,9 @@ class Endurance extends Equatable {
           beepTestContinuousScore ?? this.beepTestContinuousScore,
       beepTestVo2maxMlKgMin:
           beepTestVo2maxMlKgMin ?? this.beepTestVo2maxMlKgMin,
+      maxSpeed: maxSpeed ?? this.maxSpeed,
+      hrMaxVo: hrMaxVo ?? this.hrMaxVo,
+      vo2Max: vo2Max ?? this.vo2Max,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -136,6 +159,9 @@ class Endurance extends Equatable {
     beepTestSpeedKmh,
     beepTestContinuousScore,
     beepTestVo2maxMlKgMin,
+    maxSpeed,
+    hrMaxVo,
+    vo2Max,
     createdAt,
     updatedAt,
   ];

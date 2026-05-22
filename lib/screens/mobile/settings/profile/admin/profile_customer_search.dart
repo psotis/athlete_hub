@@ -81,15 +81,9 @@ class _ProfileCustomerSearchPageState extends State<ProfileCustomerSearchPage> {
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const MobilePageHeader(
-                title: 'Athletes',
-                subtitle:
-                    'Search by athlete name, phone, email, team or sport and open the full profile.',
-              ),
-              const SizedBox(height: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               MobileSearchField(
                 controller: _searchCtrl,
                 onChanged: (_) => setState(() {}),

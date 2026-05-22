@@ -109,12 +109,6 @@ class _MetricsMobileState extends State<MetricsMobile> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const MobilePageHeader(
-                  title: 'Ergometrics',
-                  subtitle:
-                      'Choose a category to explore your athlete data, comparisons and session history.',
-                ),
-                const SizedBox(height: 18),
                 Expanded(
                   child: LayoutBuilder(
                     builder: (context, constraints) {
@@ -173,7 +167,9 @@ class _MetricsMobileState extends State<MetricsMobile> {
                                   const Spacer(),
                                   Text(
                                     item.title,
-                                    style: Theme.of(context).textTheme.titleMedium
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
                                         ?.copyWith(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w700,

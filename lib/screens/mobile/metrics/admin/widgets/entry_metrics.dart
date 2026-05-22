@@ -55,6 +55,7 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
   final List<Squat> movementQualityItems = [];
   int? selectedBeepLevel;
   int? selectedBeepShuttle;
+  bool isVo2Test = false;
 
   final heightCmCtrl = TextEditingController();
   final armSpanCmCtrl = TextEditingController();
@@ -107,12 +108,13 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
   final movementQualityNotesCtrl = TextEditingController();
 
   final hrMaxCtrl = TextEditingController();
+  final maxSpeedCtrl = TextEditingController();
+  final hrMaxVoCtrl = TextEditingController();
 
   bool isSaving = false;
 
   Set<ErgometricsEntryCategory> get _selectedCategories =>
-      widget.selectedCategories ??
-      ErgometricsEntryCategory.values.toSet();
+      widget.selectedCategories ?? ErgometricsEntryCategory.values.toSet();
 
   bool _isSelected(ErgometricsEntryCategory category) {
     return _selectedCategories.contains(category);
@@ -166,6 +168,8 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
       movementQualityCompensationCtrl,
       movementQualityNotesCtrl,
       hrMaxCtrl,
+      maxSpeedCtrl,
+      hrMaxVoCtrl,
     ];
 
     for (final c in controllers) {
@@ -297,16 +301,32 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
     }
 
     if (_isSelected(ErgometricsEntryCategory.endurance)) {
-      payload["endurance"] = {
-        "beep_test_level": selectedBeepLevel,
-        "beep_test_shuttles": selectedBeepShuttle,
-        "hr_max": _toInt(hrMaxCtrl),
-        "beep_test_time_sec": beep?.totalTimeSec,
-        "beep_test_distance_m": beep?.totalDistanceM,
-        "beep_test_speed_kmh": beep?.speedKmh,
-        "beep_test_continuous_score": beep?.continuousScore,
-        "beep_test_vo2max_ml_kg_min": beep?.vo2maxMlKgMin,
-      };
+      if (isVo2Test) {
+        final maxSpeed = _toDouble(maxSpeedCtrl);
+        final hrMaxVo = _toDouble(hrMaxVoCtrl);
+
+        if (maxSpeed == null || hrMaxVo == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Enter max speed and HR max VO for the VO2 test'),
+            ),
+          );
+          return null;
+        }
+
+        payload["endurance"] = {"max_speed": maxSpeed, "hr_max_vo": hrMaxVo};
+      } else {
+        payload["endurance"] = {
+          "beep_test_level": selectedBeepLevel,
+          "beep_test_shuttles": selectedBeepShuttle,
+          "hr_max": _toInt(hrMaxCtrl),
+          "beep_test_time_sec": beep?.totalTimeSec,
+          "beep_test_distance_m": beep?.totalDistanceM,
+          "beep_test_speed_kmh": beep?.speedKmh,
+          "beep_test_continuous_score": beep?.continuousScore,
+          "beep_test_vo2max_ml_kg_min": beep?.vo2maxMlKgMin,
+        };
+      }
     }
 
     return payload;
@@ -398,7 +418,10 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
                 _numberField('Hand grip right (N)', handGripRightCtrl),
                 _numberField('Hand grip left (N)', handGripLeftCtrl),
                 _numberField('Mid thigh pull (N)', midThighPullCtrl),
-                _numberField('Knee extension right (N)', kneeExtensionRightCtrl),
+                _numberField(
+                  'Knee extension right (N)',
+                  kneeExtensionRightCtrl,
+                ),
                 _numberField('Knee extension left (N)', kneeExtensionLeftCtrl),
                 _numberField('Knee flexion right (N)', kneeFlexionRightNCtrl),
                 _numberField('Knee flexion left (N)', kneeFlexionLeftNCtrl),
@@ -432,10 +455,7 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
                   'CMJ free hands height (cm)',
                   cmjFreeHandsHeightCtrl,
                 ),
-                _numberField(
-                  'CMJ free hands power (W)',
-                  cmjFreeHandsPowerCtrl,
-                ),
+                _numberField('CMJ free hands power (W)', cmjFreeHandsPowerCtrl),
                 _numberField('Drop jump height (cm)', dropJumpHeightCtrl),
                 _numberField('Drop jump RSI', dropJumpRsiCtrl),
                 _numberField(
@@ -492,9 +512,7 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
                       margin: const EdgeInsets.only(bottom: 10),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(
-                          color: Colors.white.withAlpha(20),
-                        ),
+                        side: BorderSide(color: Colors.white.withAlpha(20)),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(12),
@@ -535,13 +553,38 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
             _CategorySection(
               title: 'Endurance',
               children: [
-                _beepLevelDropdown(),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text(
+                    'VO2 test',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  subtitle: Text(
+                    isVo2Test
+                        ? 'Use max speed and HR max VO'
+                        : 'Use beep test fields',
+                    style: const TextStyle(color: Colors.white70),
+                  ),
+                  value: isVo2Test,
+                  onChanged: (value) {
+                    setState(() {
+                      isVo2Test = value;
+                    });
+                  },
+                ),
                 const SizedBox(height: 10),
-                _beepShuttleDropdown(),
-                const SizedBox(height: 10),
-                _beepCalculatedFields(),
-                const SizedBox(height: 10),
-                _numberField('HR max', hrMaxCtrl, isInteger: true),
+                if (isVo2Test) ...[
+                  _numberField('Max speed (km/h)', maxSpeedCtrl),
+                  _numberField('HR max VO', hrMaxVoCtrl),
+                ] else ...[
+                  _beepLevelDropdown(),
+                  const SizedBox(height: 10),
+                  _beepShuttleDropdown(),
+                  const SizedBox(height: 10),
+                  _beepCalculatedFields(),
+                  const SizedBox(height: 10),
+                  _numberField('HR max', hrMaxCtrl, isInteger: true),
+                ],
               ],
             ),
           if (widget.showSaveButton) ...[
@@ -603,23 +646,25 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
       key: ValueKey('$label-$value'),
       initialValue: value,
       readOnly: true,
-      style: const TextStyle(color: Colors.white),
+      style: const TextStyle(color: Color(0xFF0F172A)),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: Colors.white.withAlpha(184)),
+        labelStyle: const TextStyle(color: Color(0xFF475569)),
+        floatingLabelStyle: const TextStyle(color: Color(0xFF334155)),
+        hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
         filled: true,
-        fillColor: Colors.white.withAlpha(15),
+        fillColor: Colors.white,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.white.withAlpha(26)),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.white.withAlpha(26)),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
         ),
         focusedBorder: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(12)),
-          borderSide: BorderSide(color: Color(0xFF7DEBFF)),
+          borderSide: BorderSide(color: Color(0xFF0D6EFD)),
         ),
       ),
     );
@@ -631,10 +676,7 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
       children: [
         const Text(
           'Beep test level',
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
         ),
         const SizedBox(height: 6),
         IotDropdown2<int>(
@@ -672,10 +714,7 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
       children: [
         const Text(
           'Beep test shuttle',
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
         ),
         const SizedBox(height: 6),
         IotDropdown2<int>(
@@ -727,10 +766,7 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
           ),
           Expanded(
             flex: 6,
-            child: Text(
-              value,
-              style: const TextStyle(color: Colors.white),
-            ),
+            child: Text(value, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -761,19 +797,21 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
       child: TextFormField(
         controller: controller,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: Color(0xFF0F172A)),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: TextStyle(color: Colors.white.withAlpha(184)),
+          labelStyle: const TextStyle(color: Color(0xFF475569)),
+          floatingLabelStyle: const TextStyle(color: Color(0xFF334155)),
+          hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
           filled: true,
-          fillColor: Colors.white.withAlpha(15),
+          fillColor: Colors.white,
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.white.withAlpha(26)),
+            borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
           ),
           focusedBorder: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(12)),
-            borderSide: BorderSide(color: Color(0xFF7DEBFF)),
+            borderSide: BorderSide(color: Color(0xFF0D6EFD)),
           ),
           errorBorder: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -924,8 +962,17 @@ class _MovementQualityItemSheetState extends State<_MovementQualityItemSheet> {
               const SizedBox(height: 12),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Result'),
-                subtitle: Text(result ? 'Yes' : 'No'),
+                title: const Text(
+                  'Result',
+                  style: TextStyle(
+                    color: Color(0xFF0F172A),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                subtitle: Text(
+                  result ? 'Yes' : 'No',
+                  style: const TextStyle(color: Color(0xFF475569)),
+                ),
                 value: result,
                 onChanged: (value) {
                   setState(() {

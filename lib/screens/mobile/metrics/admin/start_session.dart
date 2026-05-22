@@ -5,7 +5,11 @@ import 'package:athlete_hub/utils/dialogs/dialog.dart';
 
 class StartSessionMobile extends StatefulWidget {
   final List<Users> users;
-  const StartSessionMobile({super.key, required this.users});
+
+  const StartSessionMobile({
+    super.key,
+    required this.users,
+  });
 
   @override
   State<StartSessionMobile> createState() => _StartSessionMobileState();
@@ -165,11 +169,22 @@ class _StartSessionMobileState extends State<StartSessionMobile> {
                                   CheckboxListTile(
                                     value: selection.isSelected,
                                     contentPadding: EdgeInsets.zero,
-                                    title: Text(selection.athlete.fullName),
+                                    title: Text(
+                                      selection.athlete.fullName,
+                                      style: const TextStyle(
+                                        color: Color(0xFF0F172A),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                     subtitle:
                                         (selection.athlete.sport ?? '').isEmpty
                                         ? null
-                                        : Text(selection.athlete.sport!),
+                                        : Text(
+                                            selection.athlete.sport!,
+                                            style: const TextStyle(
+                                              color: Color(0xFF475569),
+                                            ),
+                                          ),
                                     onChanged: (value) {
                                       setModalState(() {
                                         selection.isSelected = value ?? false;
@@ -286,15 +301,8 @@ class _StartSessionMobileState extends State<StartSessionMobile> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
       child: Column(
-        spacing: 5,
+        mainAxisSize: MainAxisSize.max,
         children: [
-          const MobileInfoCard(
-            title: 'Start a session',
-            subtitle:
-                'Pick one athlete or a whole team, then continue with the metrics flow you already use.',
-            icon: Icons.play_circle_outline_rounded,
-          ),
-          const SizedBox(height: 8),
           if (_isBatchStarting)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 8),
@@ -340,6 +348,7 @@ class _StartSessionMobileState extends State<StartSessionMobile> {
               );
             },
           ),
+          const SizedBox(height: 8),
           BlocBuilder<SessionCubit, SessionState>(
             builder: (context, state) {
               if (state.status == SessionStatus.failure) {
@@ -352,16 +361,20 @@ class _StartSessionMobileState extends State<StartSessionMobile> {
               if (state.status == SessionStatus.success) {
                 return Expanded(
                   child: SessionEntriesMobile(
-                    sessionId: state.session.id,
-                    athlete: state.selectedUser!,
+                  sessionId: state.session.id,
+                  athlete: state.selectedUser!,
                   ),
                 );
               }
-              return Text(
-                'Waiting to start...',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Text(
+                  'Waiting to start...',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
+                ),
               );
             },
           ),

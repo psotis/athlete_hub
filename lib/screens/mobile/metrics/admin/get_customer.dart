@@ -5,7 +5,11 @@ import 'package:athlete_hub/helpers/imports.dart';
 
 class GetCustomerMobile extends StatefulWidget {
   final List<Users> users;
-  const GetCustomerMobile({super.key, required this.users});
+
+  const GetCustomerMobile({
+    super.key,
+    required this.users,
+  });
 
   @override
   State<GetCustomerMobile> createState() => _GetCustomerMobileState();
@@ -98,14 +102,8 @@ class _GetCustomerMobileState extends State<GetCustomerMobile> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
       child: Column(
+        mainAxisSize: MainAxisSize.max,
         children: [
-          const MobileInfoCard(
-            title: 'Search athlete or team',
-            subtitle:
-                'Pick a single athlete or load a team to inspect everyone with their metrics underneath.',
-            icon: Icons.search_rounded,
-          ),
-          const SizedBox(height: 12),
           BlocBuilder<ErgometricsCubit, ErgometricsState>(
             builder: (context, state) {
               final selectedId =
@@ -195,7 +193,10 @@ class _GetCustomerMobileState extends State<GetCustomerMobile> {
               child: ExpansionTile(
                 title: Text(
                   result.user.fullName,
-                  style: const TextStyle(color: Colors.black),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 subtitle: Text(
                   [
@@ -204,10 +205,10 @@ class _GetCustomerMobileState extends State<GetCustomerMobile> {
                     if ((result.user.sport ?? '').trim().isNotEmpty)
                       result.user.sport!,
                   ].join(' - '),
-                  style: TextStyle(color: Colors.black.withAlpha(173)),
+                  style: TextStyle(color: Colors.white.withAlpha(173)),
                 ),
-                iconColor: Colors.black,
-                collapsedIconColor: Colors.black,
+                iconColor: Colors.white,
+                collapsedIconColor: Colors.white70,
                 childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
                 children: [
                   if (result.data.ergometrics.isEmpty)
@@ -322,6 +323,12 @@ class _SessionCard extends StatelessWidget {
 
   const _SessionCard({required this.item});
 
+  bool _hasVo2Data(Endurance? endurance) {
+    return endurance?.maxSpeed != null ||
+        endurance?.hrMaxVo != null ||
+        endurance?.vo2Max != null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final session = item.session;
@@ -345,18 +352,18 @@ class _SessionCard extends StatelessWidget {
         child: ExpansionTile(
           tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-          iconColor: Colors.black,
+          iconColor: Colors.white,
           collapsedIconColor: Colors.white70,
           title: Text(
             'Session ${date != null ? DateFormat('dd-MM-yyyy').format(date) : '-'}',
             style: const TextStyle(
               fontWeight: FontWeight.w700,
-              color: Colors.black,
+              color: Colors.white,
             ),
           ),
           subtitle: Text(
             'Notes: ${session?.notes?.toString().trim().isNotEmpty == true ? session?.notes : '-'}',
-            style: TextStyle(color: Colors.black.withAlpha(173)),
+            style: TextStyle(color: Colors.white.withAlpha(173)),
           ),
           children: [
             _CategoryCard(
@@ -450,19 +457,25 @@ class _SessionCard extends StatelessWidget {
             ),
             _CategoryCard(
               title: 'Endurance',
-              values: {
-                'Beep test level': endurance?.beepTestLevel,
-                'Beep test shuttles': endurance?.beepTestShuttles,
-                'Beep test score': endurance?.beepTestContinuousScore,
-                'Beep test time': _formatDurationFromSeconds(
-                  endurance?.beepTestTimeSec,
-                ),
-                'Beep test distance (m)': endurance?.beepTestDistanceM,
-                'Beep test speed (km/h)': endurance?.beepTestSpeedKmh,
-                'Beep test VO2max (ml/kg/min)':
-                    endurance?.beepTestVo2maxMlKgMin,
-                'HR max': endurance?.hrMax,
-              },
+              values: _hasVo2Data(endurance)
+                  ? {
+                      'Max speed (km/h)': endurance?.maxSpeed,
+                      'HR max VO': endurance?.hrMaxVo,
+                      'VO2max (ml/kg/min)': endurance?.vo2Max,
+                    }
+                  : {
+                      'Beep test level': endurance?.beepTestLevel,
+                      'Beep test shuttles': endurance?.beepTestShuttles,
+                      'Beep test score': endurance?.beepTestContinuousScore,
+                      'Beep test time': _formatDurationFromSeconds(
+                        endurance?.beepTestTimeSec,
+                      ),
+                      'Beep test distance (m)': endurance?.beepTestDistanceM,
+                      'Beep test speed (km/h)': endurance?.beepTestSpeedKmh,
+                      'Beep test VO2max (ml/kg/min)':
+                          endurance?.beepTestVo2maxMlKgMin,
+                      'HR max': endurance?.hrMax,
+                    },
             ),
             if (movementQualityItems.isNotEmpty)
               _MovementQualitySection(items: movementQualityItems),

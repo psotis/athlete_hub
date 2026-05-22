@@ -1,5 +1,39 @@
 import 'package:athlete_hub/helpers/imports.dart';
 
+ThemeData _lightCardTheme(BuildContext context) {
+  final base = Theme.of(context);
+  return base.copyWith(
+    textTheme: base.textTheme.copyWith(
+      bodyLarge: base.textTheme.bodyLarge?.copyWith(
+        color: const Color(0xFF0F172A),
+      ),
+      bodyMedium: base.textTheme.bodyMedium?.copyWith(
+        color: const Color(0xFF0F172A),
+      ),
+      bodySmall: base.textTheme.bodySmall?.copyWith(
+        color: const Color(0xFF475569),
+      ),
+      titleLarge: base.textTheme.titleLarge?.copyWith(
+        color: const Color(0xFF0F172A),
+      ),
+      titleMedium: base.textTheme.titleMedium?.copyWith(
+        color: const Color(0xFF0F172A),
+      ),
+      titleSmall: base.textTheme.titleSmall?.copyWith(
+        color: const Color(0xFF0F172A),
+      ),
+      headlineSmall: base.textTheme.headlineSmall?.copyWith(
+        color: const Color(0xFF0F172A),
+      ),
+    ),
+    iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
+    listTileTheme: const ListTileThemeData(
+      textColor: Color(0xFF0F172A),
+      iconColor: Color(0xFF0F172A),
+    ),
+  );
+}
+
 class ChartCard extends StatelessWidget {
   final String title;
   final Widget chart;
@@ -17,27 +51,30 @@ class ChartCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleMedium,
+      child: Theme(
+        data: _lightCardTheme(context),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        title,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
                     ),
                   ),
-                ),
-                ?trailing,
-              ],
-            ),
-            const SizedBox(height: 16),
-            SizedBox(height: height, child: chart),
-          ],
+                  ?trailing,
+                ],
+              ),
+              const SizedBox(height: 16),
+              SizedBox(height: height, child: chart),
+            ],
+          ),
         ),
       ),
     );
@@ -61,32 +98,38 @@ class SummaryStatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            if (icon != null) ...[
-              Icon(icon, size: 28),
-              const SizedBox(width: 12),
-            ],
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: Theme.of(context).textTheme.titleSmall),
-                  const SizedBox(height: 8),
-                  Text(value, style: Theme.of(context).textTheme.headlineSmall),
-                  if (subtitle != null) ...[
-                    const SizedBox(height: 4),
+      child: Theme(
+        data: _lightCardTheme(context),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              if (icon != null) ...[
+                Icon(icon, size: 28),
+                const SizedBox(width: 12),
+              ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: Theme.of(context).textTheme.titleSmall),
+                    const SizedBox(height: 8),
                     Text(
-                      subtitle!,
-                      style: Theme.of(context).textTheme.bodySmall,
+                      value,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
+                    if (subtitle != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle!,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -107,10 +150,22 @@ class LatestMeasurementDateCard extends StatelessWidget {
               "${date!.day.toString().padLeft(2, '0')}";
 
     return Card(
-      child: ListTile(
-        leading: const Icon(Icons.event),
-        title: const Text('Latest ergometrics date'),
-        subtitle: Text(value),
+      child: Theme(
+        data: _lightCardTheme(context),
+        child: ListTile(
+          leading: const Icon(Icons.event, color: Color(0xFF0F172A)),
+          title: const Text(
+            'Latest ergometrics date',
+            style: TextStyle(
+              color: Color(0xFF0F172A),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          subtitle: Text(
+            value,
+            style: const TextStyle(color: Color(0xFF475569)),
+          ),
+        ),
       ),
     );
   }
@@ -135,55 +190,58 @@ class SparklineCard extends StatelessWidget {
     final yRange = _rangeFromSpots(spots);
 
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: Theme.of(context).textTheme.titleSmall),
-            const SizedBox(height: 6),
-            Text(value, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: height,
-              child: spots.isEmpty
-                  ? const Center(child: Text('No data'))
-                  : LineChart(
-                      LineChartData(
-                        minX: 0,
-                        maxX: (spots.length - 1).toDouble(),
-                        minY: yRange.min,
-                        maxY: yRange.max,
-                        titlesData: const FlTitlesData(
-                          leftTitles: AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
+      child: Theme(
+        data: _lightCardTheme(context),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: 6),
+              Text(value, style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: height,
+                child: spots.isEmpty
+                    ? const Center(child: Text('No data'))
+                    : LineChart(
+                        LineChartData(
+                          minX: 0,
+                          maxX: (spots.length - 1).toDouble(),
+                          minY: yRange.min,
+                          maxY: yRange.max,
+                          titlesData: const FlTitlesData(
+                            leftTitles: AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            rightTitles: AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            topTitles: AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
                           ),
-                          rightTitles: AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                          topTitles: AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                          bottomTitles: AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
+                          gridData: const FlGridData(show: false),
+                          borderData: FlBorderData(show: false),
+                          extraLinesData: _zeroLineData(yRange),
+                          lineBarsData: [
+                            LineChartBarData(
+                              spots: spots,
+                              isCurved: true,
+                              barWidth: 3,
+                              dotData: const FlDotData(show: false),
+                              belowBarData: BarAreaData(show: false),
+                            ),
+                          ],
                         ),
-                        gridData: const FlGridData(show: false),
-                        borderData: FlBorderData(show: false),
-                        extraLinesData: _zeroLineData(yRange),
-                        lineBarsData: [
-                          LineChartBarData(
-                            spots: spots,
-                            isCurved: true,
-                            barWidth: 3,
-                            dotData: const FlDotData(show: false),
-                            belowBarData: BarAreaData(show: false),
-                          ),
-                        ],
                       ),
-                    ),
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -549,41 +607,44 @@ class MetricDeltaCard extends StatelessWidget {
         : delta > 0;
 
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            if (icon != null) ...[
-              Icon(icon, size: 28),
-              const SizedBox(width: 12),
-            ],
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: Theme.of(context).textTheme.titleSmall),
-                  const SizedBox(height: 10),
-                  Wrap(
-                    spacing: 16,
-                    runSpacing: 8,
-                    children: [
-                      _MetricMiniInfo(label: 'Current', value: latestText),
-                      _MetricMiniInfo(label: 'Previous', value: previousText),
-                      _MetricMiniInfo(
-                        label: 'Delta',
-                        value: deltaText,
-                        icon: isImproved == null
-                            ? null
-                            : isImproved
-                            ? Icons.arrow_upward
-                            : Icons.arrow_downward,
-                      ),
-                    ],
-                  ),
-                ],
+      child: Theme(
+        data: _lightCardTheme(context),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              if (icon != null) ...[
+                Icon(icon, size: 28),
+                const SizedBox(width: 12),
+              ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: Theme.of(context).textTheme.titleSmall),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 16,
+                      runSpacing: 8,
+                      children: [
+                        _MetricMiniInfo(label: 'Current', value: latestText),
+                        _MetricMiniInfo(label: 'Previous', value: previousText),
+                        _MetricMiniInfo(
+                          label: 'Delta',
+                          value: deltaText,
+                          icon: isImproved == null
+                              ? null
+                              : isImproved
+                              ? Icons.arrow_upward
+                              : Icons.arrow_downward,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

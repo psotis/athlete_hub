@@ -1,11 +1,19 @@
 import 'package:athlete_hub/helpers/imports.dart';
+import 'package:flutter/foundation.dart';
 
 bool _isLoggingOut = false;
 
 class ApiClient {
+  static String get _baseUrl {
+    final isAndroidEmulator =
+        !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+    final host = isAndroidEmulator ? '10.0.2.2' : '10.72.1.198';
+    return 'http://$host:4001/api';
+  }
+
   static final Dio dio = Dio(
     BaseOptions(
-      baseUrl: 'http://10.0.2.2:4001/api',
+      baseUrl: _baseUrl,
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
     ),

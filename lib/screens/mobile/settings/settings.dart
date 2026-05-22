@@ -62,15 +62,14 @@ class _SettingsMobileState extends State<SettingsMobile> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            MobilePageHeader(
-              title: 'Profile Hub',
-              subtitle: 'Manage your account, athlete details, health and support.',
-              trailing: MobileTopIconButton(
+            Align(
+              alignment: Alignment.centerRight,
+              child: MobileTopIconButton(
                 icon: Icons.photo_library_outlined,
                 onTap: _getFromGallery,
               ),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 12),
             MobileGlassCard(
               padding: const EdgeInsets.all(20),
               child: LayoutBuilder(

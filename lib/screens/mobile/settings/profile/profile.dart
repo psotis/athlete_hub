@@ -378,19 +378,10 @@ class _ProfileMobileState extends State<ProfileMobile> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(16, 10, 16, 120),
             child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  MobilePageHeader(
-                    title: _isAdminViewingAthlete
-                        ? user.fullName
-                        : 'My Profile',
-                    subtitle: _isAdminViewingAthlete
-                        ? 'View the full athlete profile, edit details and manage medical history below.'
-                        : 'Keep your profile details organized and ready across the app.',
-                  ),
-                  const SizedBox(height: 16),
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                   ProfileHeader(
                     fullName: user.fullName,
                     email: user.email,
@@ -629,11 +620,9 @@ class _ProfileMobileState extends State<ProfileMobile> {
                     ),
                   if (_isAdminViewingAthlete) ...[
                     const SizedBox(height: 24),
-                    MobilePageHeader(
-                      title: 'Medical History',
-                      subtitle:
-                          'Review injuries, surgeries, medications and active conditions for this athlete.',
-                      trailing: MobileTopIconButton(
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: MobileTopIconButton(
                         icon: Icons.add_rounded,
                         onTap: _athleteId == null
                             ? null

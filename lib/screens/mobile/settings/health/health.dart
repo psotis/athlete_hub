@@ -323,12 +323,6 @@ class _HealthMobileState extends State<HealthMobile> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (athlete != null) ...[
-                    MobilePageHeader(
-                      title: athlete!.fullName,
-                      subtitle:
-                          'Full athlete details appear first, with medical history directly below.',
-                    ),
-                    const SizedBox(height: 12),
                     _AthleteDetailsCard(user: athlete!),
                     const SizedBox(height: 12),
                   ],

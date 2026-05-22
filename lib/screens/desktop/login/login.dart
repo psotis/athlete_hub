@@ -37,6 +37,10 @@ class _LoginDesktopState extends State<LoginDesktop> {
             context,
           ).showSnackBar(SnackBar(content: Text(state.message)));
         }
+
+        if (state is AuthAuthenticated) {
+          context.go(Routes.dashboard);
+        }
       },
       builder: (context, state) {
         final isLoading = state is AuthLoading || state is AuthChecking;
@@ -47,75 +51,70 @@ class _LoginDesktopState extends State<LoginDesktop> {
           title: 'Everything your athletes need, ready when you are.',
           subtitle:
               'Log in to access sessions, health tracking and the full performance dashboard.',
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: IotTextFormField(
-                        controller: _emailCtrl,
-                        hintText: 'E-mail',
-                        keyboardType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.next,
-                        autofillHints: const [AutofillHints.email],
-                        prefixIcon: const Icon(Icons.mail_outline),
-                        validator: (value) {
-                          final text = value?.trim() ?? '';
-                          if (text.isEmpty) return 'Enter your e-mail';
-                          if (!text.contains('@')) return 'Enter a valid e-mail';
-                          return null;
-                        },
-                      ),
+          child: AutofillGroup(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  IotTextFormField(
+                    controller: _emailCtrl,
+                    hintText: 'E-mail',
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                    autofillHints: const [AutofillHints.email],
+                    prefixIcon: const Icon(Icons.mail_outline),
+                    validator: (value) {
+                      final text = value?.trim() ?? '';
+                      if (text.isEmpty) return 'Enter your e-mail';
+                      if (!text.contains('@')) return 'Enter a valid e-mail';
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  IotTextFormField(
+                    controller: _passCtrl,
+                    hintText: 'Password',
+                    obscureText: true,
+                    textInputAction: TextInputAction.done,
+                    autofillHints: const [AutofillHints.password],
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    onFieldSubmitted: (_) => _submit(),
+                    validator: (value) {
+                      if ((value ?? '').isEmpty) {
+                        return 'Enter your password';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 18),
+                  IotButton(
+                    text: 'Login',
+                    onPressed: _submit,
+                    isLoading: isLoading,
+                    height: 56,
+                    borderRadius: 16,
+                    icon: const Icon(Icons.arrow_forward_rounded, size: 20),
+                  ),
+                  const SizedBox(height: 12),
+                  IotOutlinedButton(
+                    text: 'Create account',
+                    onPressed: () => context.push(Routes.signup),
+                    borderRadius: 16,
+                    fontSize: 16,
+                    icon: Icons.person_add_alt_1,
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    'Use the same credentials your team uses for Athlete Hub.',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: const Color(0xFF64748B),
+                      height: 1.4,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: IotTextFormField(
-                        controller: _passCtrl,
-                        hintText: 'Password',
-                        obscureText: true,
-                        textInputAction: TextInputAction.done,
-                        autofillHints: const [AutofillHints.password],
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        onFieldSubmitted: (_) => _submit(),
-                        validator: (value) {
-                          if ((value ?? '').isEmpty) {
-                            return 'Enter your password';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 18),
-                Row(
-                  children: [
-                    Expanded(
-                      child: IotButton(
-                        text: 'Login',
-                        onPressed: _submit,
-                        isLoading: isLoading,
-                        height: 56,
-                        borderRadius: 16,
-                        icon: const Icon(Icons.arrow_forward_rounded, size: 20),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: IotOutlinedButton(
-                        text: 'Create account',
-                        onPressed: () => context.push(Routes.signup),
-                        borderRadius: 16,
-                        fontSize: 16,
-                        icon: Icons.person_add_alt_1,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
           ),
         );

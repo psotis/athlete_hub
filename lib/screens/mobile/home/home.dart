@@ -14,21 +14,22 @@ class HomeMobile extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            MobilePageHeader(
-              title: 'Welcome back',
-              subtitle: user == null
-                  ? 'Athlete Hub'
-                  : '${user.fullName}\nYour training workspace is ready.',
-              trailing: const MobileTopIconButton(
-                icon: Icons.notifications_none_rounded,
-              ),
-              bottom: Container(
+            MobileGlassCard(
+              child: Container(
                 height: 170,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(24),
                   image: const DecorationImage(
                     fit: BoxFit.contain,
                     image: AssetImage(Images.logo2),
+                  ),
+                ),
+                alignment: Alignment.bottomLeft,
+                child: Text(
+                  user == null ? 'Athlete Hub' : user.fullName,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -74,20 +75,6 @@ class HomeMobile extends StatelessWidget {
                   ],
                 );
               },
-            ),
-            const SizedBox(height: 18),
-            const MobileInfoCard(
-              title: 'Quick snapshot',
-              subtitle:
-                  'Stay consistent with training, recovery and the latest athlete metrics from one clean mobile flow.',
-              icon: Icons.auto_graph_rounded,
-            ),
-            const SizedBox(height: 14),
-            const MobileInfoCard(
-              title: 'Today\'s focus',
-              subtitle:
-                  'Review sessions, keep an eye on recovery and move through health and metrics without losing context.',
-              icon: Icons.bolt_rounded,
             ),
           ],
         ),
