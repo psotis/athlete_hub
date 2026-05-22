@@ -244,25 +244,27 @@ class MobileSearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        color: Colors.black.withAlpha(20),
-        border: Border.all(color: Colors.white.withAlpha(26)),
-      ),
-      child: TextField(
-        controller: controller,
-        onChanged: onChanged,
-        style: const TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: TextStyle(color: Colors.white.withAlpha(117)),
-          prefixIcon: const Icon(Icons.search, color: Color(0xFF7DEBFF)),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 18,
-            vertical: 16,
-          ),
+    return TextField(
+      controller: controller,
+      onChanged: onChanged,
+      style: const TextStyle(color: Color(0xFF0F172A)),
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
+        prefixIcon: const Icon(Icons.search, color: Color(0xFF0F172A)),
+        filled: true,
+        fillColor: Colors.white,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(22),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(22),
+          borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 16,
         ),
       ),
     );

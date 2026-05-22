@@ -136,6 +136,7 @@ class _IotDropdown2State<T> extends State<IotDropdown2<T>> {
                     controller: _searchController,
                     expands: true,
                     maxLines: null,
+                    style: const TextStyle(color: Color(0xFF0F172A)),
                     decoration: InputDecoration(
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(
@@ -143,8 +144,21 @@ class _IotDropdown2State<T> extends State<IotDropdown2<T>> {
                         vertical: 8,
                       ),
                       hintText: widget.searchHintText ?? 'Search...',
+                      hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        color: Color(0xFF0F172A),
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Color(0xFF0D6EFD)),
                       ),
                     ),
                   ),
