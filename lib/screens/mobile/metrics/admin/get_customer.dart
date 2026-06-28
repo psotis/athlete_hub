@@ -121,6 +121,8 @@ class _GetCustomerMobileState extends State<GetCustomerMobile> {
                 buttonWidth: MediaQuery.of(context).size.width * .9,
                 value: currentValue,
                 hintText: 'Select athlete or team',
+                hintStyle: const TextStyle(color: Color(0xFF64748B)),
+                itemStyle: const TextStyle(color: Color(0xFF0F172A)),
                 enableSearch: true,
                 searchHintText: 'Search athlete or team...',
                 itemAsString: (key) {
@@ -137,6 +139,7 @@ class _GetCustomerMobileState extends State<GetCustomerMobile> {
                     value: option.key,
                     child: Text(
                       option.displayLabel,
+                      style: const TextStyle(color: Color(0xFF0F172A)),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -343,27 +346,27 @@ class _SessionCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF0E1A34),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withAlpha(20)),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
           tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-          iconColor: Colors.white,
-          collapsedIconColor: Colors.white70,
+          iconColor: const Color(0xFF0F172A),
+          collapsedIconColor: const Color(0xFF475569),
           title: Text(
             'Session ${date != null ? DateFormat('dd-MM-yyyy').format(date) : '-'}',
             style: const TextStyle(
               fontWeight: FontWeight.w700,
-              color: Colors.white,
+              color: Color(0xFF0F172A),
             ),
           ),
           subtitle: Text(
             'Notes: ${session?.notes?.toString().trim().isNotEmpty == true ? session?.notes : '-'}',
-            style: TextStyle(color: Colors.white.withAlpha(173)),
+            style: const TextStyle(color: Color(0xFF64748B)),
           ),
           children: [
             _CategoryCard(

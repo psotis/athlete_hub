@@ -1,5 +1,6 @@
 import 'package:athlete_hub/blocs/auth/auth_bloc.dart';
 import 'package:athlete_hub/helpers/imports.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AppRouter {
   late final AuthBloc authBloc;
@@ -15,14 +16,18 @@ class AppRouter {
         final authState = authBloc.state;
         final loggedIn = authBloc.state is AuthAuthenticated;
         final loc = state.matchedLocation;
+        final onLanding = loc == Routes.landing;
         final onSplash = loc == Routes.splash;
         final onLogin = loc == Routes.login;
         final onSignup = loc == Routes.signup;
         final isChecking =
             authState is AuthInitial || authState is AuthChecking;
 
+        if (onLanding && !kIsWeb) return Routes.splash;
+
         if (isChecking) {
-          return onSplash ? null : Routes.splash;
+          if (onLanding || onSplash || onLogin || onSignup) return null;
+          return Routes.splash;
         }
 
         if (onSplash) {
@@ -30,7 +35,7 @@ class AppRouter {
         }
 
         if (!loggedIn) {
-          if (onLogin || onSignup) return null;
+          if (onLanding || onLogin || onSignup) return null;
           return Routes.login;
         }
 
@@ -43,6 +48,10 @@ class AppRouter {
       },
 
       routes: [
+        GoRoute(
+          path: Routes.landing,
+          builder: (context, state) => const LandingPage(),
+        ),
         GoRoute(
           path: Routes.splash,
           builder: (context, state) => const SplashPage(),
@@ -72,7 +81,7 @@ class AppRouter {
           builder: (context, state) => const HealthCustomerSearchPage(),
         ),
       ],
-      initialLocation: Routes.splash,
+      initialLocation: Routes.landing,
     );
   }
 }

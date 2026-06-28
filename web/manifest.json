@@ -1,11 +1,11 @@
 {
-    "name": "athlete_hub",
-    "short_name": "athlete_hub",
-    "start_url": ".",
+    "name": "Athlete Hub",
+    "short_name": "Athlete Hub",
+    "start_url": "/",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "A performance workspace for teams, coaches, nutritionists and athletes.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

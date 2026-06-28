@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /health
+Disallow: /healthCustomerSearch
+Disallow: /login
+Disallow: /signup
+Disallow: /splash
+
+Sitemap: https://www.athletehub.gr/sitemap.xml

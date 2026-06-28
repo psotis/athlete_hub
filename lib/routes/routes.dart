@@ -1,4 +1,5 @@
 abstract final class Routes {
+  static const landing = "/";
   static const dashboard = "/dashboard";
   static const home = "/home";
   static const splash = "/splash";

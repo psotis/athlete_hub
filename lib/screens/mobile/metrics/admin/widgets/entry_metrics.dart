@@ -37,6 +37,7 @@ class SessionEntriesMobile extends StatefulWidget {
   final Users athlete;
   final Set<ErgometricsEntryCategory>? selectedCategories;
   final bool showSaveButton;
+  final bool lightSurface;
 
   const SessionEntriesMobile({
     super.key,
@@ -44,6 +45,7 @@ class SessionEntriesMobile extends StatefulWidget {
     required this.athlete,
     this.selectedCategories,
     this.showSaveButton = true,
+    this.lightSurface = false,
   });
 
   @override
@@ -370,7 +372,9 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
           Text(
             'Session for ${widget.athlete.fullName}',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Colors.white,
+              color: widget.lightSurface
+                  ? const Color(0xFF0F172A)
+                  : Colors.white,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -557,13 +561,13 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
                   contentPadding: EdgeInsets.zero,
                   title: const Text(
                     'VO2 test',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Color(0xFF0F172A)),
                   ),
                   subtitle: Text(
                     isVo2Test
                         ? 'Use max speed and HR max VO'
                         : 'Use beep test fields',
-                    style: const TextStyle(color: Colors.white70),
+                    style: const TextStyle(color: Color(0xFF475569)),
                   ),
                   value: isVo2Test,
                   onChanged: (value) {
@@ -676,7 +680,10 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
       children: [
         const Text(
           'Beep test level',
-          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF0F172A),
+          ),
         ),
         const SizedBox(height: 6),
         IotDropdown2<int>(
@@ -714,7 +721,10 @@ class SessionEntriesMobileState extends State<SessionEntriesMobile> {
       children: [
         const Text(
           'Beep test shuttle',
-          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF0F172A),
+          ),
         ),
         const SizedBox(height: 6),
         IotDropdown2<int>(
@@ -853,20 +863,20 @@ class _CategorySection extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFF0E1A34),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.white.withAlpha(20)),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
-          iconColor: Colors.white,
-          collapsedIconColor: Colors.white70,
+          iconColor: const Color(0xFF0F172A),
+          collapsedIconColor: const Color(0xFF475569),
           title: Text(
             title,
             style: const TextStyle(
               fontWeight: FontWeight.w600,
-              color: Colors.white,
+              color: Color(0xFF0F172A),
             ),
           ),
           childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),

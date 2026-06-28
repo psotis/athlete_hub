@@ -31,9 +31,9 @@ class SessionEntriesDesktop extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF071224),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0x1FFFFFFF)),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       padding: const EdgeInsets.all(14),
       child: SessionEntriesMobile(
@@ -42,6 +42,7 @@ class SessionEntriesDesktop extends StatelessWidget {
         athlete: athlete,
         selectedCategories: selectedCategories,
         showSaveButton: showSaveButton,
+        lightSurface: true,
       ),
     );
   }

@@ -8,7 +8,7 @@ class ApiClient {
     final isAndroidEmulator =
         !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
     final host = isAndroidEmulator ? '10.0.2.2' : '10.72.1.198';
-    return 'http://$host:4001/api';
+    return 'https://athletesrv.athletehub.gr/api';
   }
 
   static final Dio dio = Dio(

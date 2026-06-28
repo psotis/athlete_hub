@@ -77,12 +77,14 @@ class _IotDropdown2State<T> extends State<IotDropdown2<T>> {
         value: widget.value,
         onChanged: widget.onChanged,
         isExpanded: widget.isExpanded,
+        style:
+            widget.itemStyle ?? const TextStyle(color: Color(0xFF0F172A)),
         hint: widget.hintText != null
             ? Text(
                 widget.hintText!,
                 style:
                     widget.hintStyle ??
-                    TextStyle(color: Theme.of(context).hintColor),
+                    const TextStyle(color: Color(0xFF64748B)),
               )
             : null,
         buttonStyleData: ButtonStyleData(

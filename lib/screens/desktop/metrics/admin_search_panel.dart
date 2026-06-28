@@ -107,14 +107,20 @@ class _DesktopAdminMetricsSearchPanelState
       children: [
         DropdownButtonFormField<String>(
           value: _selectedOptionKey,
+          style: const TextStyle(color: Color(0xFF0F172A)),
           decoration: const InputDecoration(
             labelText: 'Select athlete or team',
+            labelStyle: TextStyle(color: Color(0xFF475569)),
+            floatingLabelStyle: TextStyle(color: Color(0xFF334155)),
           ),
           items: _options
               .map(
                 (option) => DropdownMenuItem<String>(
                   value: option.key,
-                  child: Text(option.displayLabel),
+                  child: Text(
+                    option.displayLabel,
+                    style: const TextStyle(color: Color(0xFF0F172A)),
+                  ),
                 ),
               )
               .toList(),
@@ -133,11 +139,21 @@ class _DesktopAdminMetricsSearchPanelState
       }
 
       if (_teamError != null) {
-        return Center(child: Text(_teamError!));
+        return Center(
+          child: Text(
+            _teamError!,
+            style: const TextStyle(color: Color(0xFF0F172A)),
+          ),
+        );
       }
 
       if (_teamResults.isEmpty) {
-        return const Center(child: Text('No ergometrics found'));
+        return const Center(
+          child: Text(
+            'No ergometrics found',
+            style: TextStyle(color: Color(0xFF0F172A)),
+          ),
+        );
       }
 
       return ListView.separated(
@@ -170,7 +186,10 @@ class _DesktopAdminMetricsSearchPanelState
                   if (result.data.ergometrics.isEmpty)
                     const Padding(
                       padding: EdgeInsets.all(16),
-                      child: Text('No ergometrics found'),
+                      child: Text(
+                        'No ergometrics found',
+                        style: TextStyle(color: Color(0xFF0F172A)),
+                      ),
                     )
                   else
                     ...result.data.ergometrics.map(
@@ -195,13 +214,21 @@ class _DesktopAdminMetricsSearchPanelState
 
         if (state.status == ErgometricsStatus.failure) {
           return Center(
-            child: Text(state.errorMessage ?? 'Something went wrong'),
+            child: Text(
+              state.errorMessage ?? 'Something went wrong',
+              style: const TextStyle(color: Color(0xFF0F172A)),
+            ),
           );
         }
 
         final ergometrics = state.data.ergometrics;
         if (ergometrics.isEmpty) {
-          return const Center(child: Text('No ergometrics found'));
+          return const Center(
+            child: Text(
+              'No ergometrics found',
+              style: TextStyle(color: Color(0xFF0F172A)),
+            ),
+          );
         }
 
         return ListView.separated(

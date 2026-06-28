@@ -289,14 +289,20 @@ class _DesktopAdminMetricsStartPanelState
           ),
         DropdownButtonFormField<String>(
           value: _selectedOptionKey,
+          style: const TextStyle(color: Color(0xFF0F172A)),
           decoration: const InputDecoration(
             labelText: 'Select athlete or team',
+            labelStyle: TextStyle(color: Color(0xFF475569)),
+            floatingLabelStyle: TextStyle(color: Color(0xFF334155)),
           ),
           items: _options
               .map(
                 (option) => DropdownMenuItem<String>(
                   value: option.key,
-                  child: Text(option.displayLabel),
+                  child: Text(
+                    option.displayLabel,
+                    style: const TextStyle(color: Color(0xFF0F172A)),
+                  ),
                 ),
               )
               .toList(),

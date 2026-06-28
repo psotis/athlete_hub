@@ -323,6 +323,8 @@ class _StartSessionMobileState extends State<StartSessionMobile> {
                 buttonWidth: MediaQuery.of(context).size.width * .9,
                 value: currentValue,
                 hintText: 'Select athlete or team',
+                hintStyle: const TextStyle(color: Color(0xFF64748B)),
+                itemStyle: const TextStyle(color: Color(0xFF0F172A)),
                 enableSearch: true,
                 searchHintText: 'Search athlete or team...',
                 itemAsString: (key) {
@@ -339,6 +341,7 @@ class _StartSessionMobileState extends State<StartSessionMobile> {
                     value: option.key,
                     child: Text(
                       option.displayLabel,
+                      style: const TextStyle(color: Color(0xFF0F172A)),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
