@@ -1,4 +1,4 @@
-package com.example.athlete_hub
+package com.iotsoft.athletehub
 
 import io.flutter.embedding.android.FlutterActivity
 
