@@ -40,6 +40,8 @@ export '../constants/images.dart';
 export '../screens/responsive_layout.dart';
 export '../screens/pages/landing_page.dart';
 export '../screens/pages/login_page.dart';
+export '../screens/pages/forgot_password_page.dart';
+export '../screens/pages/reset_password_page.dart';
 export '../screens/pages/splash_page.dart';
 export '../screens/pages/home_page.dart';
 export '../screens/pages/dashboard_page.dart';

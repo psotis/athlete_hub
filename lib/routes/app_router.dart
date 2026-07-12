@@ -20,13 +20,22 @@ class AppRouter {
         final onSplash = loc == Routes.splash;
         final onLogin = loc == Routes.login;
         final onSignup = loc == Routes.signup;
+        final onForgotPassword = loc == Routes.forgotPassword;
+        final onResetPassword = loc == Routes.resetPassword;
         final isChecking =
             authState is AuthInitial || authState is AuthChecking;
+        final onPublicAuthRoute =
+            onLanding ||
+            onSplash ||
+            onLogin ||
+            onSignup ||
+            onForgotPassword ||
+            onResetPassword;
 
         if (onLanding && !kIsWeb) return Routes.splash;
 
         if (isChecking) {
-          if (onLanding || onSplash || onLogin || onSignup) return null;
+          if (onPublicAuthRoute) return null;
           return Routes.splash;
         }
 
@@ -35,7 +44,7 @@ class AppRouter {
         }
 
         if (!loggedIn) {
-          if (onLanding || onLogin || onSignup) return null;
+          if (onPublicAuthRoute) return null;
           return Routes.login;
         }
 
@@ -63,6 +72,16 @@ class AppRouter {
         GoRoute(
           path: Routes.signup,
           builder: (context, state) => const SignupPage(),
+        ),
+        GoRoute(
+          path: Routes.forgotPassword,
+          builder: (context, state) => const ForgotPasswordPage(),
+        ),
+        GoRoute(
+          path: Routes.resetPassword,
+          builder: (context, state) => ResetPasswordPage(
+            token: state.uri.queryParameters['token'] ?? '',
+          ),
         ),
         GoRoute(
           path: Routes.dashboard,

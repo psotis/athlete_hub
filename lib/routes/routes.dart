@@ -5,6 +5,8 @@ abstract final class Routes {
   static const splash = "/splash";
   static const login = "/login";
   static const signup = "/signup";
+  static const forgotPassword = "/forgot-password";
+  static const resetPassword = "/reset-password";
   static const profile = "/profile";
   static const health = "/health";
   static const users = "/users";

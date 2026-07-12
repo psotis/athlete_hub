@@ -19,5 +19,16 @@ class AuthRepository {
   }
 
   Future<void> signup() async {}
+  Future<void> forgotPassword({required String email}) {
+    return authService.forgotPassword(email: email);
+  }
+
+  Future<void> resetPassword({
+    required String token,
+    required String password,
+  }) {
+    return authService.resetPassword(token: token, password: password);
+  }
+
   Future<void> logout() async {}
 }

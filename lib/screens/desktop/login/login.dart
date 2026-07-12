@@ -87,7 +87,14 @@ class _LoginDesktopState extends State<LoginDesktop> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 18),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () => context.push(Routes.forgotPassword),
+                      child: const Text('Forgot password?'),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                   IotButton(
                     text: 'Login',
                     onPressed: _submit,

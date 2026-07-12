@@ -69,6 +69,63 @@ class AuthService {
     }
   }
 
+  Future<void> forgotPassword({required String email}) async {
+    try {
+      await ApiClient.dio.post(
+        '/auth/forgot-password',
+        data: {"email": email},
+      );
+    } on DioException catch (e) {
+      throw _exceptionFromDio(e, fallback: 'Could not send reset link');
+    } catch (e) {
+      throw AppException('Unexpected error: $e');
+    }
+  }
+
+  Future<void> resetPassword({
+    required String token,
+    required String password,
+  }) async {
+    try {
+      await ApiClient.dio.post(
+        '/auth/reset-password',
+        data: {"token": token, "password": password},
+      );
+    } on DioException catch (e) {
+      throw _exceptionFromDio(e, fallback: 'Could not reset password');
+    } catch (e) {
+      throw AppException('Unexpected error: $e');
+    }
+  }
+
+  AppException _exceptionFromDio(
+    DioException e, {
+    required String fallback,
+  }) {
+    final data = e.response?.data;
+    String message = fallback;
+    if (data is Map<String, dynamic>) {
+      message = data['message']?.toString() ?? message;
+    } else if (e.message != null) {
+      message = e.message!;
+    }
+
+    final code = e.response?.statusCode ?? 0;
+
+    switch (code) {
+      case 400:
+        return BadRequestException(message);
+      case 401:
+        return UnauthorizedException(message);
+      case 404:
+        return NotFoundException(message);
+      case 500:
+        return ServerException(message);
+      default:
+        return AppException(message, statusCode: code);
+    }
+  }
+
   Future<void> logout() async {
     try {
       final res = await ApiClient.dio.post('/api/auth/logout');
