@@ -99,6 +99,10 @@ class AppRouter {
           path: Routes.healthCustomerSearch,
           builder: (context, state) => const HealthCustomerSearchPage(),
         ),
+        GoRoute(
+          path: Routes.exerciseLibrary,
+          builder: (context, state) => const ExerciseLibraryPage(),
+        ),
       ],
       initialLocation: Routes.landing,
     );

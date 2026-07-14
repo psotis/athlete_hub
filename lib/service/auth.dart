@@ -47,34 +47,39 @@ class AuthService {
     }
   }
 
-  Future<void> signup({required String email, required String password}) async {
+  Future<LoginResponse> signup({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String password,
+  }) async {
     try {
       final res = await ApiClient.dio.post(
-        '/api/auth/signup',
-        data: {"email": "psotakos@gmail.com", "password": "12345678"},
+        '/auth/signup',
+        data: {
+          "first_name": firstName,
+          "last_name": lastName,
+          "email": email,
+          "password": password,
+        },
       );
 
-      debugPrint('LOGIN RESPONSE: ${res.data}');
-
-      final token = res.data['data']?['token'] as String?;
-      if (token == null || token.isEmpty) {
-        return;
-      }
-
-      final storage = SecureTokenStorage();
-      await storage.saveToken(token);
+      final body = res.data as Map<String, dynamic>;
+      final api = ApiResponseObject<LoginResponse>.fromJson(
+        body,
+        (data) => LoginResponse.fromJson(data as Map<String, dynamic>),
+      );
+      return api.data!;
     } on DioException catch (e) {
+      throw _exceptionFromDio(e, fallback: 'Could not create account');
     } catch (e) {
-      debugPrint('LOGIN ERROR: $e');
+      throw AppException('Unexpected error: $e');
     }
   }
 
   Future<void> forgotPassword({required String email}) async {
     try {
-      await ApiClient.dio.post(
-        '/auth/forgot-password',
-        data: {"email": email},
-      );
+      await ApiClient.dio.post('/auth/forgot-password', data: {"email": email});
     } on DioException catch (e) {
       throw _exceptionFromDio(e, fallback: 'Could not send reset link');
     } catch (e) {
@@ -98,10 +103,7 @@ class AuthService {
     }
   }
 
-  AppException _exceptionFromDio(
-    DioException e, {
-    required String fallback,
-  }) {
+  AppException _exceptionFromDio(DioException e, {required String fallback}) {
     final data = e.response?.data;
     String message = fallback;
     if (data is Map<String, dynamic>) {
@@ -128,20 +130,11 @@ class AuthService {
 
   Future<void> logout() async {
     try {
-      final res = await ApiClient.dio.post('/api/auth/logout');
-
-      debugPrint('LOGIN RESPONSE: ${res.data}');
-
-      final token = res.data['data']?['token'] as String?;
-      if (token == null || token.isEmpty) {
-        return;
-      }
-
-      final storage = SecureTokenStorage();
-      await storage.saveToken(token);
+      await ApiClient.dio.post('/auth/logout');
     } on DioException catch (e) {
+      throw _exceptionFromDio(e, fallback: 'Could not log out from server');
     } catch (e) {
-      debugPrint('LOGIN ERROR: $e');
+      throw AppException('Unexpected error: $e');
     }
   }
 }

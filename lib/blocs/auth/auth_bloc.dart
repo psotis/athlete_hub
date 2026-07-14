@@ -55,7 +55,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthLoggedOut event,
     Emitter<AuthState> emit,
   ) async {
-    await tokenStorage.clearToken();
+    try {
+      if (event.notifyServer) await authRepository.logout();
+    } catch (_) {
+      // Local logout must still complete if the session already expired.
+    } finally {
+      await tokenStorage.clearToken();
+    }
     emit(const AuthUnauthenticated());
   }
 

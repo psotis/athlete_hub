@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 bool _isLoggingOut = false;
 
 class ApiClient {
+  static const _clientAccessToken = String.fromEnvironment('API_ACCESS_TOKEN');
+
   static String get _baseUrl {
     final isAndroidEmulator =
         !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
@@ -28,8 +30,9 @@ class ApiClient {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          options.headers['access_token'] =
-              'traiOyCCTQ9XkgIab40ui5x8mhdnNe9X9Qds52K4';
+          if (_clientAccessToken.isNotEmpty) {
+            options.headers['access_token'] = _clientAccessToken;
+          }
 
           final token = await getToken();
           if (token != null && token.isNotEmpty) {

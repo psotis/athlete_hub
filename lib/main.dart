@@ -1,9 +1,11 @@
 import 'package:athlete_hub/blocs/exports.dart';
 import 'package:athlete_hub/helpers/imports.dart';
 import 'package:athlete_hub/utils/snackbars/snackbar.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  usePathUrlStrategy();
   runApp(MyApp());
 }
 
@@ -37,7 +39,8 @@ class _MyAppState extends State<MyApp> {
 
     ApiClient.init(
       getToken: () => tokenStorage.getToken(),
-      onUnauthorized: () => authBloc.add(const AuthLoggedOut()),
+      onUnauthorized: () =>
+          authBloc.add(const AuthLoggedOut(notifyServer: false)),
     );
 
     appRouter = AppRouter(authBloc: authBloc);

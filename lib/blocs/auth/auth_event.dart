@@ -18,7 +18,12 @@ class AuthLoggedIn extends AuthEvent {
 }
 
 class AuthLoggedOut extends AuthEvent {
-  const AuthLoggedOut();
+  final bool notifyServer;
+
+  const AuthLoggedOut({this.notifyServer = true});
+
+  @override
+  List<Object> get props => [notifyServer];
 }
 
 class AuthUserUpdated extends AuthEvent {

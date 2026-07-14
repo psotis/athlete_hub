@@ -25,7 +25,7 @@ class SessionService {
       return api;
     } on DioException catch (e) {
       final data = e.response?.data;
-      String message = data['message'];
+      String message = 'Failed to start session';
       if (data is Map<String, dynamic>) {
         message = data['message']?.toString() ?? message;
       } else if (e.message != null) {
@@ -84,7 +84,7 @@ class SessionService {
       return false;
     } on DioException catch (e) {
       final data = e.response?.data;
-      String message = data['message'];
+      String message = 'Failed to delete session';
       if (data is Map<String, dynamic>) {
         message = data['message']?.toString() ?? message;
       } else if (e.message != null) {

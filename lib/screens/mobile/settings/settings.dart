@@ -118,6 +118,15 @@ class _SettingsMobileState extends State<SettingsMobile> {
                 },
               ),
             ],
+            if (context.isAdmin || context.isTrainer) ...[
+              const SizedBox(height: 12),
+              _SettingsActionTile(
+                title: 'Exercise library',
+                subtitle: 'Create and manage categories, muscle groups and exercises.',
+                icon: Icons.fitness_center_rounded,
+                onTap: () => context.push(Routes.exerciseLibrary),
+              ),
+            ],
             const SizedBox(height: 12),
             _SettingsActionTile(
               title: 'My health',

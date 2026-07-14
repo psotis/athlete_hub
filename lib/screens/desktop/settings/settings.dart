@@ -80,6 +80,13 @@ class _SettingsDesktopState extends State<SettingsDesktop> {
             );
           },
         ),
+      if (context.isAdmin || context.isTrainer)
+        _DesktopActionTile(
+          title: 'Exercise library',
+          subtitle: 'Create and manage categories, muscle groups and exercises.',
+          icon: Icons.fitness_center_rounded,
+          onTap: () => context.push(Routes.exerciseLibrary),
+        ),
       _DesktopActionTile(
         title: 'Logout',
         subtitle: 'Sign out from the current workspace.',

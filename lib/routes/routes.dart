@@ -11,4 +11,5 @@ abstract final class Routes {
   static const health = "/health";
   static const users = "/users";
   static const healthCustomerSearch = "/healthCustomerSearch";
+  static const exerciseLibrary = "/exercise-library";
 }

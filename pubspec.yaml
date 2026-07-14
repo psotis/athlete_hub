@@ -37,6 +37,8 @@ dependencies:
   fl_chart: ^1.2.0
   flutter:
     sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
   flutter_bloc: ^9.1.1
   flutter_secure_storage: ^10.0.0
   flutter_spinkit: ^5.2.2

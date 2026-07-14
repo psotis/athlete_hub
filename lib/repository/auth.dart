@@ -18,7 +18,23 @@ class AuthRepository {
     return loggedUser.user;
   }
 
-  Future<void> signup() async {}
+  Future<Users> signup({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String password,
+  }) async {
+    final registered = await authService.signup(
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      password: password,
+    );
+    await tokenStorage.saveToken(registered.token);
+    await tokenStorage.saveUser(registered.user);
+    return registered.user;
+  }
+
   Future<void> forgotPassword({required String email}) {
     return authService.forgotPassword(email: email);
   }
@@ -30,5 +46,5 @@ class AuthRepository {
     return authService.resetPassword(token: token, password: password);
   }
 
-  Future<void> logout() async {}
+  Future<void> logout() => authService.logout();
 }

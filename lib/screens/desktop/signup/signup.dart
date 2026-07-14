@@ -1,3 +1,4 @@
+import 'package:athlete_hub/blocs/auth/auth_bloc.dart';
 import 'package:athlete_hub/helpers/imports.dart';
 
 class SignupDesktop extends StatefulWidget {
@@ -23,14 +24,26 @@ class _SignupDesktopState extends State<SignupDesktop> {
     super.dispose();
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Signup is not connected yet. Please contact admin.'),
-      ),
-    );
+    final names = _nameCtrl.text.trim().split(RegExp(r'\s+'));
+    try {
+      final user = await context.read<AuthRepository>().signup(
+        firstName: names.first,
+        lastName: names.skip(1).join(' '),
+        email: _emailCtrl.text.trim(),
+        password: _passCtrl.text,
+      );
+      if (!mounted) return;
+      context.read<AuthBloc>().add(AuthUserUpdated(user));
+      context.go(Routes.dashboard);
+    } on AppException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
   }
 
   @override
@@ -56,7 +69,8 @@ class _SignupDesktopState extends State<SignupDesktop> {
                     textCapitalization: TextCapitalization.words,
                     prefixIcon: const Icon(Icons.person_outline),
                     validator: (value) {
-                      if ((value ?? '').trim().isEmpty) return 'Enter your name';
+                      final names = (value ?? '').trim().split(RegExp(r'\s+'));
+                      if (names.length < 2) return 'Enter first and last name';
                       return null;
                     },
                   ),
@@ -90,8 +104,8 @@ class _SignupDesktopState extends State<SignupDesktop> {
                     textInputAction: TextInputAction.next,
                     prefixIcon: const Icon(Icons.lock_outline),
                     validator: (value) {
-                      if ((value ?? '').length < 6) {
-                        return 'Use at least 6 characters';
+                      if ((value ?? '').length < 8) {
+                        return 'Use at least 8 characters';
                       }
                       return null;
                     },

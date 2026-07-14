@@ -10,16 +10,18 @@ class DashboardDesktop extends StatefulWidget {
 class _DashboardDesktopState extends State<DashboardDesktop> {
   int _selectedIndex = 0;
 
-  late final List<_DesktopDashboardTab> _tabs = [
+  List<_DesktopDashboardTab> _tabs(BuildContext context) => [
     _DesktopDashboardTab(
       title: 'Home',
       subtitle: '',
       builder: () => const HomeDesktop(),
     ),
     _DesktopDashboardTab(
-      title: 'Calendar',
+      title: context.isNutritionist ? 'Calendar' : 'Training',
       subtitle: '',
-      builder: () => const CalendarDesktop(),
+      builder: () => context.isNutritionist
+          ? const CalendarDesktop()
+          : const ExercisesDesktop(),
     ),
     _DesktopDashboardTab(
       title: 'Metrics',
@@ -40,7 +42,8 @@ class _DashboardDesktopState extends State<DashboardDesktop> {
 
   @override
   Widget build(BuildContext context) {
-    final tab = _tabs[_selectedIndex];
+    final tabs = _tabs(context);
+    final tab = tabs[_selectedIndex];
 
     return DesktopAppShell(
       selectedIndex: _selectedIndex,

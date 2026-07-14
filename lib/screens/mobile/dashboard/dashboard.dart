@@ -11,22 +11,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
   PageController? pageController;
   int _selectedIndex = 0;
 
-  final screens = [
-    HomePage(),
-    CalendarPage(),
-    MetricsPage(),
-    NutritionPage(),
-    SettingsPage(),
-  ];
-
-  final _navItems = const [
-    (icon: FontAwesomeIcons.house, label: 'Home'),
-    (icon: FontAwesomeIcons.calendar, label: 'Plan'),
-    (icon: FontAwesomeIcons.database, label: 'Metrics'),
-    (icon: FontAwesomeIcons.nutritionix, label: 'Nutrition'),
-    (icon: FontAwesomeIcons.user, label: 'Profile'),
-  ];
-
   void onpageChange(int page) {
     setState(() {
       _selectedIndex = page;
@@ -50,6 +34,26 @@ class _DashboardMobileState extends State<DashboardMobile> {
 
   @override
   Widget build(BuildContext context) {
+    final exerciseAccess = !context.isNutritionist;
+    final screens = [
+      const HomePage(),
+      exerciseAccess ? const ExercisesPage() : const CalendarPage(),
+      const MetricsPage(),
+      const NutritionPage(),
+      const SettingsPage(),
+    ];
+    final navItems = [
+      (icon: FontAwesomeIcons.house, label: 'Home'),
+      (
+        icon: exerciseAccess
+            ? FontAwesomeIcons.dumbbell
+            : FontAwesomeIcons.calendar,
+        label: exerciseAccess ? 'Training' : 'Plan',
+      ),
+      (icon: FontAwesomeIcons.database, label: 'Metrics'),
+      (icon: FontAwesomeIcons.nutritionix, label: 'Nutrition'),
+      (icon: FontAwesomeIcons.user, label: 'Profile'),
+    ];
     return MobileGlowScaffold(
       useSafeArea: false,
       bottomNavigationBar: SafeArea(
@@ -59,11 +63,11 @@ class _DashboardMobileState extends State<DashboardMobile> {
           borderRadius: BorderRadius.circular(30),
           child: Row(
             children: [
-              for (var i = 0; i < _navItems.length; i++)
+              for (var i = 0; i < navItems.length; i++)
                 Expanded(
                   child: _MobileNavItem(
-                    icon: _navItems[i].icon,
-                    label: _navItems[i].label,
+                    icon: navItems[i].icon,
+                    label: navItems[i].label,
                     selected: _selectedIndex == i,
                     onTap: () {
                       setState(() {

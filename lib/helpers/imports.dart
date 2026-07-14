@@ -53,6 +53,8 @@ export '../screens/pages/profile_page.dart';
 export '../screens/pages/health_page.dart';
 export '../screens/shared/auth/auth_shell.dart';
 export '../screens/pages/nutrition.dart';
+export '../screens/pages/exercises_page.dart';
+export '../screens/pages/exercise_library_page.dart';
 
 // Mobile
 export '../screens/mobile/login/login.dart';
@@ -74,6 +76,7 @@ export '../screens/mobile/metrics/admin/start_session.dart';
 export '../screens/mobile/metrics/admin/widgets/team_batch_session_page.dart';
 export '../screens/mobile/widgets/mobile_shell.dart';
 export '../screens/mobile/nutrition/nutrition.dart';
+export '../screens/mobile/exercises/exercises.dart';
 
 // Desktop
 export '../screens/desktop/login/login.dart';
@@ -89,6 +92,8 @@ export '../screens/desktop/settings/profile/profile.dart';
 export '../screens/desktop/settings/profile/admin/profile_customer_search.dart';
 export '../screens/desktop/settings/health/health.dart';
 export '../screens/desktop/nutrition/nutrition.dart';
+export '../screens/desktop/exercises/exercises.dart';
+export '../screens/shared/exercises/exercise_program_dialog.dart';
 
 // Utils
 export '../utils/dio_interceptor.dart';
@@ -108,6 +113,7 @@ export '../service/user.dart';
 export '../service/ergometrics.dart';
 export '../service/medical.dart';
 export '../service/session.dart';
+export '../service/exercises.dart';
 
 // Reporitory
 export '../repository/auth.dart';
@@ -115,6 +121,7 @@ export '../repository/user.dart';
 export '../repository/ergometrics.dart';
 export '../repository/medical.dart';
 export '../repository/session.dart';
+export '../repository/exercises.dart';
 
 // Models
 export '../models/api_error.dart';
@@ -137,6 +144,7 @@ export '../models/medical_history.dart';
 export '../models/ergometrics/beep_test_table.dart';
 export '../models/teams.dart';
 export '../models/team_members.dart';
+export '../models/exercises.dart';
 
 // Helpers
 export './auth_extensions.dart';

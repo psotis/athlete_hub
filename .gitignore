@@ -51,6 +51,7 @@ generated_plugin_registrant.dart
 # Environment / Secrets
 .env
 *.env
+dart_defines.json
 
 # Other
 .pubignore

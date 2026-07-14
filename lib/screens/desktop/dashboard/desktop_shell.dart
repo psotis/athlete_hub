@@ -145,32 +145,42 @@ class DesktopAppShell extends StatelessWidget {
                               color: Colors.white.withAlpha(170),
                               fontWeight: FontWeight.w500,
                             ),
-                            destinations: const [
-                              NavigationRailDestination(
+                            destinations: [
+                              const NavigationRailDestination(
                                 icon: Icon(Icons.home_outlined),
                                 selectedIcon: Icon(Icons.home_rounded),
                                 label: Text('Home'),
                               ),
                               NavigationRailDestination(
-                                icon: Icon(Icons.calendar_month_outlined),
-                                selectedIcon: Icon(
-                                  Icons.calendar_month_rounded,
+                                icon: Icon(
+                                  user?.isNutritionist == true
+                                      ? Icons.calendar_month_outlined
+                                      : Icons.fitness_center_outlined,
                                 ),
-                                label: Text('Calendar'),
+                                selectedIcon: Icon(
+                                  user?.isNutritionist == true
+                                      ? Icons.calendar_month_rounded
+                                      : Icons.fitness_center_rounded,
+                                ),
+                                label: Text(
+                                  user?.isNutritionist == true
+                                      ? 'Calendar'
+                                      : 'Training',
+                                ),
                               ),
-                              NavigationRailDestination(
+                              const NavigationRailDestination(
                                 icon: Icon(Icons.analytics_outlined),
                                 selectedIcon: Icon(Icons.analytics_rounded),
                                 label: Text('Metrics'),
                               ),
-                              NavigationRailDestination(
+                              const NavigationRailDestination(
                                 icon: Icon(Icons.restaurant_menu_outlined),
                                 selectedIcon: Icon(
                                   Icons.restaurant_menu_rounded,
                                 ),
                                 label: Text('Nutrition'),
                               ),
-                              NavigationRailDestination(
+                              const NavigationRailDestination(
                                 icon: Icon(Icons.person_outline_rounded),
                                 selectedIcon: Icon(Icons.person_rounded),
                                 label: Text('Profile'),
